@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Eternals MC | Dashboard</title>
+    <title>Eternals MC | Zephyr Dashboard</title>
 
     <style>
         body {
@@ -13,65 +13,123 @@
             color: white;
         }
 
-        header {
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            align-items: center;
             background: #111;
-            padding: 20px;
-            text-align: center;
+            padding: 15px 25px;
             border-bottom: 2px solid #b8860b;
         }
 
-        header img {
-            height: 80px;
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        h1 {
-            margin: 10px 0 0;
-            font-size: 28px;
+        .nav-logo img {
+            height: 60px;
+        }
+
+        .nav-title {
+            font-size: 22px;
+            font-weight: bold;
             color: #b8860b;
         }
 
-        .container {
-            padding: 20px;
+        .nav-subtitle {
+            font-size: 14px;
+            color: #ccc;
         }
 
-        .balances {
+        .nav-links {
+            margin-left: auto;
             display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 25px;
         }
 
-        .balance-box {
-            flex: 1;
+        .nav-links div {
+            font-size: 16px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .nav-links .active {
+            color: #b8860b;
+            font-weight: bold;
+        }
+
+        /* MAIN CONTENT */
+        .container {
+            padding: 25px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #b8860b;
+        }
+
+        /* FUNDS OVERVIEW */
+        .funds-box {
             background: #1a1a1a;
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #333;
+            margin-bottom: 25px;
         }
 
-        .balance-box h2 {
-            margin: 0 0 10px;
+        .funds-grid {
+            display: flex;
+            gap: 20px;
+        }
+
+        .fund-item {
+            flex: 1;
+            background: #111;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #333;
+        }
+
+        .fund-item h3 {
+            margin: 0 0 5px;
             color: #b8860b;
         }
 
-        .balance-value {
+        .fund-value {
             font-size: 26px;
             font-weight: bold;
         }
 
+        .clean { color: #4caf50; }
+        .dirty { color: #f44336; }
+
         #addTransactionBtn {
+            margin-top: 15px;
             background: #b8860b;
             border: none;
             padding: 12px 20px;
             font-size: 16px;
             cursor: pointer;
             border-radius: 6px;
-            margin-bottom: 20px;
         }
 
         #addTransactionBtn:hover {
             background: #d4a017;
         }
 
+        /* STATUS SNAPSHOT */
+        .status-box {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-bottom: 25px;
+        }
+
+        /* TRANSACTION LOG */
         .log-box {
             background: #1a1a1a;
             padding: 20px;
@@ -79,17 +137,23 @@
             border: 1px solid #333;
         }
 
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #333;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
         }
 
-        .t-type.income { color: #4caf50; }
-        .t-type.expense { color: #f44336; }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            text-align: left;
+        }
 
-        /* Modal */
+        th {
+            color: #b8860b;
+        }
+
+        /* MODAL */
         #transactionModal {
             display: none;
             position: fixed;
@@ -150,35 +214,79 @@
 
 <body>
 
-<header>
-    <img src="logo.png" alt="Eternals MC Logo" />
-    <h1>Eternals MC | Club Dashboard</h1>
-</header>
-
-<div class="container">
-
-    <div class="balances">
-        <div class="balance-box">
-            <h2>Clean Balance</h2>
-            <div class="balance-value" id="cleanBalance">$0</div>
-        </div>
-
-        <div class="balance-box">
-            <h2>Dirty Balance</h2>
-            <div class="balance-value" id="dirtyBalance">$0</div>
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="nav-logo">
+        <img src="logo.png" alt="Eternals MC Logo" />
+        <div>
+            <div class="nav-title">ETERNALS MC</div>
+            <div class="nav-subtitle">ZEPHYR CHARTER</div>
         </div>
     </div>
 
-    <button id="addTransactionBtn">Add Transaction</button>
+    <div class="nav-links">
+        <div class="active">Dashboard</div>
+        <div>Members</div>
+        <div>Operations</div>
+        <div>Finance</div>
+    </div>
+</div>
 
+<div class="container">
+
+    <!-- FUNDS OVERVIEW -->
+    <div class="funds-box">
+        <div class="section-title">Funds Overview – Club Balances</div>
+
+        <div class="funds-grid">
+            <div class="fund-item">
+                <h3>Total Funds</h3>
+                <div class="fund-value" id="totalFunds">$0</div>
+            </div>
+
+            <div class="fund-item">
+                <h3>Clean Money</h3>
+                <div class="fund-value clean" id="cleanBalance">$0</div>
+            </div>
+
+            <div class="fund-item">
+                <h3>Dirty Money</h3>
+                <div class="fund-value dirty" id="dirtyBalance">$0</div>
+            </div>
+        </div>
+
+        <button id="addTransactionBtn">ADD TRANSACTION</button>
+    </div>
+
+    <!-- STATUS SNAPSHOT -->
+    <div class="status-box">
+        <div class="section-title">Status Snapshot</div>
+        <div id="statusMessage">No transactions yet</div>
+    </div>
+
+    <!-- TRANSACTION LOG -->
     <div class="log-box">
-        <h2>Transaction Log</h2>
-        <div id="transactionLog"></div>
+        <div class="section-title">Transaction Log – Income & Expenses</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Logged By</th>
+                    <th>Type</th>
+                    <th>Money</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Balance After</th>
+                </tr>
+            </thead>
+            <tbody id="transactionLog"></tbody>
+        </table>
     </div>
 
 </div>
 
-<!-- Modal -->
+<!-- MODAL -->
 <div id="transactionModal">
     <div class="modal-content">
         <h2>Add Transaction</h2>
@@ -194,7 +302,7 @@
         <label>Amount</label>
         <input type="number" id="transactionAmount" placeholder="Enter amount" />
 
-        <label>Tag / Description</label>
+        <label>Description</label>
         <input type="text" id="transactionTag" placeholder="e.g. Gun Sale, Club Dues" />
 
         <button id="saveTransaction">Save Transaction</button>
