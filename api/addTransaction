@@ -13,8 +13,7 @@ export default async function handler(req, res) {
   try {
     const { cleanDelta, dirtyDelta, logged_by, description } = req.body;
 
-    // Load current funds
-    const { data: fundsRow, error: loadError } = await supabase
+    const { data: funds, error: loadError } = await supabase
       .from('funds')
       .select('*')
       .eq('id', 1)
@@ -22,10 +21,9 @@ export default async function handler(req, res) {
 
     if (loadError) throw loadError;
 
-    const newClean = fundsRow.clean + (cleanDelta || 0);
-    const newDirty = fundsRow.dirty + (dirtyDelta || 0);
+    const newClean = funds.clean + (cleanDelta || 0);
+    const newDirty = funds.dirty + (dirtyDelta || 0);
 
-    // Update funds
     const { error: updateError } = await supabase
       .from('funds')
       .update({ clean: newClean, dirty: newDirty })
@@ -33,7 +31,6 @@ export default async function handler(req, res) {
 
     if (updateError) throw updateError;
 
-    // Log transaction
     const { error: txError } = await supabase
       .from('transactions')
       .insert({
