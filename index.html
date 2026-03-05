@@ -58,7 +58,14 @@
 
     <section id="members" class="page">
         <h2>Members</h2>
-        <ul id="memberList"></ul>
+
+        <div class="member-actions">
+            <input id="memberName" type="text" placeholder="Member Name">
+            <input id="memberRank" type="text" placeholder="Rank">
+            <button onclick="addMember()">Add Member</button>
+        </div>
+
+        <ul id="memberList" class="member-list"></ul>
     </section>
 
     <section id="inventory" class="page">
