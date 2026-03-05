@@ -9,33 +9,33 @@ export default async function handler(req, res) {
 
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-  const { data, error: fetchError } = await supabase
-    .from('eternals_data')
-    .select('*')
-    .single();
-
-  if (fetchError) {
-    return res.status(500).json({ error: fetchError.message });
-  }
-
-  let members = data.members || [];
-
   if (action === 'add') {
-    members.push({ name, rank });
+    const { error } = await supabase
+      .from('Members')
+      .insert([{ name, rank }]);
+
+    if (error) return res.status(500).json({ error: error.message });
   }
 
   if (action === 'remove') {
-    members.splice(index, 1);
+    const { data: members } = await supabase
+      .from('Members')
+      .select('*');
+
+    const member = members[index];
+
+    const { error } = await supabase
+      .from('Members')
+      .delete()
+      .eq('id', member.id);
+
+    if (error) return res.status(500).json({ error: error.message });
   }
 
-  const { error: updateError } = await supabase
-    .from('eternals_data')
-    .update({ members })
-    .eq('id', 1);
+  // Return updated list
+  const { data: updatedMembers } = await supabase
+    .from('Members')
+    .select('*');
 
-  if (updateError) {
-    return res.status(500).json({ error: updateError.message });
-  }
-
-  res.status(200).json({ members });
+  res.status(200).json({ members: updatedMembers });
 }
