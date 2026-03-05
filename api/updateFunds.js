@@ -9,9 +9,8 @@ export default async function handler(req, res) {
 
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-  // Get current funds
   const { data: funds, error: fetchError } = await supabase
-    .from('Funds')
+    .from('funds')
     .select('*')
     .eq('id', 1)
     .single();
@@ -23,9 +22,8 @@ export default async function handler(req, res) {
     dirty: funds.dirty + dirtyDelta
   };
 
-  // Update
   const { error: updateError } = await supabase
-    .from('Funds')
+    .from('funds')
     .update(updated)
     .eq('id', 1);
 
