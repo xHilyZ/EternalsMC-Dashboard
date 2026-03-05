@@ -6,69 +6,55 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { type, delta, logged_by, description } = req.body;
+    const { cleanDelta, dirtyDelta, logged_by, description } = req.body;
 
-    if (!type || !delta) {
-      return res.status(400).json({ error: 'type and delta are required' });
-    }
-
-    // Get current funds
-    const { data: fundsRow, error: fundsError } = await supabase
+    // Load current funds
+    const { data: fundsRow, error: loadError } = await supabase
       .from('funds')
       .select('*')
       .eq('id', 1)
       .single();
 
-    if (fundsError) throw fundsError;
+    if (loadError) throw loadError;
 
-    const current = type === 'clean' ? fundsRow.clean : fundsRow.dirty;
-    const newBalance = current + delta;
-
-    const direction = delta >= 0 ? 'income' : 'expense';
-    const amount = Math.abs(delta);
+    const newClean = fundsRow.clean + (cleanDelta || 0);
+    const newDirty = fundsRow.dirty + (dirtyDelta || 0);
 
     // Update funds
-    const updatedFunds = {
-      clean: fundsRow.clean,
-      dirty: fundsRow.dirty
-    };
-    updatedFunds[type] = newBalance;
-
     const { error: updateError } = await supabase
       .from('funds')
-      .update(updatedFunds)
+      .update({ clean: newClean, dirty: newDirty })
       .eq('id', 1);
 
     if (updateError) throw updateError;
 
-    // Insert transaction
-    const { data: tx, error: txError } = await supabase
+    // Log transaction
+    const { error: txError } = await supabase
       .from('transactions')
       .insert({
-        type,
-        direction,
-        amount,
-        delta,
-        balance_after: newBalance,
-        logged_by: logged_by || null,
-        description: description || null
-      })
-      .select()
-      .single();
+        type: cleanDelta !== 0 ? "clean" : "dirty",
+        direction: (cleanDelta || dirtyDelta) > 0 ? "income" : "expense",
+        amount: Math.abs(cleanDelta || dirtyDelta),
+        delta: cleanDelta || dirtyDelta,
+        balance_after: cleanDelta !== 0 ? newClean : newDirty,
+        logged_by,
+        description
+      });
 
     if (txError) throw txError;
 
     res.status(200).json({
-      funds: updatedFunds,
-      transaction: tx
+      clean: newClean,
+      dirty: newDirty
     });
+
   } catch (err) {
-    console.error('addTransaction error:', err);
-    res.status(500).json({ error: 'Failed to add transaction' });
+    console.error("addTransaction error:", err);
+    res.status(500).json({ error: "Failed to update funds" });
   }
 }
