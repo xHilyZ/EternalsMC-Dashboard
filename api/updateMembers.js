@@ -13,7 +13,6 @@ export default async function handler(req, res) {
   try {
     const { action, name, rank, index } = req.body;
 
-    // Load current members
     const { data: members, error: loadError } = await supabase
       .from('members')
       .select('*')
@@ -35,15 +34,13 @@ export default async function handler(req, res) {
       updated.splice(index, 1);
     }
 
-    // ❗ DELETE ALL MEMBERS (this is the correct way)
     const { error: deleteError } = await supabase
       .from('members')
       .delete()
-      .neq('id', ''); // deletes everything
+      .neq('id', '');
 
     if (deleteError) throw deleteError;
 
-    // ❗ INSERT WITHOUT IDs (Supabase will generate new ones)
     const cleaned = updated.map(m => ({
       name: m.name,
       rank: m.rank,
