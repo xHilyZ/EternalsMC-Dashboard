@@ -1,6 +1,74 @@
-{
-  "type": "clean",
-  "delta": 5000,
-  "logged_by": "Tee",
-  "description": "Weekly dues"
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { type, delta, logged_by, description } = req.body;
+
+    if (!type || !delta) {
+      return res.status(400).json({ error: 'type and delta are required' });
+    }
+
+    // get current funds
+    const { data: fundsRow, error: fundsError } = await supabase
+      .from('funds')
+      .select('*')
+      .eq('id', 1)
+      .single();
+
+    if (fundsError) throw fundsError;
+
+    const current = type === 'clean' ? fundsRow.clean : fundsRow.dirty;
+    const newBalance = current + delta;
+
+    const direction = delta >= 0 ? 'income' : 'expense';
+    const amount = Math.abs(delta);
+
+    // update funds
+    const updatedFunds = {
+      clean: fundsRow.clean,
+      dirty: fundsRow.dirty
+    };
+    updatedFunds[type] = newBalance;
+
+    const { error: updateError } = await supabase
+      .from('funds')
+      .update(updatedFunds)
+      .eq('id', 1);
+
+    if (updateError) throw updateError;
+
+    // insert transaction
+    const { data: tx, error: txError } = await supabase
+      .from('transactions')
+      .insert({
+        type,
+        direction,
+        amount,
+        delta,
+        balance_after: newBalance,
+        logged_by: logged_by || null,
+        description: description || null
+      })
+      .select()
+      .single();
+
+    if (txError) throw txError;
+
+    res.status(200).json({
+      funds: updatedFunds,
+      transaction: tx
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to add transaction' });
+  }
 }
