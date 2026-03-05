@@ -1,5 +1,0 @@
-[functions]
-directory = "netlify/functions"
-
-[[kv_namespaces]]
-binding = "ETERNALS_DB"
