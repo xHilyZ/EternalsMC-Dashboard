@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Eternals MC – Zephyr Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-main: #050505;
+      --bg-elevated: #0b0b0b;
+      --bg-card: #101010;
+      --accent-tan: #d2b48c;
+      --accent-tan-soft: rgba(210, 180, 140, 0.2);
+      --text-main: #f5f5f5;
+      --text-muted: #9a9a9a;
+      --border-soft: #262626;
+      --danger: #b33a3a;
+      --success: #3a9b5c;
+      --warning: #c28b3a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1a1208 0, #050505 45%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: #050505;
+      border-right: 1px solid var(--border-soft);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-tan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 22px;
+      color: var(--accent-tan);
+      box-shadow: 0 0 12px rgba(210, 180, 140, 0.4);
+    }
+
+    .sidebar-title-main {
+      font-size: 16px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-tan);
+      font-weight: 700;
+    }
+
+    .sidebar-title-sub {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .nav-item.active,
+    .nav-item:hover {
+      background: rgba(210, 180, 140, 0.12);
+      color: var(--accent-tan);
+    }
+
+    .nav-pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-soft);
+      padding-top: 10px;
+      font-weight: 600;
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .top-header {
+      display: flex;
+      align-items: center;
+      background: #0a0a0a;
+      border-bottom: 1px solid var(--accent-tan);
+      padding: 20px 30px;
+      height: 130px;
+    }
+
+    .header-logo {
+      height: 100px;
+      width: auto;
+      border-radius: 6px;
+      border: 1px solid var(--accent-tan);
+      box-shadow: 0 0 12px rgba(210,180,140,0.4);
+    }
+
+    .header-right {
+      margin-left: 25px;
+    }
+
+    .header-right h1 {
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--accent-tan);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    /* Content */
+    .content {
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr;
+      gap: 26px;
+    }
+
+    .card {
+      background: #0b0b0b;
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      padding: 26px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      color: var(--accent-tan);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .funds-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .fund-card {
+      background: #111;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      padding: 16px;
+    }
+
+    .fund-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .fund-amount {
+      font-size: 32px !important;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .fund-amount.total { color: var(--accent-tan); }
+    .fund-amount.clean { color: var(--success); }
+    .fund-amount.dirty { color: var(--danger); }
+
+    .btn-small {
+      font-size: 14px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-tan);
+      background: transparent;
+      color: var(--accent-tan);
+      cursor: pointer;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    /* Table */
+    .transactions-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+
+    .transactions-table th {
+      font-size: 14px;
+      font-weight: 800;
+      padding: 12px 6px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .transactions-table td {
+      font-size: 16px;
+      padding: 12px 6px;
+      border-bottom: 1px solid #151515;
+      font-weight: 600;
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .tag-income { border-color: var(--accent-tan); color: var(--accent-tan); }
+    .tag-expense { border-color: var(--danger); color: var(--danger); }
+    .tag-clean { border-color: var(--success); color: var(--success); }
+    .tag-dirty { border-color: var(--danger); color: var(--danger); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .modal {
+      background: #111;
+      padding: 26px;
+      border-radius: 12px;
+      width: 360px;
+      border: 1px solid var(--accent-tan);
+    }
+
+    .modal label {
+      display: block;
+      margin-top: 14px;
+      font-size: 14px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .modal input,
+    .modal select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      background: #0a0a0a;
+      border: 1px solid var(--border-soft);
+      border-radius: 6px;
+      color: var(--text-main);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-circle">E</div>
+      <div>
+        <div class="sidebar-title-main">Eternals MC</div>
+        <div class="sidebar-title-sub">Zephyr Charter</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-item active">
+        <span>Dashboard</span>
+        <span class="nav-pill">LIVE</span>
+      </li>
+      <li class="nav-item"><span>Members</span></li>
+      <li class="nav-item"><span>Operations</span></li>
+      <li class="nav-item"><span>Finance</span></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <span>1% | Australia</span>
+      <small>Internal use only</small>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Header -->
+    <header class="top-header">
+      <img src="logo.png" class="header-logo">
+      <div class="header-right">
+        <h1>Eternals MC – Zephyr</h1>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <section class="content">
+
+      <div class="grid">
+        <!-- Funds -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Funds Overview</div>
+              <div class="card-subtitle">Club Balances</div>
+            </div>
+            <button class="btn-small" onclick="openTransactionModal()">Add Transaction</button>
+          </div>
+
+          <div class="funds-grid">
+            <div class="fund-card">
+              <div class="fund-label">Total Funds</div>
+              <div class="fund-amount total" id="totalFunds">$0</div>
+            </div>
+            <div class="fund-card">
+              <div class="fund-label">Clean Money</div>
+              <div class="fund-amount clean" id="cleanFunds">$0</div>
+            </div>
+            <div class="fund-card">
+              <div class="fund-label">Dirty Money</div>
+              <div class="fund-amount dirty" id="dirtyFunds">$0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Status</div>
+              <div class="card-subtitle">Snapshot</div>
+            </div>
+          </div>
+          <p id="lastUpdate" style="color:var(--text-muted); font-size:16px; font-weight:600;">No transactions yet</p>
+        </div>
+      </div>
+
+      <!-- Transaction Log -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Transaction Log</div>
+            <div class="card-subtitle">Income & Expenses</div>
+          </div>
+        </div>
+
+        <table class="transactions-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Logged By</th>
+              <th>Type</th>
+              <th>Money</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Balance After</th>
+            </tr>
+          </thead>
+          <tbody id="transactionsBody">
+            <tr>
+              <td colspan="7" style="color:var(--text-muted); font-size:16px;">No transactions logged yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div id="transactionModal" class="modal-overlay">
+    <div class="modal">
+      <h2 style="color:var(--accent-tan); text-transform:uppercase; font-size:20px; font-weight:800;">Add Transaction</h2>
+
+      <label>Transaction Type</label>
+      <select id="txDirection">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+
+      <label>Amount</label>
+      <input type="number" id="txAmount">
+
+      <label>Money Type</label>
+      <select id="txType">
+        <option value="clean">Clean</option>
+        <option value="dirty">Dirty</option>
+      </select>
+
+      <label>Description</label>
+      <input type="text" id="txDescription">
+
+      <label>Logged By</label>
+      <input type="text" id="txLoggedBy">
+
+      <div class="modal-actions">
+        <button class="btn-small" onclick="closeTransactionModal()">Cancel</button>
+        <button class="btn-small" onclick="saveTransaction()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let cleanBalance = 0;
+    let dirtyBalance = 0;
+    let transactions = [];
+
+    async function loadData() {
+      try {
+        const res = await fetch("/.netlify/functions/getData");
+        const data = await res.json();
+
+        cleanBalance = data.cleanBalance;
+        dirtyBalance = data.dirtyBalance;
+        transactions = data.transactions;
+
+        updateBalancesUI();
+        renderTransactions();
+      } catch (err) {
+        console.error("Error loading data:", err);
+      }
+    }
+
+    function formatMoney(amount) {
+      return "$" + amount.toLocaleString();
+    }
+
+    function updateBalancesUI() {
+      const total = cleanBalance + dirtyBalance;
+      document.getElementById("cleanFunds").textContent = formatMoney(cleanBalance);
+      document.getElementById("dirtyFunds").textContent = formatMoney(dirtyBalance);
+      document.getElementById("totalFunds").textContent = formatMoney(total);
+    }
+
+    function renderTransactions() {
+      const tbody = document.getElementById("transactionsBody");
+      tbody.innerHTML = "";
+
+      if (transactions.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 7;
+        cell.style.color = "var(--text-muted)";
+        cell.style.fontSize = "16px";
+        cell.textContent = "No transactions logged yet.";
+        row.appendChild(cell);
+        tbody.appendChild(row);
+        return;
+      }
+
+      transactions.forEach(tx => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${tx.date}</td>
+          <td>${tx.loggedBy}</td>
+          <td><span class="tag ${tx.direction === "income" ? "tag-income" : "tag-expense"}">${tx.direction === "income" ? "Income" : "Expense"}</span></td>
+          <td><span class="tag ${tx.type === "clean" ? "tag-clean" : "tag-dirty"}">${tx.type === "clean" ? "Clean" : "Dirty"}</span></td>
+          <td>${tx.description}</td>
+          <td>${tx.amount < 0 ? "-" : ""}$${Math.abs(tx.amount).toLocaleString()}</td>
+          <td>$${tx.balanceAfter.toLocaleString()}</td>
+        `;
+
+        tbody.appendChild(row);
+      });
+
+      const last = transactions[transactions.length - 1];
+      document.getElementById("lastUpdate").textContent = last.date + " by " + last.loggedBy;
+    }
+
+    function openTransactionModal() {
+      document.getElementById("transactionModal").style.display = "flex";
+    }
+
+    function closeTransactionModal() {
+      document.getElementById("transactionModal").style.display = "none";
+    }
+
+    async function saveTransaction() {
+      const direction = document.getElementById("txDirection").value;
+      const amountVal = Number(document.getElementById("txAmount").value);
+      const type = document.getElementById("txType").value;
+      const description = document.getElementById("txDescription").value.trim();
+      const loggedBy = document.getElementById("txLoggedBy").value.trim();
+
+      if (!amountVal || !description || !loggedBy) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      const payload = {
+        amount: amountVal,
+        direction,
+        type,
+        description,
