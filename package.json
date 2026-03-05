@@ -1,6 +1,7 @@
 {
-  "type": "module",
+  "name": "eternals-dashboard",
+  "version": "1.0.0",
   "dependencies": {
-    "@netlify/blobs": "latest"
+    "@supabase/supabase-js": "^2.39.0"
   }
 }
