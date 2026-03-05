@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'type and delta are required' });
     }
 
-    // get current funds
+    // Get current funds
     const { data: fundsRow, error: fundsError } = await supabase
       .from('funds')
       .select('*')
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     const direction = delta >= 0 ? 'income' : 'expense';
     const amount = Math.abs(delta);
 
-    // update funds
+    // Update funds
     const updatedFunds = {
       clean: fundsRow.clean,
       dirty: fundsRow.dirty
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
 
     if (updateError) throw updateError;
 
-    // insert transaction
+    // Insert transaction
     const { data: tx, error: txError } = await supabase
       .from('transactions')
       .insert({
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
       transaction: tx
     });
   } catch (err) {
-    console.error(err);
+    console.error('addTransaction error:', err);
     res.status(500).json({ error: 'Failed to add transaction' });
   }
 }
