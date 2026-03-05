@@ -35,17 +35,28 @@ export default async function handler(req, res) {
       updated.splice(index, 1);
     }
 
-    // Clear table
-    await supabase.from('members').delete().neq('id', -1);
+    // ❗ DELETE ALL MEMBERS (this is the correct way)
+    const { error: deleteError } = await supabase
+      .from('members')
+      .delete()
+      .neq('id', ''); // deletes everything
 
-    // Insert updated list
+    if (deleteError) throw deleteError;
+
+    // ❗ INSERT WITHOUT IDs (Supabase will generate new ones)
+    const cleaned = updated.map(m => ({
+      name: m.name,
+      rank: m.rank,
+      created_at: m.created_at
+    }));
+
     const { error: insertError } = await supabase
       .from('members')
-      .insert(updated);
+      .insert(cleaned);
 
     if (insertError) throw insertError;
 
-    res.status(200).json({ members: updated });
+    res.status(200).json({ members: cleaned });
 
   } catch (err) {
     console.error("updateMembers error:", err);
