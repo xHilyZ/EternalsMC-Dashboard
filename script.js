@@ -1,5 +1,5 @@
 // =========================
-// INITIAL DATA LOAD
+// LOAD DATA ON PAGE START
 // =========================
 
 async function loadData() {
@@ -7,24 +7,38 @@ async function loadData() {
         const res = await fetch("/.netlify/functions/getData");
         const data = await res.json();
 
+        // Update balances
         document.getElementById("cleanBalance").textContent = data.cleanBalance;
         document.getElementById("dirtyBalance").textContent = data.dirtyBalance;
 
-        const logContainer = document.getElementById("transactionLog");
-        logContainer.innerHTML = "";
+        // ⭐ FIX: Update Total Funds
+        const total = data.cleanBalance + data.dirtyBalance;
+        document.getElementById("totalFunds").textContent = total;
+
+        // Update status snapshot
+        const status = document.getElementById("statusMessage");
+        status.textContent = data.transactions.length === 0
+            ? "No transactions yet"
+            : "Active financial activity";
+
+        // Update transaction table
+        const table = document.getElementById("transactionLog");
+        table.innerHTML = "";
 
         data.transactions.forEach(t => {
-            const item = document.createElement("div");
-            item.className = "transaction-item";
+            const row = document.createElement("tr");
 
-            item.innerHTML = `
-                <span class="t-type ${t.type}">${t.type.toUpperCase()}</span>
-                <span class="t-amount">$${t.amount}</span>
-                <span class="t-tag">${t.tag}</span>
-                <span class="t-time">${t.time}</span>
+            row.innerHTML = `
+                <td>${t.time}</td>
+                <td>${t.loggedBy || "Zephyr"}</td>
+                <td>${t.type}</td>
+                <td>${t.moneyType}</td>
+                <td>${t.tag}</td>
+                <td>$${t.amount}</td>
+                <td>$${t.balanceAfter}</td>
             `;
 
-            logContainer.appendChild(item);
+            table.appendChild(row);
         });
 
     } catch (err) {
@@ -36,7 +50,7 @@ loadData();
 
 
 // =========================
-// OPEN / CLOSE MODAL
+// MODAL OPEN / CLOSE
 // =========================
 
 const modal = document.getElementById("transactionModal");
@@ -70,7 +84,17 @@ document.getElementById("saveTransaction").addEventListener("click", async () =>
         return;
     }
 
-    const payload = { type, amount, tag };
+    // Determine clean/dirty type
+    let moneyType = "Clean";
+    if (type.includes("dirty")) moneyType = "Dirty";
+
+    const payload = {
+        type,
+        amount,
+        tag,
+        moneyType,
+        loggedBy: "Zephyr" // default for now
+    };
 
     try {
         const res = await fetch("/.netlify/functions/saveTransaction", {
