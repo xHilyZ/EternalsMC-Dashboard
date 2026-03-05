@@ -1,7 +1,8 @@
 [functions]
-  directory = "netlify/functions"
+directory = "netlify/functions"
 
 [kv_namespaces]
   [[kv_namespaces]]
     binding = "ETERNALS_DB"
     id = "eternals-db"
+
