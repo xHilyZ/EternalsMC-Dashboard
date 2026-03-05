@@ -1,16 +1,13 @@
-/* Global Font + Smoothing */
 body {
     margin: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
     background: #000;
     color: #d2b48c;
     display: flex;
-
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Sidebar */
 .sidebar {
     width: 260px;
     background: #111;
@@ -41,7 +38,6 @@ body {
     font-weight: 600;
 }
 
-/* Navigation */
 nav {
     margin-top: 20px;
     width: 100%;
@@ -66,7 +62,6 @@ nav button:hover {
     color: #000;
 }
 
-/* Main Content */
 .content {
     flex: 1;
     padding: 30px;
@@ -80,7 +75,6 @@ nav button:hover {
     display: block;
 }
 
-/* Dashboard Cards */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -105,7 +99,6 @@ nav button:hover {
     font-weight: 800;
 }
 
-/* Funds Input Area */
 .fund-actions {
     margin-top: 20px;
     display: flex;
@@ -131,6 +124,37 @@ nav button:hover {
     border-radius: 4px;
 }
 
-.fund-actions button:hover {
-    background: #b89c6f;
+.member-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.member-actions input {
+    padding: 10px;
+    background: #222;
+    border: 2px solid #d2b48c;
+    color: #d2b48c;
+    border-radius: 4px;
+}
+
+.member-list li {
+    padding: 12px;
+    background: #111;
+    border: 2px solid #d2b48c;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.member-list button {
+    background: #d2b48c;
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 4px;
 }
