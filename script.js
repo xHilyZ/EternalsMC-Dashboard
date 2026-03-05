@@ -25,13 +25,13 @@ function renderDashboard() {
 }
 
 // Switch pages
-function showPage(id) {
+window.showPage = function (id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-}
+};
 
 // Apply fund changes
-async function applyFundsChange() {
+window.applyFundsChange = async function () {
     const cleanDelta = Number(document.getElementById('cleanDelta').value || 0);
     const dirtyDelta = Number(document.getElementById('dirtyDelta').value || 0);
 
@@ -47,7 +47,7 @@ async function applyFundsChange() {
     } catch (err) {
         console.error("Failed to update funds:", err);
     }
-}
+};
 
 // Render members list
 function renderMembers() {
@@ -64,7 +64,7 @@ function renderMembers() {
 }
 
 // Add a member
-async function addMember() {
+window.addMember = async function () {
     const name = document.getElementById("memberName").value.trim();
     const rank = document.getElementById("memberRank").value.trim();
 
@@ -85,10 +85,10 @@ async function addMember() {
     } catch (err) {
         console.error("Failed to add member:", err);
     }
-}
+};
 
 // Remove a member
-async function removeMember(index) {
+window.removeMember = async function (index) {
     try {
         const res = await fetch('/api/updateMembers', {
             method: 'POST',
@@ -101,7 +101,7 @@ async function removeMember(index) {
     } catch (err) {
         console.error("Failed to remove member:", err);
     }
-}
+};
 
 // Start
 loadData();
