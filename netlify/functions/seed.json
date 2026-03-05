@@ -1,0 +1,24 @@
+{
+  "funds": { "clean": 25000, "dirty": 7800 },
+  "members": [
+    { "name": "Ghost", "rank": "President" },
+    { "name": "Viper", "rank": "VP" }
+  ],
+  "inventory": [
+    { "item": "Lockpick", "qty": 12 },
+    { "item": "Radio", "qty": 8 }
+  ],
+  "drugs": [
+    { "type": "Coke Brick", "qty": 12 }
+  ],
+  "weapons": [
+    { "weapon": "Glock 19", "serial": "ETR-001" }
+  ],
+  "territories": [
+    { "name": "Grapeseed", "income": 1200 }
+  ],
+  "operations": [
+    { "name": "Gun Run", "status": "Active" }
+  ],
+  "logs": []
+}

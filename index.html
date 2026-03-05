@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternals MC | Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="logo">
+        <img src="patch.png" alt="Eternals MC Patch">
+        <h1>Eternals MC</h1>
+        <h2>Zephyr Charter</h2>
+    </div>
+
+    <nav>
+        <button onclick="showPage('dashboard')">Dashboard</button>
+        <button onclick="showPage('funds')">Funds</button>
+        <button onclick="showPage('members')">Members</button>
+        <button onclick="showPage('inventory')">Inventory</button>
+        <button onclick="showPage('drugs')">Drug Lab</button>
+        <button onclick="showPage('weapons')">Weapons</button>
+        <button onclick="showPage('territories')">Territories</button>
+        <button onclick="showPage('operations')">Operations</button>
+        <button onclick="showPage('settings')">Settings</button>
+    </nav>
+</div>
+
+<div class="content">
+
+    <section id="dashboard" class="page active">
+        <h2>Dashboard Overview</h2>
+        <div class="grid">
+            <div class="card"><h3>Total Funds</h3><p id="fundTotal">$0</p></div>
+            <div class="card"><h3>Members</h3><p id="memberCount">0</p></div>
+            <div class="card"><h3>Inventory Items</h3><p id="inventoryCount">0</p></div>
+            <div class="card"><h3>Territories</h3><p id="territoryCount">0</p></div>
+        </div>
+    </section>
+
+    <section id="funds" class="page">
+        <h2>Club Funds</h2>
+        <p>Clean: <span id="cleanMoney">$0</span></p>
+        <p>Dirty: <span id="dirtyMoney">$0</span></p>
+
+        <div class="fund-actions">
+            <input id="cleanDelta" type="number" placeholder="Clean +/-">
+            <input id="dirtyDelta" type="number" placeholder="Dirty +/-">
+            <button onclick="applyFundsChange()">Apply</button>
+        </div>
+    </section>
+
+    <section id="members" class="page">
+        <h2>Members</h2>
+        <ul id="memberList"></ul>
+    </section>
+
+    <section id="inventory" class="page">
+        <h2>Inventory</h2>
+        <ul id="inventoryList"></ul>
+    </section>
+
+    <section id="drugs" class="page">
+        <h2>Drug Lab</h2>
+        <ul id="drugList"></ul>
+    </section>
+
+    <section id="weapons" class="page">
+        <h2>Weapons Locker</h2>
+        <ul id="weaponList"></ul>
+    </section>
+
+    <section id="territories" class="page">
+        <h2>Territories</h2>
+        <ul id="territoryList"></ul>
+    </section>
+
+    <section id="operations" class="page">
+        <h2>Operations</h2>
+        <ul id="operationList"></ul>
+    </section>
+
+    <section id="settings" class="page">
+        <h2>Settings</h2>
+        <p>Branding, theme, and admin tools will go here.</p>
+    </section>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
