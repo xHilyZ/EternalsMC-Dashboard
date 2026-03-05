@@ -1,57 +1,29 @@
-import { createClient } from '@supabase/supabase-js';
+async function addTransaction() {
+  const amount = parseInt(document.getElementById("amount").value);
+  const type = document.getElementById("type").value;
+  const direction = document.getElementById("direction").value;
+  const logged_by = document.getElementById("loggedBy").value;
+  const description = document.getElementById("description").value;
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+  let cleanDelta = 0;
+  let dirtyDelta = 0;
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  if (type === "clean") {
+    cleanDelta = direction === "income" ? amount : -amount;
+  } else {
+    dirtyDelta = direction === "income" ? amount : -amount;
   }
 
-  try {
-    const { cleanDelta, dirtyDelta, logged_by, description } = req.body;
+  await fetch("/api/addTransaction", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      cleanDelta,
+      dirtyDelta,
+      logged_by,
+      description
+    })
+  });
 
-    const { data: funds, error: loadError } = await supabase
-      .from('funds')
-      .select('*')
-      .eq('id', 1)
-      .single();
-
-    if (loadError) throw loadError;
-
-    const newClean = funds.clean + (cleanDelta || 0);
-    const newDirty = funds.dirty + (dirtyDelta || 0);
-
-    const { error: updateError } = await supabase
-      .from('funds')
-      .update({ clean: newClean, dirty: newDirty })
-      .eq('id', 1);
-
-    if (updateError) throw updateError;
-
-    const { error: txError } = await supabase
-      .from('transactions')
-      .insert({
-        type: cleanDelta !== 0 ? "clean" : "dirty",
-        direction: (cleanDelta || dirtyDelta) > 0 ? "income" : "expense",
-        amount: Math.abs(cleanDelta || dirtyDelta),
-        delta: cleanDelta || dirtyDelta,
-        balance_after: cleanDelta !== 0 ? newClean : newDirty,
-        logged_by,
-        description
-      });
-
-    if (txError) throw txError;
-
-    res.status(200).json({
-      clean: newClean,
-      dirty: newDirty
-    });
-
-  } catch (err) {
-    console.error("addTransaction error:", err);
-    res.status(500).json({ error: "Failed to update funds" });
-  }
+  loadData();
 }
