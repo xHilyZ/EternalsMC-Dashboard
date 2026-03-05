@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   if (action === 'add') {
     const { error } = await supabase
-      .from('Members')
+      .from('members')
       .insert([{ name, rank }]);
 
     if (error) return res.status(500).json({ error: error.message });
@@ -19,22 +19,21 @@ export default async function handler(req, res) {
 
   if (action === 'remove') {
     const { data: members } = await supabase
-      .from('Members')
+      .from('members')
       .select('*');
 
     const member = members[index];
 
     const { error } = await supabase
-      .from('Members')
+      .from('members')
       .delete()
       .eq('id', member.id);
 
     if (error) return res.status(500).json({ error: error.message });
   }
 
-  // Return updated list
   const { data: updatedMembers } = await supabase
-    .from('Members')
+    .from('members')
     .select('*');
 
   res.status(200).json({ members: updatedMembers });
