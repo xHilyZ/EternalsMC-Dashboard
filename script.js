@@ -7,21 +7,22 @@ async function loadData() {
         const res = await fetch("/.netlify/functions/getData");
         const data = await res.json();
 
-        // Update balances
-        document.getElementById("cleanBalance").textContent = data.cleanBalance;
-        document.getElementById("dirtyBalance").textContent = data.dirtyBalance;
+        const clean = Number(data.cleanBalance) || 0;
+        const dirty = Number(data.dirtyBalance) || 0;
 
-        // ⭐ FIX: Update Total Funds
-        const total = data.cleanBalance + data.dirtyBalance;
-        document.getElementById("totalFunds").textContent = total;
+        document.getElementById("cleanBalance").textContent = clean;
+        document.getElementById("dirtyBalance").textContent = dirty;
 
-        // Update status snapshot
-        const status = document.getElementById("statusMessage");
-        status.textContent = data.transactions.length === 0
-            ? "No transactions yet"
-            : "Active financial activity";
+        // FIX: Total Funds
+        document.getElementById("totalFunds").textContent = clean + dirty;
 
-        // Update transaction table
+        // Status Snapshot
+        document.getElementById("statusMessage").textContent =
+            data.transactions.length === 0
+                ? "No transactions yet"
+                : "Active financial activity";
+
+        // Transaction Table
         const table = document.getElementById("transactionLog");
         table.innerHTML = "";
 
@@ -30,7 +31,7 @@ async function loadData() {
 
             row.innerHTML = `
                 <td>${t.time}</td>
-                <td>${t.loggedBy || "Zephyr"}</td>
+                <td>${t.loggedBy}</td>
                 <td>${t.type}</td>
                 <td>${t.moneyType}</td>
                 <td>${t.tag}</td>
@@ -54,20 +55,12 @@ loadData();
 // =========================
 
 const modal = document.getElementById("transactionModal");
-const openBtn = document.getElementById("addTransactionBtn");
-const closeBtn = document.getElementById("closeModal");
+document.getElementById("addTransactionBtn").onclick = () => modal.style.display = "flex";
+document.getElementById("closeModal").onclick = () => modal.style.display = "none";
 
-openBtn.addEventListener("click", () => {
-    modal.style.display = "flex";
-});
-
-closeBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-});
-
-window.addEventListener("click", (e) => {
+window.onclick = (e) => {
     if (e.target === modal) modal.style.display = "none";
-});
+};
 
 
 // =========================
@@ -84,26 +77,21 @@ document.getElementById("saveTransaction").addEventListener("click", async () =>
         return;
     }
 
-    // Determine clean/dirty type
-    let moneyType = "Clean";
-    if (type.includes("dirty")) moneyType = "Dirty";
+    const moneyType = type.includes("dirty") ? "Dirty" : "Clean";
 
     const payload = {
         type,
         amount,
         tag,
         moneyType,
-        loggedBy: "Zephyr" // default for now
+        loggedBy: "Zephyr"
     };
 
     try {
-        const res = await fetch("/.netlify/functions/saveTransaction", {
+        await fetch("/.netlify/functions/saveTransaction", {
             method: "POST",
             body: JSON.stringify(payload)
         });
-
-        const result = await res.json();
-        console.log("Saved:", result);
 
         modal.style.display = "none";
         loadData();
