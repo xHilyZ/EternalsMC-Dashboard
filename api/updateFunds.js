@@ -1,18 +1,37 @@
 import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-  const { clean, dirty } = req.body;
+  const { cleanDelta, dirtyDelta } = req.body;
 
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-  const { error } = await supabase
+  // Fetch current values
+  const { data, error: fetchError } = await supabase
     .from('eternals_data')
-    .update({ clean, dirty })
+    .select('*')
+    .single();
+
+  if (fetchError) {
+    return res.status(500).json({ error: fetchError.message });
+  }
+
+  const updated = {
+    clean: data.funds.clean + cleanDelta,
+    dirty: data.funds.dirty + dirtyDelta
+  };
+
+  const { error: updateError } = await supabase
+    .from('eternals_data')
+    .update({ funds: updated })
     .eq('id', 1);
 
-  if (error) return res.status(500).json({ error: error.message });
+  if (updateError) {
+    return res.status(500).json({ error: updateError.message });
+  }
 
-  res.status(200).json({ success: true });
+  res.status(200).json(updated);
 }
