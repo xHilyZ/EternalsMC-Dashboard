@@ -9,29 +9,27 @@ export default async function handler(req, res) {
 
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-  // Fetch current values
-  const { data, error: fetchError } = await supabase
-    .from('eternals_data')
+  // Get current funds
+  const { data: funds, error: fetchError } = await supabase
+    .from('Funds')
     .select('*')
+    .eq('id', 1)
     .single();
 
-  if (fetchError) {
-    return res.status(500).json({ error: fetchError.message });
-  }
+  if (fetchError) return res.status(500).json({ error: fetchError.message });
 
   const updated = {
-    clean: data.funds.clean + cleanDelta,
-    dirty: data.funds.dirty + dirtyDelta
+    clean: funds.clean + cleanDelta,
+    dirty: funds.dirty + dirtyDelta
   };
 
+  // Update
   const { error: updateError } = await supabase
-    .from('eternals_data')
-    .update({ funds: updated })
+    .from('Funds')
+    .update(updated)
     .eq('id', 1);
 
-  if (updateError) {
-    return res.status(500).json({ error: updateError.message });
-  }
+  if (updateError) return res.status(500).json({ error: updateError.message });
 
   res.status(200).json(updated);
 }
