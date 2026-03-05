@@ -1,35 +1,45 @@
-export default async (req, context) => {
-  const db = context.env.ETERNALS_DB;
-  const body = await req.json();
+export default async (req) => {
+    const kv = await import("@netlify/kv");
+    const body = await req.json();
 
-  let cleanBalance = Number(await db.get("cleanBalance")) || 0;
-  let dirtyBalance = Number(await db.get("dirtyBalance")) || 0;
-  let transactions = JSON.parse(await db.get("transactions") || "[]");
+    const amount = Number(body.amount);
+    const type = body.type;
+    const tag = body.tag;
+    const moneyType = body.moneyType;
+    const loggedBy = body.loggedBy || "Zephyr";
 
-  const { amount, direction, type, description, loggedBy, date } = body;
+    let cleanBalance = Number(await kv.get("cleanBalance")) || 0;
+    let dirtyBalance = Number(await kv.get("dirtyBalance")) || 0;
 
-  const signedAmount = direction === "income" ? amount : -amount;
+    // Update balances
+    if (type === "income") cleanBalance += amount;
+    if (type === "expense") cleanBalance -= amount;
 
-  if (type === "clean") cleanBalance += signedAmount;
-  else dirtyBalance += signedAmount;
+    if (type === "dirty_income") dirtyBalance += amount;
+    if (type === "dirty_expense") dirtyBalance -= amount;
 
-  const balanceAfter = cleanBalance + dirtyBalance;
+    // Save balances
+    await kv.set("cleanBalance", cleanBalance);
+    await kv.set("dirtyBalance", dirtyBalance);
 
-  const newTx = {
-    amount: signedAmount,
-    direction,
-    type,
-    description,
-    loggedBy,
-    date,
-    balanceAfter
-  };
+    // Determine balanceAfter
+    const balanceAfter = moneyType === "Dirty" ? dirtyBalance : cleanBalance;
 
-  transactions.push(newTx);
+    // Build transaction object
+    const transaction = {
+        time: new Date().toLocaleString("en-AU"),
+        loggedBy,
+        type,
+        moneyType,
+        tag,
+        amount,
+        balanceAfter
+    };
 
-  await db.put("cleanBalance", cleanBalance.toString());
-  await db.put("dirtyBalance", dirtyBalance.toString());
-  await db.put("transactions", JSON.stringify(transactions));
+    // Save transaction list
+    const transactions = await kv.get("transactions") || [];
+    transactions.push(transaction);
+    await kv.set("transactions", transactions);
 
-  return Response.json({ success: true, cleanBalance, dirtyBalance, transactions });
+    return Response.json({ success: true, transaction });
 };
