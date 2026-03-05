@@ -1,7 +1,7 @@
 let data = null;
 
 async function loadData() {
-    const res = await fetch('/.netlify/functions/getData');
+    const res = await fetch('/api/getData');
     data = await res.json();
     renderDashboard();
 }
@@ -24,7 +24,7 @@ async function applyFundsChange() {
     const cleanDelta = Number(document.getElementById('cleanDelta').value || 0);
     const dirtyDelta = Number(document.getElementById('dirtyDelta').value || 0);
 
-    const res = await fetch('/.netlify/functions/updateFunds', {
+    const res = await fetch('/api/updateFunds', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cleanDelta, dirtyDelta })
@@ -51,7 +51,7 @@ async function addMember() {
 
     if (!name || !rank) return;
 
-    const res = await fetch('/.netlify/functions/updateMembers', {
+    const res = await fetch('/api/updateMembers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: "add", name, rank })
@@ -62,7 +62,7 @@ async function addMember() {
 }
 
 async function removeMember(index) {
-    const res = await fetch('/.netlify/functions/updateMembers', {
+    const res = await fetch('/api/updateMembers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: "remove", index })
