@@ -22,6 +22,7 @@ function renderDashboard() {
     document.getElementById("memberCount").innerText = data.members.length;
 
     renderMembers();
+    renderTransactions();
 }
 
 // Switch pages
@@ -30,19 +31,54 @@ window.showPage = function (id) {
     document.getElementById(id).classList.add('active');
 };
 
-// Apply fund changes
+// Apply fund changes + log transaction
 window.applyFundsChange = async function () {
     const cleanDelta = Number(document.getElementById('cleanDelta').value || 0);
     const dirtyDelta = Number(document.getElementById('dirtyDelta').value || 0);
+    const loggedBy = document.getElementById('txLoggedBy')?.value.trim() || "";
+    const description = document.getElementById('txDescription')?.value.trim() || "";
 
     try {
-        const res = await fetch('/api/updateFunds', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cleanDelta, dirtyDelta })
-        });
+        // Clean
+        if (cleanDelta !== 0) {
+            const res = await fetch('/api/addTransaction', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'clean',
+                    delta: cleanDelta,
+                    logged_by: loggedBy,
+                    description
+                })
+            });
 
-        data.funds = await res.json();
+            const result = await res.json();
+            data.funds.clean = result.funds.clean;
+            data.transactions.unshift(result.transaction);
+        }
+
+        // Dirty
+        if (dirtyDelta !== 0) {
+            const res = await fetch('/api/addTransaction', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'dirty',
+                    delta: dirtyDelta,
+                    logged_by: loggedBy,
+                    description
+                })
+            });
+
+            const result = await res.json();
+            data.funds.dirty = result.funds.dirty;
+            data.transactions.unshift(result.transaction);
+        }
+
+        // Clear inputs
+        document.getElementById('cleanDelta').value = "";
+        document.getElementById('dirtyDelta').value = "";
+
         renderDashboard();
     } catch (err) {
         console.error("Failed to update funds:", err);
@@ -102,6 +138,26 @@ window.removeMember = async function (index) {
         console.error("Failed to remove member:", err);
     }
 };
+
+// Render transaction log
+function renderTransactions() {
+    const tbody = document.getElementById("transactionTableBody");
+    if (!tbody || !data.transactions) return;
+
+    tbody.innerHTML = data.transactions
+        .map(t => `
+            <tr>
+                <td>${new Date(t.created_at).toLocaleString()}</td>
+                <td>${t.logged_by || "—"}</td>
+                <td>${t.type}</td>
+                <td>${t.direction}</td>
+                <td>${t.delta > 0 ? "+" : ""}${t.delta.toLocaleString()}</td>
+                <td>${t.balance_after.toLocaleString()}</td>
+                <td>${t.description || ""}</td>
+            </tr>
+        `)
+        .join("");
+}
 
 // Start
 loadData();
