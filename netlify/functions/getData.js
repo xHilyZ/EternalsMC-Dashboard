@@ -1,14 +1,18 @@
+import { neon } from "@netlify/neon";
+
+const sql = neon();
+
 export default async () => {
-    const kv = await import("@netlify/kv");
+    const balanceRows = await sql`SELECT * FROM balances LIMIT 1`;
+    const balance = balanceRows[0] || { clean_balance: 0, dirty_balance: 0 };
 
-    const cleanBalance = Number(await kv.get("cleanBalance")) || 0;
-    const dirtyBalance = Number(await kv.get("dirtyBalance")) || 0;
-
-    const transactions = await kv.get("transactions") || [];
+    const transactions = await sql`
+        SELECT * FROM transactions ORDER BY id ASC
+    `;
 
     return Response.json({
-        cleanBalance,
-        dirtyBalance,
+        cleanBalance: balance.clean_balance,
+        dirtyBalance: balance.dirty_balance,
         transactions
     });
 };
