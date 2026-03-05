@@ -7,7 +7,7 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
   try {
-    // Get funds
+    // Load funds
     const { data: fundsRow, error: fundsError } = await supabase
       .from('funds')
       .select('*')
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
     if (fundsError) throw fundsError;
 
-    // Get members
+    // Load members
     const { data: members, error: membersError } = await supabase
       .from('members')
       .select('*')
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
 
     if (membersError) throw membersError;
 
-    // Get transactions
+    // Load transactions
     const { data: transactions, error: txError } = await supabase
       .from('transactions')
       .select('*')
@@ -34,15 +34,13 @@ export default async function handler(req, res) {
     if (txError) throw txError;
 
     res.status(200).json({
-      funds: {
-        clean: fundsRow.clean,
-        dirty: fundsRow.dirty
-      },
-      members: members || [],
-      transactions: transactions || []
+      funds: fundsRow,
+      members,
+      transactions
     });
+
   } catch (err) {
-    console.error('getData error:', err);
-    res.status(500).json({ error: 'Failed to load data' });
+    console.error("getData error:", err);
+    res.status(500).json({ error: "Failed to load data" });
   }
 }
