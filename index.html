@@ -23,6 +23,7 @@
         <button onclick="showPage('dashboard')">Dashboard</button>
         <button onclick="showPage('funds')">Funds</button>
         <button onclick="showPage('members')">Members</button>
+        <button onclick="showPage('transactions')">Transactions</button>
         <button onclick="showPage('inventory')">Inventory</button>
         <button onclick="showPage('drugs')">Drug Lab</button>
         <button onclick="showPage('weapons')">Weapons</button>
@@ -34,6 +35,7 @@
 
 <div class="content">
 
+    <!-- DASHBOARD -->
     <section id="dashboard" class="page active">
         <h2>Dashboard Overview</h2>
         <div class="grid">
@@ -44,6 +46,7 @@
         </div>
     </section>
 
+    <!-- FUNDS -->
     <section id="funds" class="page">
         <h2>Club Funds</h2>
         <p>Clean: <span id="cleanMoney">$0</span></p>
@@ -52,10 +55,13 @@
         <div class="fund-actions">
             <input id="cleanDelta" type="number" placeholder="Clean +/-">
             <input id="dirtyDelta" type="number" placeholder="Dirty +/-">
+            <input id="txLoggedBy" type="text" placeholder="Logged by (optional)">
+            <input id="txDescription" type="text" placeholder="Description (optional)">
             <button onclick="applyFundsChange()">Apply</button>
         </div>
     </section>
 
+    <!-- MEMBERS -->
     <section id="members" class="page">
         <h2>Members</h2>
 
@@ -68,31 +74,57 @@
         <ul id="memberList" class="member-list"></ul>
     </section>
 
+    <!-- TRANSACTIONS -->
+    <section id="transactions" class="page">
+        <h2>Transaction Log</h2>
+
+        <table class="transaction-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Logged By</th>
+                    <th>Type</th>
+                    <th>Direction</th>
+                    <th>Delta</th>
+                    <th>Balance After</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody id="transactionTableBody"></tbody>
+        </table>
+    </section>
+
+    <!-- INVENTORY -->
     <section id="inventory" class="page">
         <h2>Inventory</h2>
         <ul id="inventoryList"></ul>
     </section>
 
+    <!-- DRUG LAB -->
     <section id="drugs" class="page">
         <h2>Drug Lab</h2>
         <ul id="drugList"></ul>
     </section>
 
+    <!-- WEAPONS -->
     <section id="weapons" class="page">
         <h2>Weapons Locker</h2>
         <ul id="weaponList"></ul>
     </section>
 
+    <!-- TERRITORIES -->
     <section id="territories" class="page">
         <h2>Territories</h2>
         <ul id="territoryList"></ul>
     </section>
 
+    <!-- OPERATIONS -->
     <section id="operations" class="page">
         <h2>Operations</h2>
         <ul id="operationList"></ul>
     </section>
 
+    <!-- SETTINGS -->
     <section id="settings" class="page">
         <h2>Settings</h2>
         <p>Branding, theme, and admin tools will go here.</p>
