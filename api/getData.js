@@ -1,27 +1,48 @@
 import { createClient } from '@supabase/supabase-js';
 
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 export default async function handler(req, res) {
-  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+  try {
+    // Get funds
+    const { data: fundsRow, error: fundsError } = await supabase
+      .from('funds')
+      .select('*')
+      .eq('id', 1)
+      .single();
 
-  const { data: funds, error: fundsError } = await supabase
-    .from('funds')
-    .select('*')
-    .eq('id', 1)
-    .single();
+    if (fundsError) throw fundsError;
 
-  if (fundsError) return res.status(500).json({ error: fundsError.message });
+    // Get members
+    const { data: members, error: membersError } = await supabase
+      .from('members')
+      .select('*')
+      .order('created_at', { ascending: true });
 
-  const { data: members, error: membersError } = await supabase
-    .from('members')
-    .select('*');
+    if (membersError) throw membersError;
 
-  if (membersError) return res.status(500).json({ error: membersError.message });
+    // Get transactions
+    const { data: transactions, error: txError } = await supabase
+      .from('transactions')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-  res.status(200).json({
-    funds: {
-      clean: funds.clean,
-      dirty: funds.dirty
-    },
-    members
-  });
+    if (txError) throw txError;
+
+    res.status(200).json({
+      funds: {
+        clean: fundsRow.clean,
+        dirty: fundsRow.dirty
+      },
+      members: members || [],
+      transactions: transactions || []
+    });
+  } catch (err) {
+    console.error('getData error:', err);
+    res.status(500).json({ error: 'Failed to load data' });
+  }
 }
