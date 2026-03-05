@@ -6,8 +6,8 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
@@ -46,6 +46,7 @@ export default async function handler(req, res) {
     if (insertError) throw insertError;
 
     res.status(200).json({ members: updated });
+
   } catch (err) {
     console.error("updateMembers error:", err);
     res.status(500).json({ error: "Failed to update members" });
