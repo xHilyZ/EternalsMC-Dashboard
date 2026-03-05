@@ -1,5 +1,8 @@
+import { neon } from "@netlify/neon";
+
+const sql = neon();
+
 export default async (req) => {
-    const kv = await import("@netlify/kv");
     const body = await req.json();
 
     const amount = Number(body.amount);
@@ -8,38 +11,43 @@ export default async (req) => {
     const moneyType = body.moneyType;
     const loggedBy = body.loggedBy || "Zephyr";
 
-    let cleanBalance = Number(await kv.get("cleanBalance")) || 0;
-    let dirtyBalance = Number(await kv.get("dirtyBalance")) || 0;
+    const balanceRows = await sql`SELECT * FROM balances LIMIT 1`;
+    let balance = balanceRows[0];
 
-    // Update balances
-    if (type === "income") cleanBalance += amount;
-    if (type === "expense") cleanBalance -= amount;
+    if (!balance) {
+        await sql`INSERT INTO balances (clean_balance, dirty_balance) VALUES (0, 0)`;
+        balance = { clean_balance: 0, dirty_balance: 0 };
+    }
 
-    if (type === "dirty_income") dirtyBalance += amount;
-    if (type === "dirty_expense") dirtyBalance -= amount;
+    let clean = balance.clean_balance;
+    let dirty = balance.dirty_balance;
 
-    // Save balances
-    await kv.set("cleanBalance", cleanBalance);
-    await kv.set("dirtyBalance", dirtyBalance);
+    if (type === "income") clean += amount;
+    if (type === "expense") clean -= amount;
 
-    // Determine balanceAfter
-    const balanceAfter = moneyType === "Dirty" ? dirtyBalance : cleanBalance;
+    if (type === "dirty_income") dirty += amount;
+    if (type === "dirty_expense") dirty -= amount;
 
-    // Build transaction object
-    const transaction = {
-        time: new Date().toLocaleString("en-AU"),
-        loggedBy,
-        type,
-        moneyType,
-        tag,
-        amount,
-        balanceAfter
-    };
+    await sql`
+        UPDATE balances
+        SET clean_balance = ${clean}, dirty_balance = ${dirty}
+        WHERE id = 1
+    `;
 
-    // Save transaction list
-    const transactions = await kv.get("transactions") || [];
-    transactions.push(transaction);
-    await kv.set("transactions", transactions);
+    const balanceAfter = moneyType === "Dirty" ? dirty : clean;
 
-    return Response.json({ success: true, transaction });
+    await sql`
+        INSERT INTO transactions (time, logged_by, type, money_type, tag, amount, balance_after)
+        VALUES (
+            ${new Date().toLocaleString("en-AU")},
+            ${loggedBy},
+            ${type},
+            ${moneyType},
+            ${tag},
+            ${amount},
+            ${balanceAfter}
+        )
+    `;
+
+    return Response.json({ success: true });
 };
