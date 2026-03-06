@@ -1,11 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -14,9 +14,9 @@ export default async function handler(req, res) {
     const { action, name, rank, index } = req.body;
 
     const { data: members, error: loadError } = await supabase
-      .from('members')
-      .select('*')
-      .order('created_at', { ascending: true });
+      .from("members")
+      .select("*")
+      .order("created_at", { ascending: true });
 
     if (loadError) throw loadError;
 
@@ -36,9 +36,9 @@ export default async function handler(req, res) {
 
     // Clear table
     const { error: deleteError } = await supabase
-      .from('members')
+      .from("members")
       .delete()
-      .neq('id', '');
+      .neq("id", "");
 
     if (deleteError) throw deleteError;
 
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
     }));
 
     const { error: insertError } = await supabase
-      .from('members')
+      .from("members")
       .insert(cleaned);
 
     if (insertError) throw insertError;
@@ -61,4 +61,4 @@ export default async function handler(req, res) {
     console.error("updateMembers error:", err);
     res.status(500).json({ error: "Failed to update members" });
   }
-}
+};
