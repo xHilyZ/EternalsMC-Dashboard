@@ -13,15 +13,8 @@ module.exports = async function handler(req, res) {
   try {
     const { action, name, rank, index } = req.body;
 
-    const { data: members } = await supabase
-      .from("members")
-      .select("*")
-      .order("created_at", { ascending: true });
-
-    let updated = [...members];
-
     if (action === "add") {
-      updated.push({
+      await supabase.from("members").insert({
         name,
         rank,
         created_at: new Date().toISOString()
@@ -29,22 +22,29 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === "remove") {
-      updated.splice(index, 1);
+      // Get the member to delete
+      const { data: members } = await supabase
+        .from("members")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      const memberToDelete = members[index];
+
+      if (memberToDelete) {
+        await supabase
+          .from("members")
+          .delete()
+          .eq("id", memberToDelete.id);
+      }
     }
 
-    // Clear table
-    await supabase.from("members").delete().neq("id", "");
+    // Return updated list
+    const { data: updated } = await supabase
+      .from("members")
+      .select("*")
+      .order("created_at", { ascending: true });
 
-    // Insert updated list
-    const cleaned = updated.map(m => ({
-      name: m.name,
-      rank: m.rank,
-      created_at: m.created_at
-    }));
-
-    await supabase.from("members").insert(cleaned);
-
-    res.status(200).json({ members: cleaned });
+    res.status(200).json({ members: updated });
 
   } catch (err) {
     console.error("updateMembers error:", err);
