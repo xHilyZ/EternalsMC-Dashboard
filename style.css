@@ -193,3 +193,54 @@ body {
     overflow-y: auto;
     border: 1px solid #222;
 }
+
+/* ================================
+   AUTH‑BASED VISIBILITY CONTROL
+   ================================ */
+
+/* Hide restricted content for guests */
+body.guest .restricted {
+    display: none !important;
+}
+
+/* Login button (Discord style) */
+.login-btn {
+    background: #5865F2;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.login-btn:hover {
+    background: #4752C4;
+}
+
+/* User box (bottom-left area) */
+#user-box {
+    padding: 20px;
+    color: #C2B59B;
+    font-size: 14px;
+    text-align: center;
+}
+
+#user-box button {
+    margin-top: 10px;
+    background: #C2B59B;
+    color: #000;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#user-box button:hover {
+    background: #E6DCC5;
+}

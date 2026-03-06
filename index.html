@@ -1,151 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Eternals MC | Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+  <title>Eternals MC Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
 
-<!-- AUTH CHECK -->
-<script>
-async function checkAuth() {
-    const res = await fetch('/api/auth/session');
-    const data = await res.json();
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2>ETERNALS MC</h2>
+    <ul>
+      <li>Dashboard</li>
+      <li class="restricted">Deals</li>
+      <li class="restricted">Bank</li>
+      <li class="restricted">Checklist</li>
+      <li class="restricted">Price List</li>
+      <li class="restricted">Members</li>
+      <li class="restricted">Transactions</li>
+    </ul>
 
-    if (!data || !data.user) {
-        window.location.href = "/login.html";
-    } else {
-        // Insert Discord username into UI
-        const spots = document.querySelectorAll(".username-spot");
-        spots.forEach(s => s.innerText = data.user.username);
+    <!-- USER BOX (Login or Member/Logout) -->
+    <div id="user-box"></div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <h1>Welcome — Eternals MC</h1>
+
+    <!-- ALWAYS VISIBLE -->
+    <section class="stats">
+      <div class="stat-box">
+        <h3>Total Money</h3>
+        <p id="totalMoney">$0</p>
+      </div>
+
+      <div class="stat-box">
+        <h3>Total Deals</h3>
+        <p id="totalDeals">0</p>
+      </div>
+
+      <div class="stat-box">
+        <h3>Active Members</h3>
+        <p id="activeMembers">0</p>
+      </div>
+    </section>
+
+    <!-- RESTRICTED BUTTONS -->
+    <section class="restricted actions">
+      <button>Add Deals</button>
+      <button>Bank</button>
+      <button>Checklist</button>
+      <button>Price List</button>
+    </section>
+
+    <!-- RESTRICTED SECTIONS -->
+    <section class="restricted">
+      <h2>Club Funds</h2>
+      <p>Clean: $0</p>
+      <p>Dirty: $0</p>
+    </section>
+
+    <section class="restricted">
+      <h2>Members</h2>
+      <div id="membersList"></div>
+    </section>
+
+    <section class="restricted">
+      <h2>Transactions</h2>
+      <div id="transactionsList"></div>
+    </section>
+
+  </main>
+
+  <!-- SUPABASE AUTH -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const sb = supabase.createClient(
+      "https://glgeavemxohcagjrsqnu.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsZ2VhdmVteG9oY2FnanJzcW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2OTk3MDksImV4cCI6MjA4ODI3NTcwOX0.AJERdGpD08N8gRsM0x-cNXD151ZtRlj08GUwuUdg3tk"
+    );
+
+    async function checkAuth() {
+      const { data } = await sb.auth.getSession();
+
+      const userBox = document.getElementById("user-box");
+
+      if (!data.session) {
+        // NOT LOGGED IN
+        document.body.classList.add("guest");
+
+        userBox.innerHTML = `
+          <button class="login-btn" onclick="login()">Login with Discord</button>
+        `;
+      } else {
+        // LOGGED IN
+        document.body.classList.remove("guest");
+
+        userBox.innerHTML = `
+          MEMBER<br>
+          <button onclick="logout()">Logout</button>
+        `;
+      }
     }
-}
-checkAuth();
 
-// Logout handler
-async function logout() {
-    window.location.href = "/api/auth/signout";
-}
-</script>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <img src="patch.png" class="sidebar-patch" alt="Eternals MC Patch">
-            <h1>ETERNALS MC</h1>
-        </div>
-
-        <nav class="sidebar-nav">
-            <button class="nav-item" onclick="showPage('dashboard')"><span class="icon">🏠</span> Dashboard</button>
-            <button class="nav-item" onclick="showPage('deals')"><span class="icon">📄</span> Deals</button>
-            <button class="nav-item" onclick="showPage('bank')"><span class="icon">💵</span> Bank</button>
-            <button class="nav-item" onclick="showPage('checklist')"><span class="icon">✔️</span> Checklist</button>
-            <button class="nav-item" onclick="showPage('prices')"><span class="icon">🔫</span> Price List</button>
-            <button class="nav-item" onclick="showPage('members')"><span class="icon">👥</span> Members</button>
-            <button class="nav-item" onclick="showPage('transactions')"><span class="icon">📑</span> Transactions</button>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="user-box">
-                <span class="user-name username-spot"></span>
-                <span class="user-role">MEMBER</span>
-            </div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="main">
-
-        <!-- TOP BAR -->
-        <div class="top-bar">
-            Welcome, <span class="username-spot"></span> — Eternals MC
-        </div>
-
-        <!-- DASHBOARD PAGE -->
-        <section id="dashboard" class="page active">
-
-            <!-- TOP STATS -->
-            <section class="top-stats">
-                <div class="money-main">
-                    <label>Total Money</label>
-                    <span id="totalMoney">$0</span>
-                </div>
-
-                <div class="sub-stats">
-                    <div class="sub-stat">
-                        <label>Total Deals</label>
-                        <span id="totalDeals">0</span>
-                    </div>
-                    <div class="sub-stat">
-                        <label>Active Members</label>
-                        <span id="activeMembers">0</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- QUICK ACTION TILES -->
-            <section class="quick-actions">
-                <div class="action-tile" onclick="showPage('deals')">
-                    <div class="action-icon">📄</div>
-                    <div class="action-label">Add Deals</div>
-                </div>
-
-                <div class="action-tile" onclick="showPage('bank')">
-                    <div class="action-icon">💵</div>
-                    <div class="action-label">Bank</div>
-                </div>
-
-                <div class="action-tile" onclick="showPage('checklist')">
-                    <div class="action-icon">✔️</div>
-                    <div class="action-label">Checklist</div>
-                </div>
-
-                <div class="action-tile" onclick="showPage('prices')">
-                    <div class="action-icon">🔫</div>
-                    <div class="action-label">Price List</div>
-                </div>
-            </section>
-
-            <!-- OVERVIEW CARDS -->
-            <section class="card">
-                <div class="card-title">Club Funds</div>
-                <div class="funds">
-                    <p>Clean: $<span id="cleanBalance">0</span></p>
-                    <p>Dirty: $<span id="dirtyBalance">0</span></p>
-                </div>
-            </section>
-
-            <section class="card">
-                <div class="card-title">Members</div>
-                <div id="membersList" class="list"></div>
-            </section>
-
-            <section class="card">
-                <div class="card-title">Transactions</div>
-                <div id="transactionsList" class="list"></div>
-            </section>
-
-        </section>
-
-        <!-- OTHER PAGES -->
-        <section id="deals" class="page"><div class="page-title">Deals</div><div id="dealsList" class="list"></div></section>
-        <section id="bank" class="page"><div class="page-title">Bank</div></section>
-        <section id="checklist" class="page"><div class="page-title">Checklist</div></section>
-        <section id="prices" class="page"><div class="page-title">Price List</div></section>
-        <section id="members" class="page"><div class="page-title">Members</div></section>
-        <section id="transactions" class="page"><div class="page-title">Transactions</div></section>
-
-    </main>
-
-    <script>
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+    async function login() {
+      await sb.auth.signInWithOAuth({
+        provider: "discord",
+        options: {
+          redirectTo: "https://eternals-mc-dashboard.vercel.app/index.html"
         }
-    </script>
+      });
+    }
+
+    async function logout() {
+      await sb.auth.signOut();
+      window.location.reload();
+    }
+
+    checkAuth();
+  </script>
 
 </body>
 </html>
