@@ -16,10 +16,14 @@
         </div>
 
         <nav class="sidebar-nav">
-            <button class="nav-item active">Dashboard</button>
-            <button class="nav-item">Club Funds</button>
-            <button class="nav-item">Members</button>
-            <button class="nav-item">Transactions</button>
+            <button class="nav-item" onclick="showPage('dashboard')">Dashboard</button>
+            <button class="nav-item" onclick="showPage('deals')">Deals</button>
+            <button class="nav-item" onclick="showPage('bank')">Bank Transactions</button>
+            <button class="nav-item" onclick="showPage('checklist')">Daily Checklist</button>
+            <button class="nav-item" onclick="showPage('todo')">Things To Do</button>
+            <button class="nav-item" onclick="showPage('prices')">Price List</button>
+            <button class="nav-item" onclick="showPage('members')">Members</button>
+            <button class="nav-item" onclick="showPage('transactions')">Transactions</button>
         </nav>
 
         <div class="sidebar-footer">
@@ -34,73 +38,143 @@
     <!-- MAIN CONTENT -->
     <main class="main">
 
-        <!-- TOP STATS BAR -->
-        <section class="stats-bar">
-            <div class="stat-card">
-                <label>Total Money</label>
-                <span id="totalMoney">$0</span>
-            </div>
+        <!-- DASHBOARD PAGE -->
+        <section id="dashboard" class="page active">
 
-            <div class="stat-card">
-                <label>Total Deals</label>
-                <span id="totalDeals">0</span>
-            </div>
+            <!-- TOP STATS BAR -->
+            <section class="stats-bar">
+                <div class="stat-card">
+                    <label>Total Money</label>
+                    <span id="totalMoney">$0</span>
+                </div>
 
-            <div class="stat-card">
-                <label>Active Members</label>
-                <span id="activeMembers">0</span>
-            </div>
+                <div class="stat-card">
+                    <label>Total Deals</label>
+                    <span id="totalDeals">0</span>
+                </div>
+
+                <div class="stat-card">
+                    <label>Active Members</label>
+                    <span id="activeMembers">0</span>
+                </div>
+            </section>
+
+            <!-- QUICK ACTION TILES -->
+            <section class="quick-actions">
+
+                <div class="action-tile" onclick="showPage('deals')">
+                    <div class="action-icon">🔥</div>
+                    <div class="action-label">Add Deals</div>
+                </div>
+
+                <div class="action-tile" onclick="showPage('bank')">
+                    <div class="action-icon">💰</div>
+                    <div class="action-label">Bank Transactions</div>
+                </div>
+
+                <div class="action-tile" onclick="showPage('checklist')">
+                    <div class="action-icon">✔️</div>
+                    <div class="action-label">Daily Checklist</div>
+                </div>
+
+                <div class="action-tile" onclick="showPage('todo')">
+                    <div class="action-icon">📌</div>
+                    <div class="action-label">Things To Do</div>
+                </div>
+
+                <div class="action-tile" onclick="showPage('prices')">
+                    <div class="action-icon">🔫</div>
+                    <div class="action-label">Price List</div>
+                </div>
+
+            </section>
+
+            <!-- OVERVIEW CARDS -->
+            <section class="card">
+                <div class="card-title">Club Funds</div>
+                <div class="funds">
+                    <p>Clean: $<span id="cleanBalance">0</span></p>
+                    <p>Dirty: $<span id="dirtyBalance">0</span></p>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-title">Members</div>
+                <div id="membersList" class="list"></div>
+            </section>
+
+            <section class="card">
+                <div class="card-title">Transactions</div>
+                <div id="transactionsList" class="list"></div>
+            </section>
+
         </section>
 
-        <!-- FUNDS SECTION -->
-        <section class="card">
-            <div class="card-title">Club Funds</div>
+        <!-- DEALS PAGE -->
+        <section id="deals" class="page">
+            <h2 class="page-title">Deals</h2>
+            <div id="dealsList" class="list"></div>
+        </section>
 
-            <div class="funds">
-                <p>Clean: $<span id="cleanBalance">0</span></p>
-                <p>Dirty: $<span id="dirtyBalance">0</span></p>
+        <!-- BANK PAGE -->
+        <section id="bank" class="page">
+            <h2 class="page-title">Bank Transactions</h2>
+
+            <div class="bank-box">
+                <p>Clean: $<span id="cleanBalance2">0</span></p>
+                <p>Dirty: $<span id="dirtyBalance2">0</span></p>
             </div>
 
             <div class="input-group">
-                <input id="cleanInput" type="number" placeholder="New Clean Amount">
-                <input id="dirtyInput" type="number" placeholder="New Dirty Amount">
-                <button id="updateFundsBtn">Update Funds</button>
+                <input id="cleanAdd" type="number" placeholder="+ Clean">
+                <input id="cleanRemove" type="number" placeholder="- Clean">
+                <input id="dirtyAdd" type="number" placeholder="+ Dirty">
+                <input id="dirtyRemove" type="number" placeholder="- Dirty">
+                <button id="updateBankBtn">Update</button>
             </div>
         </section>
 
-        <!-- MEMBERS SECTION -->
-        <section class="card">
-            <div class="card-title">Members</div>
-
-            <div id="membersList" class="list"></div>
-
-            <div class="input-group">
-                <input id="memberName" type="text" placeholder="Member Name">
-                <input id="memberRole" type="text" placeholder="Member Role">
-                <button id="updateMembersBtn">Add / Update Member</button>
-            </div>
+        <!-- CHECKLIST PAGE -->
+        <section id="checklist" class="page">
+            <h2 class="page-title">Daily Checklist</h2>
+            <div id="checklistItems" class="list"></div>
         </section>
 
-        <!-- TRANSACTIONS SECTION -->
-        <section class="card">
-            <div class="card-title">Transactions</div>
+        <!-- TODO PAGE -->
+        <section id="todo" class="page">
+            <h2 class="page-title">Things To Do in City</h2>
+            <p>Coming soon…</p>
+        </section>
 
-            <div id="transactionsList" class="list"></div>
+        <!-- PRICE LIST PAGE -->
+        <section id="prices" class="page">
+            <h2 class="page-title">Price List</h2>
+            <ul class="price-list">
+                <li>Gun 1 — $0</li>
+                <li>Gun 2 — $0</li>
+            </ul>
+        </section>
 
-            <div class="input-group">
-                <input id="txDescription" type="text" placeholder="Description">
-                <input id="txAmount" type="number" placeholder="Amount">
+        <!-- MEMBERS PAGE -->
+        <section id="members" class="page">
+            <h2 class="page-title">Members</h2>
+            <div id="membersList2" class="list"></div>
+        </section>
 
-                <select id="txType">
-                    <option value="income">Income</option>
-                    <option value="expense">Expense</option>
-                </select>
-
-                <button id="addTxBtn">Add Transaction</button>
-            </div>
+        <!-- TRANSACTIONS PAGE -->
+        <section id="transactions" class="page">
+            <h2 class="page-title">Transactions</h2>
+            <div id="transactionsList2" class="list"></div>
         </section>
 
     </main>
+
+    <script>
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+    </script>
 
     <script src="script.v2.js"></script>
 </body>
