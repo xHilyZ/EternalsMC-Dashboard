@@ -8,14 +8,49 @@
 
 <body>
 
-    <!-- HEADER WITH PATCH -->
-    <header class="mc-header">
-        <img src="patch.png" alt="Eternals MC Patch" class="mc-patch">
-        <h1>ETERNALS MC</h1>
-        <h2>DASHBOARD</h2>
-    </header>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="patch.png" class="sidebar-patch" alt="Eternals MC Patch">
+            <h1>ETERNALS MC</h1>
+        </div>
 
-    <main>
+        <nav class="sidebar-nav">
+            <button class="nav-item active">Dashboard</button>
+            <button class="nav-item">Club Funds</button>
+            <button class="nav-item">Members</button>
+            <button class="nav-item">Transactions</button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-box">
+                <span class="user-name">Sahil</span>
+                <span class="user-role">ADMIN</span>
+            </div>
+            <button class="logout-btn">Logout</button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- TOP STATS BAR -->
+        <section class="stats-bar">
+            <div class="stat-card">
+                <label>Total Money</label>
+                <span id="totalMoney">$0</span>
+            </div>
+
+            <div class="stat-card">
+                <label>Total Deals</label>
+                <span id="totalDeals">0</span>
+            </div>
+
+            <div class="stat-card">
+                <label>Active Members</label>
+                <span id="activeMembers">0</span>
+            </div>
+        </section>
 
         <!-- FUNDS SECTION -->
         <section class="card">
