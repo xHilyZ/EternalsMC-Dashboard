@@ -1,29 +1,62 @@
-async function addTransaction() {
-  const amount = parseInt(document.getElementById("amount").value);
-  const type = document.getElementById("type").value;
-  const direction = document.getElementById("direction").value;
-  const logged_by = document.getElementById("loggedBy").value;
-  const description = document.getElementById("description").value;
+import { createClient } from '@supabase/supabase-js';
 
-  let cleanDelta = 0;
-  let dirtyDelta = 0;
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
-  if (type === "clean") {
-    cleanDelta = direction === "income" ? amount : -amount;
-  } else {
-    dirtyDelta = direction === "income" ? amount : -amount;
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  await fetch("/api/addTransaction", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      cleanDelta,
-      dirtyDelta,
-      logged_by,
-      description
-    })
-  });
+  try {
+    const { cleanDelta, dirtyDelta, logged_by, description } = req.body;
 
-  loadData();
+    const { data: funds, error: loadError } = await supabase
+      .from('funds')
+      .select('*')
+      .eq('id', 1)
+      .single();
+
+    if (loadError) throw loadError;
+
+    const newClean = funds.clean + (cleanDelta || 0);
+    const newDirty = funds.dirty + (dirtyDelta || 0);
+
+    const { error: updateError } = await supabase
+      .from('funds')
+      .update({ clean: newClean, dirty: newDirty })
+      .eq('id', 1);
+
+    if (updateError) throw updateError;
+
+    const delta = cleanDelta !== 0 ? cleanDelta : dirtyDelta;
+    const type = cleanDelta !== 0 ? "clean" : "dirty";
+    const direction = delta > 0 ? "income" : "expense";
+    const balance_after = cleanDelta !== 0 ? newClean : newDirty;
+
+    const { error: txError } = await supabase
+      .from('transactions')
+      .insert({
+        type,
+        direction,
+        delta,
+        amount: Math.abs(delta),
+        balance_after,
+        logged_by,
+        description
+      });
+
+    if (txError) throw txError;
+
+    res.status(200).json({
+      clean: newClean,
+      dirty: newDirty
+    });
+
+  } catch (err) {
+    console.error("addTransaction error:", err);
+    res.status(500).json({ error: "Failed to update funds" });
+  }
 }
