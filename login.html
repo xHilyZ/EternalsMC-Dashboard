@@ -8,7 +8,30 @@
   <div class="login-box">
     <h1>ETERNALS MC</h1>
     <p>Members Only</p>
-    <a class="login-btn" href="/api/auth/signin">Login with Discord</a>
+
+    <!-- New Supabase login button -->
+    <button class="login-btn" onclick="login()">Login with Discord</button>
+
   </div>
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const supabase = supabase.createClient(
+      "https://glgeavemxohcagjrsqnu.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsZ2VhdmVteG9oY2FnanJzcW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2OTk3MDksImV4cCI6MjA4ODI3NTcwOX0.AJERdGpD08N8gRsM0x-cNXD151ZtRlj08GUwuUdg3tk"
+    );
+
+    async function login() {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "discord"
+      });
+
+      if (error) {
+        console.error(error);
+      }
+    }
+  </script>
 </body>
 </html>
