@@ -1,11 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -14,9 +14,9 @@ export default async function handler(req, res) {
     const { cleanDelta, dirtyDelta, logged_by, description } = req.body;
 
     const { data: funds, error: loadError } = await supabase
-      .from('funds')
-      .select('*')
-      .eq('id', 1)
+      .from("funds")
+      .select("*")
+      .eq("id", 1)
       .single();
 
     if (loadError) throw loadError;
@@ -25,9 +25,9 @@ export default async function handler(req, res) {
     const newDirty = funds.dirty + (dirtyDelta || 0);
 
     const { error: updateError } = await supabase
-      .from('funds')
+      .from("funds")
       .update({ clean: newClean, dirty: newDirty })
-      .eq('id', 1);
+      .eq("id", 1);
 
     if (updateError) throw updateError;
 
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     const balance_after = cleanDelta !== 0 ? newClean : newDirty;
 
     const { error: txError } = await supabase
-      .from('transactions')
+      .from("transactions")
       .insert({
         type,
         direction,
@@ -59,4 +59,4 @@ export default async function handler(req, res) {
     console.error("addTransaction error:", err);
     res.status(500).json({ error: "Failed to update funds" });
   }
-}
+};
