@@ -1,96 +1,131 @@
-// PAGE SWITCHING
-function showPage(pageId) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(pageId).classList.add("active");
-}
+// Load everything on page load
+document.addEventListener("DOMContentLoaded", loadData);
 
-// LOAD ALL DATA
 async function loadData() {
-    const res = await fetch("/api/getData");
-    const data = await res.json();
+    try {
+        const res = await fetch("/api/getData");
+        const data = await res.json();
 
-    // FUNDS
-    document.getElementById("cleanMoney").innerText = "$" + data.funds.clean;
-    document.getElementById("dirtyMoney").innerText = "$" + data.funds.dirty;
+        updateFundsUI(data.funds.clean, data.funds.dirty);
+        updateMembersUI(data.members);
 
-    // DASHBOARD TOTAL FUNDS
-    document.getElementById("fundTotal").innerText = "$" + (data.funds.clean + data.funds.dirty);
+    } catch (err) {
+        console.error("Failed to load data:", err);
+    }
+}
 
-    // MEMBERS
-    const memberList = document.getElementById("memberList");
-    memberList.innerHTML = "";
-    data.members.forEach((m, i) => {
+// ---------------------------
+// FUNDS UI
+// ---------------------------
+
+function updateFundsUI(clean, dirty) {
+    document.getElementById("cleanBalance").textContent = clean;
+    document.getElementById("dirtyBalance").textContent = dirty;
+}
+
+// ---------------------------
+// UPDATE FUNDS (NO LOGS)
+// ---------------------------
+
+async function updateFunds(cleanDelta = 0, dirtyDelta = 0) {
+    try {
+        const res = await fetch("/api/updateFunds", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cleanDelta, dirtyDelta })
+        });
+
+        const data = await res.json();
+
+        updateFundsUI(data.clean, data.dirty);
+
+    } catch (err) {
+        console.error("Failed to update funds:", err);
+    }
+}
+
+// Buttons
+document.getElementById("addClean").addEventListener("click", () => {
+    const amount = parseInt(prompt("Add Clean Amount:"));
+    if (!isNaN(amount)) updateFunds(amount, 0);
+});
+
+document.getElementById("removeClean").addEventListener("click", () => {
+    const amount = parseInt(prompt("Remove Clean Amount:"));
+    if (!isNaN(amount)) updateFunds(-amount, 0);
+});
+
+document.getElementById("addDirty").addEventListener("click", () => {
+    const amount = parseInt(prompt("Add Dirty Amount:"));
+    if (!isNaN(amount)) updateFunds(0, amount);
+});
+
+document.getElementById("removeDirty").addEventListener("click", () => {
+    const amount = parseInt(prompt("Remove Dirty Amount:"));
+    if (!isNaN(amount)) updateFunds(0, -amount);
+});
+
+// ---------------------------
+// MEMBERS UI
+// ---------------------------
+
+function updateMembersUI(members) {
+    const list = document.getElementById("membersList");
+    list.innerHTML = "";
+
+    members.forEach((m, index) => {
         const li = document.createElement("li");
-        li.innerHTML = `${m.name} — ${m.rank} 
-            <button onclick="removeMember(${i})">Remove</button>`;
-        memberList.appendChild(li);
-    });
+        li.textContent = `${m.name} — ${m.rank}`;
 
-    // DASHBOARD MEMBER COUNT
-    document.getElementById("memberCount").innerText = data.members.length;
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Remove";
+        removeBtn.style.marginLeft = "10px";
+        removeBtn.onclick = () => removeMember(index);
 
-    // TRANSACTIONS
-    const txBody = document.getElementById("transactionTableBody");
-    txBody.innerHTML = "";
-    data.transactions.forEach(tx => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${new Date(tx.created_at).toLocaleString()}</td>
-            <td>${tx.logged_by || "-"}</td>
-            <td>${tx.type}</td>
-            <td>${tx.direction}</td>
-            <td>${tx.delta}</td>
-            <td>${tx.balance_after}</td>
-            <td>${tx.description || "-"}</td>
-        `;
-        txBody.appendChild(row);
+        li.appendChild(removeBtn);
+        list.appendChild(li);
     });
 }
 
-// ADD MEMBER
+// ---------------------------
+// UPDATE MEMBERS (NO LOGS)
+// ---------------------------
+
 async function addMember() {
-    const name = document.getElementById("memberName").value;
-    const rank = document.getElementById("memberRank").value;
+    const name = prompt("Member Name:");
+    const rank = prompt("Member Rank:");
 
-    await fetch("/api/updateMembers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "add", name, rank })
-    });
+    if (!name || !rank) return;
 
-    loadData();
+    try {
+        const res = await fetch("/api/updateMembers", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "add", name, rank })
+        });
+
+        const data = await res.json();
+        updateMembersUI(data.members);
+
+    } catch (err) {
+        console.error("Failed to add member:", err);
+    }
 }
 
-// REMOVE MEMBER
 async function removeMember(index) {
-    await fetch("/api/updateMembers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "remove", index })
-    });
+    try {
+        const res = await fetch("/api/updateMembers", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "remove", index })
+        });
 
-    loadData();
+        const data = await res.json();
+        updateMembersUI(data.members);
+
+    } catch (err) {
+        console.error("Failed to remove member:", err);
+    }
 }
 
-// APPLY FUNDS CHANGE
-async function applyFundsChange() {
-    const cleanDelta = parseInt(document.getElementById("cleanDelta").value) || 0;
-    const dirtyDelta = parseInt(document.getElementById("dirtyDelta").value) || 0;
-    const logged_by = document.getElementById("txLoggedBy").value || "Unknown";
-    const description = document.getElementById("txDescription").value || "";
-
-    await fetch("/api/addTransaction", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            cleanDelta,
-            dirtyDelta,
-            logged_by,
-            description
-        })
-    });
-
-    loadData();
-}
-
-window.onload = loadData;
+document.getElementById("addMember").addEventListener("click", addMember);
