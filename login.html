@@ -18,9 +18,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
+    // Create Supabase client
     const sb = supabase.createClient(
-      "https://gleavemxohcagjrsgnu.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsZWF2ZW14b2hjYWdqc..."
+      "https://glgeavemxohcagjrsqnu.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsZ2VhdmVteG9oY2FnanJzcW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2OTk3MDksImV4cCI6MjA4ODI3NTcwOX0.AJERdGpD08N8gRsM0x-cNXD151ZtRlj08GUwuUdg3tk"
     );
 
     async function login() {
@@ -29,7 +30,7 @@
       });
 
       if (error) {
-        console.error(error);
+        console.error("Login error:", error);
       }
     }
   </script>
