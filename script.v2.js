@@ -4,6 +4,10 @@
 function showPage(pageId) {
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
     document.getElementById(pageId).classList.add("active");
+
+    if (pageId === "transactions") {
+        loadScreenshotLogs();
+    }
 }
 
 // ---------------------------
@@ -19,7 +23,6 @@ async function loadData() {
         updateFundsUI(data.funds.clean, data.funds.dirty);
         updateMembersUI(data.members);
 
-        // Dashboard counters
         document.getElementById("fundTotal").textContent = "$" + (data.funds.clean + data.funds.dirty);
         document.getElementById("memberCount").textContent = data.members.length;
 
@@ -36,9 +39,6 @@ function updateFundsUI(clean, dirty) {
     document.getElementById("dirtyMoney").textContent = "$" + dirty;
 }
 
-// ---------------------------
-// APPLY FUNDS CHANGE (NO LOGS)
-// ---------------------------
 async function applyFundsChange() {
     const cleanDelta = parseInt(document.getElementById("cleanDelta").value) || 0;
     const dirtyDelta = parseInt(document.getElementById("dirtyDelta").value) || 0;
@@ -53,7 +53,6 @@ async function applyFundsChange() {
         const data = await res.json();
         updateFundsUI(data.clean, data.dirty);
 
-        // Clear inputs
         document.getElementById("cleanDelta").value = "";
         document.getElementById("dirtyDelta").value = "";
 
@@ -63,7 +62,7 @@ async function applyFundsChange() {
 }
 
 // ---------------------------
-// MEMBERS UI
+// MEMBERS
 // ---------------------------
 function updateMembersUI(members) {
     const list = document.getElementById("memberList");
@@ -83,9 +82,6 @@ function updateMembersUI(members) {
     });
 }
 
-// ---------------------------
-// ADD MEMBER
-// ---------------------------
 async function addMember() {
     const name = document.getElementById("memberName").value.trim();
     const rank = document.getElementById("memberRank").value.trim();
@@ -110,9 +106,6 @@ async function addMember() {
     }
 }
 
-// ---------------------------
-// REMOVE MEMBER
-// ---------------------------
 async function removeMember(index) {
     try {
         const res = await fetch("/api/updateMembers", {
@@ -128,3 +121,55 @@ async function removeMember(index) {
         console.error("Failed to remove member:", err);
     }
 }
+
+// ---------------------------
+// SCREENSHOT LOGS
+// ---------------------------
+async function loadScreenshotLogs() {
+    try {
+        const res = await fetch("/api/getScreenshotLogs");
+        const data = await res.json();
+        renderScreenshotLogs(data.logs);
+    } catch (err) {
+        console.error("Failed to load screenshot logs:", err);
+    }
+}
+
+function renderScreenshotLogs(logs) {
+    const container = document.getElementById("screenshotLogList");
+    container.innerHTML = "";
+
+    logs.forEach(log => {
+        const div = document.createElement("div");
+        div.className = "screenshot-log-entry";
+
+        div.innerHTML = `
+            <p><strong>${new Date(log.created_at).toLocaleString()}</strong></p>
+            <img src="${log.image_url}" class="screenshot-thumb">
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+document.getElementById("uploadScreenshotBtn").addEventListener("click", () => {
+    document.getElementById("screenshotInput").click();
+});
+
+document.getElementById("screenshotInput").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("screenshot", file);
+
+    const res = await fetch("/api/uploadScreenshot", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+    renderScreenshotLogs(data.logs);
+
+    e.target.value = "";
+});
