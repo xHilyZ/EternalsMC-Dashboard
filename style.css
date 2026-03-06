@@ -68,8 +68,7 @@ body {
     gap: 10px;
 }
 
-.nav-item:hover,
-.nav-item.active {
+.nav-item:hover {
     background: #C2B59B;
     color: #000;
 }
@@ -79,51 +78,9 @@ body {
     font-size: 18px;
 }
 
-/* SIDEBAR FOOTER */
-.sidebar-footer {
-    padding: 20px;
-    border-top: 1px solid #3A3A3A;
-}
-
-.user-box {
-    margin-bottom: 10px;
-}
-
-.user-name {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.user-role {
-    font-size: 12px;
-    color: #8E8E8E;
-}
-
-.logout-btn {
-    width: 100%;
-    padding: 10px;
-    background: #C2B59B;
-    border: none;
-    border-radius: 5px;
-    color: #000;
-    cursor: pointer;
-    font-weight: bold;
-}
-
 /* MAIN CONTENT */
 .main {
     flex: 1;
-    padding: 0;
-}
-
-/* PAGE TITLES */
-.page-title {
-    background: #C2B59B;
-    color: #000;
-    padding: 12px 20px;
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 20px;
 }
 
 /* PAGE SYSTEM */
@@ -136,51 +93,60 @@ body {
     display: block;
 }
 
-/* STATS BAR */
-.stats-bar {
-    display: flex;
-    gap: 20px;
+/* TOP STATS */
+.top-stats {
+    text-align: center;
     margin-bottom: 30px;
-    padding: 20px;
 }
 
-.stat-card {
-    flex: 1;
-    background: #0D0D0D;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #3A3A3A;
+.money-main label {
+    color: #C2B59B;
+    font-size: 16px;
 }
 
-.stat-card label {
+.money-main span {
+    display: block;
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.sub-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 15px;
+}
+
+.sub-stat label {
     color: #C2B59B;
     font-size: 14px;
 }
 
-.stat-card span {
+.sub-stat span {
     display: block;
-    margin-top: 5px;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
 }
 
 /* QUICK ACTION TILES */
 .quick-actions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
     margin-bottom: 30px;
-    padding: 0 20px;
 }
 
 .action-tile {
+    width: 90px;
+    height: 90px;
     background: #0D0D0D;
     border: 2px solid #C2B59B;
     border-radius: 10px;
-    padding: 25px;
     text-align: center;
     cursor: pointer;
     transition: 0.2s;
+    padding-top: 10px;
 }
 
 .action-tile:hover {
@@ -189,13 +155,13 @@ body {
 }
 
 .action-icon {
-    font-size: 32px;
+    font-size: 24px;
     color: #C2B59B;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .action-label {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: bold;
 }
 
@@ -223,35 +189,7 @@ body {
     background: #111;
     padding: 10px;
     border-radius: 6px;
-    margin-bottom: 15px;
     max-height: 250px;
     overflow-y: auto;
     border: 1px solid #222;
-}
-
-/* INPUTS */
-.input-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.input-group input,
-.input-group select {
-    flex: 1;
-    padding: 10px;
-    background: #0F0F0F;
-    border: 1px solid #3A3A3A;
-    border-radius: 5px;
-    color: #E6E6E6;
-}
-
-button {
-    padding: 10px 15px;
-    background: #C2B59B;
-    border: none;
-    border-radius: 5px;
-    color: #000;
-    cursor: pointer;
-    font-weight: bold;
 }
