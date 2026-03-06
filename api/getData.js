@@ -18,15 +18,9 @@ module.exports = async function handler(req, res) {
       .select("*")
       .order("created_at", { ascending: true });
 
-    const { data: transactions } = await supabase
-      .from("transactions")
-      .select("*")
-      .order("created_at", { ascending: false });
-
     res.status(200).json({
       funds,
-      members,
-      transactions
+      members
     });
 
   } catch (err) {
