@@ -2,126 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eternals MC | Dashboard</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="sidebar">
-    <div class="logo">
-        <img src="patch.png" alt="Eternals MC Patch">
-        <h1>Eternals MC</h1>
-        <h2>Zephyr Charter</h2>
-    </div>
+    <header>
+        <h1>Eternals MC | Dashboard</h1>
+    </header>
 
-    <nav>
-        <button onclick="showPage('dashboard')">Dashboard</button>
-        <button onclick="showPage('funds')">Funds</button>
-        <button onclick="showPage('members')">Members</button>
-        <button onclick="showPage('transactions')">Transactions</button>
-        <button onclick="showPage('inventory')">Inventory</button>
-        <button onclick="showPage('drugs')">Drug Lab</button>
-        <button onclick="showPage('weapons')">Weapons</button>
-        <button onclick="showPage('territories')">Territories</button>
-        <button onclick="showPage('operations')">Operations</button>
-        <button onclick="showPage('settings')">Settings</button>
-    </nav>
-</div>
+    <main>
 
-<div class="content">
+        <!-- FUNDS SECTION -->
+        <section class="card">
+            <h2>Club Funds</h2>
+            <div class="funds">
+                <p>Clean: $<span id="cleanBalance">0</span></p>
+                <p>Dirty: $<span id="dirtyBalance">0</span></p>
+            </div>
 
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="page active">
-        <h2>Dashboard Overview</h2>
-        <div class="grid">
-            <div class="card"><h3>Total Funds</h3><p id="fundTotal">$0</p></div>
-            <div class="card"><h3>Members</h3><p id="memberCount">0</p></div>
-            <div class="card"><h3>Inventory Items</h3><p id="inventoryCount">0</p></div>
-            <div class="card"><h3>Territories</h3><p id="territoryCount">0</p></div>
-        </div>
-    </section>
+            <div class="input-group">
+                <input id="cleanInput" type="number" placeholder="New Clean Amount">
+                <input id="dirtyInput" type="number" placeholder="New Dirty Amount">
+                <button id="updateFundsBtn">Update Funds</button>
+            </div>
+        </section>
 
-    <!-- FUNDS -->
-    <section id="funds" class="page">
-        <h2>Club Funds</h2>
-        <p>Clean: <span id="cleanMoney">$0</span></p>
-        <p>Dirty: <span id="dirtyMoney">$0</span></p>
+        <!-- MEMBERS SECTION -->
+        <section class="card">
+            <h2>Members</h2>
+            <div id="membersList" class="list"></div>
 
-        <div class="fund-actions">
-            <input id="cleanDelta" type="number" placeholder="Clean +/-">
-            <input id="dirtyDelta" type="number" placeholder="Dirty +/-">
-            <input id="txLoggedBy" type="text" placeholder="Logged by (optional)">
-            <input id="txDescription" type="text" placeholder="Description (optional)">
-            <button onclick="applyFundsChange()">Apply</button>
-        </div>
-    </section>
+            <div class="input-group">
+                <input id="memberName" type="text" placeholder="Member Name">
+                <input id="memberRole" type="text" placeholder="Member Role">
+                <button id="updateMembersBtn">Add / Update Member</button>
+            </div>
+        </section>
 
-    <!-- MEMBERS -->
-    <section id="members" class="page">
-        <h2>Members</h2>
+        <!-- TRANSACTIONS SECTION -->
+        <section class="card">
+            <h2>Transactions</h2>
 
-        <div class="member-actions">
-            <input id="memberName" type="text" placeholder="Member Name">
-            <input id="memberRank" type="text" placeholder="Rank">
-            <button onclick="addMember()">Add Member</button>
-        </div>
+            <div id="transactionsList" class="list"></div>
 
-        <ul id="memberList" class="member-list"></ul>
-    </section>
+            <div class="input-group">
+                <input id="txDescription" type="text" placeholder="Description">
+                <input id="txAmount" type="number" placeholder="Amount">
 
-    <!-- TRANSACTIONS (Screenshot Logs Only) -->
-    <section id="transactions" class="page">
-        <h2>Transaction Log</h2>
+                <select id="txType">
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
 
-        <button id="uploadScreenshotBtn">Upload Screenshot</button>
-        <input type="file" id="screenshotInput" accept="image/*" style="display:none">
+                <button id="addTxBtn">Add Transaction</button>
+            </div>
+        </section>
 
-        <div id="screenshotLogList" class="screenshot-log-list"></div>
-    </section>
+    </main>
 
-    <!-- INVENTORY -->
-    <section id="inventory" class="page">
-        <h2>Inventory</h2>
-        <ul id="inventoryList"></ul>
-    </section>
-
-    <!-- DRUG LAB -->
-    <section id="drugs" class="page">
-        <h2>Drug Lab</h2>
-        <ul id="drugList"></ul>
-    </section>
-
-    <!-- WEAPONS -->
-    <section id="weapons" class="page">
-        <h2>Weapons Locker</h2>
-        <ul id="weaponList"></ul>
-    </section>
-
-    <!-- TERRITORIES -->
-    <section id="territories" class="page">
-        <h2>Territories</h2>
-        <ul id="territoryList"></ul>
-    </section>
-
-    <!-- OPERATIONS -->
-    <section id="operations" class="page">
-        <h2>Operations</h2>
-        <ul id="operationList"></ul>
-    </section>
-
-    <!-- SETTINGS -->
-    <section id="settings" class="page">
-        <h2>Settings</h2>
-        <p>Branding, theme, and admin tools will go here.</p>
-    </section>
-
-</div>
-
-<script src="script.v2.js"></script>
+    <script src="script.v2.js"></script>
 </body>
 </html>
-
-<!-- redeploy -->
