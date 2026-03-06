@@ -13,19 +13,26 @@ module.exports = async function handler(req, res) {
   try {
     const { clean, dirty } = req.body;
 
-    const { data: funds } = await supabase
+    // Load current funds
+    const { data: funds, error: loadError } = await supabase
       .from("funds")
       .select("*")
       .eq("id", 1)
       .single();
 
-    const newClean = clean;
-    const newDirty = dirty;
+    if (loadError) throw loadError;
 
-    await supabase
+    // Add to existing values
+    const newClean = funds.clean + clean;
+    const newDirty = funds.dirty + dirty;
+
+    // Update database
+    const { error: updateError } = await supabase
       .from("funds")
       .update({ clean: newClean, dirty: newDirty })
       .eq("id", 1);
+
+    if (updateError) throw updateError;
 
     res.status(200).json({
       clean: newClean,

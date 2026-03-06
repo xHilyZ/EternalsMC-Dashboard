@@ -22,14 +22,25 @@ module.exports = async function handler(req, res) {
 
     if (loadError) throw loadError;
 
-    // Determine new balances
+    // Determine delta (+ or -)
     const delta = type === "income" ? amount : -amount;
-    const newClean = funds.clean + delta;
+
+    // Determine which balance to update
+    let newClean = funds.clean;
+    let newDirty = funds.dirty;
+
+    if (description.toLowerCase().includes("dirty")) {
+      // Dirty transaction
+      newDirty = funds.dirty + delta;
+    } else {
+      // Clean transaction
+      newClean = funds.clean + delta;
+    }
 
     // Update funds
     const { error: updateError } = await supabase
       .from("funds")
-      .update({ clean: newClean })
+      .update({ clean: newClean, dirty: newDirty })
       .eq("id", 1);
 
     if (updateError) throw updateError;
@@ -42,7 +53,7 @@ module.exports = async function handler(req, res) {
         direction: type,
         delta,
         amount,
-        balance_after: newClean,
+        balance_after: description.toLowerCase().includes("dirty") ? newDirty : newClean,
         description,
         created_at: new Date().toISOString()
       });
@@ -50,7 +61,8 @@ module.exports = async function handler(req, res) {
     if (txError) throw txError;
 
     res.status(200).json({
-      clean: newClean
+      clean: newClean,
+      dirty: newDirty
     });
 
   } catch (err) {

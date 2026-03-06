@@ -13,18 +13,24 @@ module.exports = async function handler(req, res) {
   try {
     const { name, role } = req.body;
 
-    // Insert new member
-    await supabase.from("members").insert({
-      name,
-      role,
-      created_at: new Date().toISOString()
-    });
+    // Insert new member (must be array)
+    const { error: insertError } = await supabase
+      .from("members")
+      .insert([{ 
+        name, 
+        role, 
+        created_at: new Date().toISOString() 
+      }]);
+
+    if (insertError) throw insertError;
 
     // Return updated list
-    const { data: updated } = await supabase
+    const { data: updated, error: loadError } = await supabase
       .from("members")
       .select("*")
       .order("created_at", { ascending: true });
+
+    if (loadError) throw loadError;
 
     res.status(200).json({ members: updated });
 
