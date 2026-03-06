@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { cleanDelta, dirtyDelta } = req.body;
+    const { clean, dirty } = req.body;
 
     const { data: funds } = await supabase
       .from("funds")
@@ -19,8 +19,8 @@ module.exports = async function handler(req, res) {
       .eq("id", 1)
       .single();
 
-    const newClean = funds.clean + (cleanDelta || 0);
-    const newDirty = funds.dirty + (dirtyDelta || 0);
+    const newClean = clean;
+    const newDirty = dirty;
 
     await supabase
       .from("funds")

@@ -11,32 +11,14 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { action, name, rank, index } = req.body;
+    const { name, role } = req.body;
 
-    if (action === "add") {
-      await supabase.from("members").insert({
-        name,
-        rank,
-        created_at: new Date().toISOString()
-      });
-    }
-
-    if (action === "remove") {
-      // Get the member to delete
-      const { data: members } = await supabase
-        .from("members")
-        .select("*")
-        .order("created_at", { ascending: true });
-
-      const memberToDelete = members[index];
-
-      if (memberToDelete) {
-        await supabase
-          .from("members")
-          .delete()
-          .eq("id", memberToDelete.id);
-      }
-    }
+    // Insert new member
+    await supabase.from("members").insert({
+      name,
+      role,
+      created_at: new Date().toISOString()
+    });
 
     // Return updated list
     const { data: updated } = await supabase

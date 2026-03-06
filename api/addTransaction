@@ -11,8 +11,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { cleanDelta, dirtyDelta, logged_by, description } = req.body;
+    const { description, amount, type } = req.body;
 
+    // Load current funds
     const { data: funds, error: loadError } = await supabase
       .from("funds")
       .select("*")
@@ -21,42 +22,39 @@ module.exports = async function handler(req, res) {
 
     if (loadError) throw loadError;
 
-    const newClean = funds.clean + (cleanDelta || 0);
-    const newDirty = funds.dirty + (dirtyDelta || 0);
+    // Determine new balances
+    const delta = type === "income" ? amount : -amount;
+    const newClean = funds.clean + delta;
 
+    // Update funds
     const { error: updateError } = await supabase
       .from("funds")
-      .update({ clean: newClean, dirty: newDirty })
+      .update({ clean: newClean })
       .eq("id", 1);
 
     if (updateError) throw updateError;
 
-    const delta = cleanDelta !== 0 ? cleanDelta : dirtyDelta;
-    const type = cleanDelta !== 0 ? "clean" : "dirty";
-    const direction = delta > 0 ? "income" : "expense";
-    const balance_after = cleanDelta !== 0 ? newClean : newDirty;
-
+    // Insert transaction
     const { error: txError } = await supabase
       .from("transactions")
       .insert({
         type,
-        direction,
+        direction: type,
         delta,
-        amount: Math.abs(delta),
-        balance_after,
-        logged_by,
-        description
+        amount,
+        balance_after: newClean,
+        description,
+        created_at: new Date().toISOString()
       });
 
     if (txError) throw txError;
 
     res.status(200).json({
-      clean: newClean,
-      dirty: newDirty
+      clean: newClean
     });
 
   } catch (err) {
     console.error("addTransaction error:", err);
-    res.status(500).json({ error: "Failed to update funds" });
+    res.status(500).json({ error: "Failed to add transaction" });
   }
 };

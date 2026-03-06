@@ -7,20 +7,29 @@ const supabase = createClient(
 
 module.exports = async function handler(req, res) {
   try {
+    // Load funds
     const { data: funds } = await supabase
       .from("funds")
       .select("*")
       .eq("id", 1)
       .single();
 
+    // Load members
     const { data: members } = await supabase
       .from("members")
       .select("*")
       .order("created_at", { ascending: true });
 
+    // Load transactions
+    const { data: transactions } = await supabase
+      .from("transactions")
+      .select("*")
+      .order("created_at", { ascending: false });
+
     res.status(200).json({
       funds,
-      members
+      members,
+      transactions
     });
 
   } catch (err) {

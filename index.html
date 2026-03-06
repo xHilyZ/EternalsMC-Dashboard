@@ -49,30 +49,56 @@
 
     <!-- RESTRICTED BUTTONS -->
     <section class="restricted actions">
-      <button>Add Deals</button>
-      <button>Bank</button>
-      <button>Checklist</button>
-      <button>Price List</button>
+      <button id="addTxBtn">Add Deals</button>
+      <button id="updateFundsBtn">Bank</button>
+      <button id="checklistBtn">Checklist</button>
+      <button id="priceListBtn">Price List</button>
     </section>
 
     <!-- RESTRICTED SECTIONS -->
     <section class="restricted">
       <h2>Club Funds</h2>
-      <p>Clean: $0</p>
-      <p>Dirty: $0</p>
+
+      <p>Clean: <span id="cleanBalance">$0</span></p>
+      <input id="cleanInput" type="number" placeholder="Add Clean Amount">
+
+      <p>Dirty: <span id="dirtyBalance">$0</span></p>
+      <input id="dirtyInput" type="number" placeholder="Add Dirty Amount">
+
+      <button id="updateFundsBtn">Update Funds</button>
     </section>
 
     <section class="restricted">
       <h2>Members</h2>
+
+      <input id="memberName" type="text" placeholder="Member Name">
+      <input id="memberRole" type="text" placeholder="Role">
+
+      <button id="updateMembersBtn">Add Member</button>
+
       <div id="membersList"></div>
     </section>
 
     <section class="restricted">
       <h2>Transactions</h2>
+
+      <input id="txDescription" type="text" placeholder="Description">
+      <input id="txAmount" type="number" placeholder="Amount">
+
+      <select id="txType">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+
+      <button id="addTxBtn">Add Transaction</button>
+
       <div id="transactionsList"></div>
     </section>
 
   </main>
+
+  <!-- LOAD SCRIPT -->
+  <script src="/script.v2.js"></script>
 
   <!-- SUPABASE AUTH -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -88,20 +114,11 @@
       const userBox = document.getElementById("user-box");
 
       if (!data.session) {
-        // NOT LOGGED IN
         document.body.classList.add("guest");
-
-        userBox.innerHTML = `
-          <button class="login-btn" onclick="login()">Login with Discord</button>
-        `;
+        userBox.innerHTML = `<button class="login-btn" onclick="login()">Login with Discord</button>`;
       } else {
-        // LOGGED IN
         document.body.classList.remove("guest");
-
-        userBox.innerHTML = `
-          MEMBER<br>
-          <button onclick="logout()">Logout</button>
-        `;
+        userBox.innerHTML = `MEMBER<br><button onclick="logout()">Logout</button>`;
       }
     }
 
