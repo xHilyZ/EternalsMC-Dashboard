@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       updated.splice(index, 1);
     }
 
+    // Clear table
     const { error: deleteError } = await supabase
       .from('members')
       .delete()
@@ -41,6 +42,7 @@ export default async function handler(req, res) {
 
     if (deleteError) throw deleteError;
 
+    // Insert updated list
     const cleaned = updated.map(m => ({
       name: m.name,
       rank: m.rank,
