@@ -1,4 +1,14 @@
-// Load everything on page load
+// ---------------------------
+// PAGE SWITCHING
+// ---------------------------
+function showPage(pageId) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(pageId).classList.add("active");
+}
+
+// ---------------------------
+// LOAD DATA ON START
+// ---------------------------
 document.addEventListener("DOMContentLoaded", loadData);
 
 async function loadData() {
@@ -9,6 +19,10 @@ async function loadData() {
         updateFundsUI(data.funds.clean, data.funds.dirty);
         updateMembersUI(data.members);
 
+        // Dashboard counters
+        document.getElementById("fundTotal").textContent = "$" + (data.funds.clean + data.funds.dirty);
+        document.getElementById("memberCount").textContent = data.members.length;
+
     } catch (err) {
         console.error("Failed to load data:", err);
     }
@@ -17,17 +31,18 @@ async function loadData() {
 // ---------------------------
 // FUNDS UI
 // ---------------------------
-
 function updateFundsUI(clean, dirty) {
-    document.getElementById("cleanBalance").textContent = clean;
-    document.getElementById("dirtyBalance").textContent = dirty;
+    document.getElementById("cleanMoney").textContent = "$" + clean;
+    document.getElementById("dirtyMoney").textContent = "$" + dirty;
 }
 
 // ---------------------------
-// UPDATE FUNDS (NO LOGS)
+// APPLY FUNDS CHANGE (NO LOGS)
 // ---------------------------
+async function applyFundsChange() {
+    const cleanDelta = parseInt(document.getElementById("cleanDelta").value) || 0;
+    const dirtyDelta = parseInt(document.getElementById("dirtyDelta").value) || 0;
 
-async function updateFunds(cleanDelta = 0, dirtyDelta = 0) {
     try {
         const res = await fetch("/api/updateFunds", {
             method: "POST",
@@ -36,41 +51,22 @@ async function updateFunds(cleanDelta = 0, dirtyDelta = 0) {
         });
 
         const data = await res.json();
-
         updateFundsUI(data.clean, data.dirty);
+
+        // Clear inputs
+        document.getElementById("cleanDelta").value = "";
+        document.getElementById("dirtyDelta").value = "";
 
     } catch (err) {
         console.error("Failed to update funds:", err);
     }
 }
 
-// Buttons
-document.getElementById("addClean").addEventListener("click", () => {
-    const amount = parseInt(prompt("Add Clean Amount:"));
-    if (!isNaN(amount)) updateFunds(amount, 0);
-});
-
-document.getElementById("removeClean").addEventListener("click", () => {
-    const amount = parseInt(prompt("Remove Clean Amount:"));
-    if (!isNaN(amount)) updateFunds(-amount, 0);
-});
-
-document.getElementById("addDirty").addEventListener("click", () => {
-    const amount = parseInt(prompt("Add Dirty Amount:"));
-    if (!isNaN(amount)) updateFunds(0, amount);
-});
-
-document.getElementById("removeDirty").addEventListener("click", () => {
-    const amount = parseInt(prompt("Remove Dirty Amount:"));
-    if (!isNaN(amount)) updateFunds(0, -amount);
-});
-
 // ---------------------------
 // MEMBERS UI
 // ---------------------------
-
 function updateMembersUI(members) {
-    const list = document.getElementById("membersList");
+    const list = document.getElementById("memberList");
     list.innerHTML = "";
 
     members.forEach((m, index) => {
@@ -88,12 +84,11 @@ function updateMembersUI(members) {
 }
 
 // ---------------------------
-// UPDATE MEMBERS (NO LOGS)
+// ADD MEMBER
 // ---------------------------
-
 async function addMember() {
-    const name = prompt("Member Name:");
-    const rank = prompt("Member Rank:");
+    const name = document.getElementById("memberName").value.trim();
+    const rank = document.getElementById("memberRank").value.trim();
 
     if (!name || !rank) return;
 
@@ -107,11 +102,17 @@ async function addMember() {
         const data = await res.json();
         updateMembersUI(data.members);
 
+        document.getElementById("memberName").value = "";
+        document.getElementById("memberRank").value = "";
+
     } catch (err) {
         console.error("Failed to add member:", err);
     }
 }
 
+// ---------------------------
+// REMOVE MEMBER
+// ---------------------------
 async function removeMember(index) {
     try {
         const res = await fetch("/api/updateMembers", {
@@ -127,5 +128,3 @@ async function removeMember(index) {
         console.error("Failed to remove member:", err);
     }
 }
-
-document.getElementById("addMember").addEventListener("click", addMember);
