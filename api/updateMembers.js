@@ -13,12 +13,10 @@ module.exports = async function handler(req, res) {
   try {
     const { action, name, rank, index } = req.body;
 
-    const { data: members, error: loadError } = await supabase
+    const { data: members } = await supabase
       .from("members")
       .select("*")
       .order("created_at", { ascending: true });
-
-    if (loadError) throw loadError;
 
     let updated = [...members];
 
@@ -35,12 +33,7 @@ module.exports = async function handler(req, res) {
     }
 
     // Clear table
-    const { error: deleteError } = await supabase
-      .from("members")
-      .delete()
-      .neq("id", "");
-
-    if (deleteError) throw deleteError;
+    await supabase.from("members").delete().neq("id", "");
 
     // Insert updated list
     const cleaned = updated.map(m => ({
@@ -49,11 +42,7 @@ module.exports = async function handler(req, res) {
       created_at: m.created_at
     }));
 
-    const { error: insertError } = await supabase
-      .from("members")
-      .insert(cleaned);
-
-    if (insertError) throw insertError;
+    await supabase.from("members").insert(cleaned);
 
     res.status(200).json({ members: cleaned });
 
