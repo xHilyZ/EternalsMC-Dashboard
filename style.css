@@ -93,6 +93,20 @@ body {
     display: block;
 }
 
+/* ⭐ ADDED: SLIDE ANIMATION ⭐ */
+.page {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.35s ease;
+}
+
+.page.active {
+    opacity: 1;
+    max-height: 2000px;
+}
+/* ⭐ END ADDED ⭐ */
+
 /* TOP STATS */
 .top-stats {
     text-align: center;

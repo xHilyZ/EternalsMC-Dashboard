@@ -27,60 +27,31 @@
   <!-- MAIN CONTENT -->
   <main>
 
-    <h1>Welcome — Eternals MC</h1>
+    <!-- DASHBOARD ALWAYS VISIBLE -->
+    <div id="page-dashboard" class="page active">
+      <h1>Welcome — Eternals MC</h1>
 
-    <!-- ALWAYS VISIBLE -->
-    <section class="stats">
-      <div class="stat-box">
-        <h3>Total Money</h3>
-        <p id="totalMoney">$0</p>
-      </div>
+      <section class="stats">
+        <div class="stat-box">
+          <h3>Total Money</h3>
+          <p id="totalMoney">$0</p>
+        </div>
 
-      <div class="stat-box">
-        <h3>Total Deals</h3>
-        <p id="totalDeals">0</p>
-      </div>
+        <div class="stat-box">
+          <h3>Total Deals</h3>
+          <p id="totalDeals">0</p>
+        </div>
 
-      <div class="stat-box">
-        <h3>Active Members</h3>
-        <p id="activeMembers">0</p>
-      </div>
-    </section>
+        <div class="stat-box">
+          <h3>Active Members</h3>
+          <p id="activeMembers">0</p>
+        </div>
+      </section>
+    </div>
 
-    <!-- RESTRICTED BUTTONS -->
-    <section class="restricted actions">
-      <button id="addTxBtn">Add Deals</button>
-      <button id="updateFundsBtn">Bank</button>
-      <button id="checklistBtn">Checklist</button>
-      <button id="priceListBtn">Price List</button>
-    </section>
-
-    <!-- RESTRICTED SECTIONS -->
-    <section class="restricted">
-      <h2>Club Funds</h2>
-
-      <p>Clean: <span id="cleanBalance">$0</span></p>
-      <input id="cleanInput" type="number" placeholder="Add Clean Amount">
-
-      <p>Dirty: <span id="dirtyBalance">$0</span></p>
-      <input id="dirtyInput" type="number" placeholder="Add Dirty Amount">
-
-      <button id="updateFundsBtn">Update Funds</button>
-    </section>
-
-    <section class="restricted">
-      <h2>Members</h2>
-
-      <input id="memberName" type="text" placeholder="Member Name">
-      <input id="memberRole" type="text" placeholder="Role">
-
-      <button id="updateMembersBtn">Add Member</button>
-
-      <div id="membersList"></div>
-    </section>
-
-    <section class="restricted">
-      <h2>Transactions</h2>
+    <!-- DEALS -->
+    <div id="page-deals" class="page restricted">
+      <h2>Deals</h2>
 
       <input id="txDescription" type="text" placeholder="Description">
       <input id="txAmount" type="number" placeholder="Amount">
@@ -93,9 +64,64 @@
       <button id="addTxBtn">Add Transaction</button>
 
       <div id="transactionsList"></div>
-    </section>
+    </div>
+
+    <!-- BANK -->
+    <div id="page-bank" class="page restricted">
+      <h2>Club Funds</h2>
+
+      <p>Clean: <span id="cleanBalance">$0</span></p>
+      <input id="cleanInput" type="number" placeholder="Add Clean Amount">
+
+      <p>Dirty: <span id="dirtyBalance">$0</span></p>
+      <input id="dirtyInput" type="number" placeholder="Add Dirty Amount">
+
+      <button id="updateFundsBtn">Update Funds</button>
+    </div>
+
+    <!-- MEMBERS -->
+    <div id="page-members" class="page restricted">
+      <h2>Members</h2>
+
+      <input id="memberName" type="text" placeholder="Member Name">
+      <input id="memberRole" type="text" placeholder="Role">
+
+      <button id="updateMembersBtn">Add Member</button>
+
+      <div id="membersList"></div>
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div id="page-transactions" class="page restricted">
+      <h2>Transactions</h2>
+      <div id="transactionsList"></div>
+    </div>
 
   </main>
+
+  <!-- STEP 2: SIDEBAR PAGE SWITCHING -->
+  <script>
+    const pages = {
+      "Dashboard": "page-dashboard",
+      "Deals": "page-deals",
+      "Bank": "page-bank",
+      "Checklist": null,
+      "Price List": null,
+      "Members": "page-members",
+      "Transactions": "page-transactions"
+    };
+
+    document.querySelectorAll(".sidebar ul li").forEach(item => {
+      item.addEventListener("click", () => {
+        const pageId = pages[item.innerText];
+
+        if (!pageId) return;
+
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.getElementById(pageId).classList.add("active");
+      });
+    });
+  </script>
 
   <!-- LOAD SCRIPT -->
   <script src="/script.v2.js"></script>

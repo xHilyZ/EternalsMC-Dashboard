@@ -14,9 +14,28 @@ async function loadDashboard() {
         updateFundsUI(data.funds);
         updateMembersUI(data.members);
         updateTransactionsUI(data.transactions);
+
+        // ⭐ NEW: Update top stats
+        updateTopStats(data.funds, data.members, data.transactions);
+
     } catch (err) {
         console.error("Error loading dashboard:", err);
     }
+}
+
+// -------------------------------
+// UPDATE TOP STATS (NEW)
+// -------------------------------
+function updateTopStats(funds, members, transactions) {
+    // Total Money = clean + dirty
+    const totalMoney = (funds.clean || 0) + (funds.dirty || 0);
+    document.getElementById("totalMoney").textContent = `$${totalMoney}`;
+
+    // Total Deals = number of transactions
+    document.getElementById("totalDeals").textContent = transactions.length;
+
+    // Active Members = number of members
+    document.getElementById("activeMembers").textContent = members.length;
 }
 
 // -------------------------------

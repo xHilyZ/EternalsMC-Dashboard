@@ -8,23 +8,29 @@ const supabase = createClient(
 module.exports = async function handler(req, res) {
   try {
     // Load funds
-    const { data: funds } = await supabase
+    const { data: funds, error: fundsError } = await supabase
       .from("funds")
       .select("*")
       .eq("id", 1)
       .single();
 
+    if (fundsError) throw fundsError;
+
     // Load members
-    const { data: members } = await supabase
+    const { data: members, error: membersError } = await supabase
       .from("members")
       .select("*")
       .order("created_at", { ascending: true });
 
+    if (membersError) throw membersError;
+
     // Load transactions
-    const { data: transactions } = await supabase
+    const { data: transactions, error: txError } = await supabase
       .from("transactions")
       .select("*")
       .order("created_at", { ascending: false });
+
+    if (txError) throw txError;
 
     res.status(200).json({
       funds,
