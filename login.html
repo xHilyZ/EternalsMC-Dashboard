@@ -26,7 +26,10 @@
 
     async function login() {
       const { data, error } = await sb.auth.signInWithOAuth({
-        provider: "discord"
+        provider: "discord",
+        options: {
+          redirectTo: "https://eternals-mc-dashboard.vercel.app/"
+        }
       });
 
       if (error) {
