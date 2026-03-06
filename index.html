@@ -8,6 +8,28 @@
 
 <body>
 
+<!-- AUTH CHECK -->
+<script>
+async function checkAuth() {
+    const res = await fetch('/api/auth/session');
+    const data = await res.json();
+
+    if (!data || !data.user) {
+        window.location.href = "/login.html";
+    } else {
+        // Insert Discord username into UI
+        const spots = document.querySelectorAll(".username-spot");
+        spots.forEach(s => s.innerText = data.user.username);
+    }
+}
+checkAuth();
+
+// Logout handler
+async function logout() {
+    window.location.href = "/api/auth/signout";
+}
+</script>
+
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -27,10 +49,10 @@
 
         <div class="sidebar-footer">
             <div class="user-box">
-                <span class="user-name">Sahil</span>
-                <span class="user-role">ADMIN</span>
+                <span class="user-name username-spot"></span>
+                <span class="user-role">MEMBER</span>
             </div>
-            <button class="logout-btn">Logout</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
     </aside>
 
@@ -39,7 +61,7 @@
 
         <!-- TOP BAR -->
         <div class="top-bar">
-            Welcome, Sahil — Eternals MC Admin
+            Welcome, <span class="username-spot"></span> — Eternals MC
         </div>
 
         <!-- DASHBOARD PAGE -->
@@ -108,7 +130,7 @@
 
         </section>
 
-        <!-- OTHER PAGES (unchanged structure) -->
+        <!-- OTHER PAGES -->
         <section id="deals" class="page"><div class="page-title">Deals</div><div id="dealsList" class="list"></div></section>
         <section id="bank" class="page"><div class="page-title">Bank</div></section>
         <section id="checklist" class="page"><div class="page-title">Checklist</div></section>
