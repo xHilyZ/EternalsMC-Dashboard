@@ -1,160 +1,134 @@
+/* ------------------------------
+   GLOBAL
+------------------------------ */
 body {
     margin: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: #000;
-    color: #d2b48c;
-    display: flex;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #0d0d0d;
+    color: #f2f2f2;
 }
 
-.sidebar {
-    width: 260px;
-    background: #111;
-    height: 100vh;
-    padding: 20px;
-    border-right: 3px solid #d2b48c;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.logo img {
-    width: 140px;
-    margin-bottom: 10px;
-}
-
-.logo h1 {
-    font-size: 26px;
-    margin: 5px 0;
-    font-weight: 800;
-    text-align: center;
-}
-
-.logo h2 {
-    font-size: 15px;
+h1, h2 {
     margin: 0;
-    opacity: 0.8;
-    font-weight: 600;
-}
-
-nav {
-    margin-top: 20px;
-    width: 100%;
-}
-
-nav button {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    background: #222;
-    color: #d2b48c;
-    border: 2px solid #d2b48c;
-    cursor: pointer;
-    font-size: 14px;
+    padding: 0;
     font-weight: 700;
-    letter-spacing: 0.3px;
-    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-nav button:hover {
-    background: #d2b48c;
-    color: #000;
-}
-
-.content {
-    flex: 1;
-    padding: 30px;
-}
-
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
-}
-
-.card {
+/* ------------------------------
+   HEADER
+------------------------------ */
+header {
     background: #111;
-    border: 2px solid #d2b48c;
     padding: 20px;
-    border-radius: 6px;
     text-align: center;
+    border-bottom: 2px solid #b30000;
 }
 
-.card h3 {
-    font-weight: 700;
-    margin-bottom: 10px;
+header h1 {
+    font-size: 28px;
+    color: #b30000;
 }
 
-.card p {
-    font-size: 22px;
-    font-weight: 800;
+/* ------------------------------
+   MAIN LAYOUT
+------------------------------ */
+main {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
 }
 
-.fund-actions {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
+/* ------------------------------
+   CARD SECTIONS
+------------------------------ */
+.card {
+    background: #1a1a1a;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    border: 1px solid #333;
 }
 
-.fund-actions input {
-    padding: 10px;
-    background: #222;
-    border: 2px solid #d2b48c;
-    color: #d2b48c;
-    border-radius: 4px;
-    width: 140px;
+.card h2 {
+    color: #b30000;
+    margin-bottom: 15px;
 }
 
-.fund-actions button {
-    padding: 10px 20px;
-    background: #d2b48c;
-    color: #000;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.member-actions {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.member-actions input {
-    padding: 10px;
-    background: #222;
-    border: 2px solid #d2b48c;
-    color: #d2b48c;
-    border-radius: 4px;
-}
-
-.member-list li {
-    padding: 12px;
+/* ------------------------------
+   LISTS
+------------------------------ */
+.list {
     background: #111;
-    border: 2px solid #d2b48c;
-    margin-bottom: 10px;
-    border-radius: 4px;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #222;
+}
+
+.member-item,
+.transaction-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid #222;
 }
 
-.member-list button {
-    background: #d2b48c;
-    color: #000;
+.member-item:last-child,
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+/* ------------------------------
+   INPUT GROUPS
+------------------------------ */
+.input-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.input-group input,
+.input-group select {
+    flex: 1;
+    padding: 10px;
+    background: #0f0f0f;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.input-group input::placeholder {
+    color: #777;
+}
+
+/* ------------------------------
+   BUTTONS
+------------------------------ */
+button {
+    padding: 10px 15px;
+    background: #b30000;
     border: none;
-    padding: 6px 12px;
-    font-weight: 700;
+    border-radius: 5px;
+    color: #fff;
     cursor: pointer;
-    border-radius: 4px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background: #cc0000;
+}
+
+/* ------------------------------
+   FUNDS DISPLAY
+------------------------------ */
+.funds p {
+    margin: 5px 0;
+    font-size: 18px;
 }
