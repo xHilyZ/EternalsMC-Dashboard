@@ -25,12 +25,21 @@ body {
 
 .sidebar h2 {
     text-align: center;
-    padding: 20px 0;
+    padding: 20px 0 10px 0;
     color: #C2B59B;
     font-size: 22px;
     letter-spacing: 2px;
 }
 
+/* ⭐ PATCH LOGO ⭐ */
+.sidebar-patch {
+    width: 140px;
+    height: auto;
+    display: block;
+    margin: 0 auto 20px auto;
+}
+
+/* NAVIGATION */
 .sidebar ul {
     list-style: none;
     padding: 0;
