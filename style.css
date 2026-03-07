@@ -20,6 +20,7 @@ body {
     --panel-bg: rgba(20,20,20,0.55);
     --panel-border: rgba(194,181,155,0.35);
 }
+
 /* ============================================================
    SIDEBAR — LUXURY CARTEL STYLE
 ============================================================ */
@@ -68,6 +69,7 @@ body {
     color: var(--gold);
     border-left: 3px solid var(--gold);
 }
+
 /* ============================================================
    DASHBOARD STATS — GLASS PANELS
 ============================================================ */
@@ -107,6 +109,7 @@ body {
     font-weight: bold;
     margin: 0;
 }
+
 /* ============================================================
    ACTION TILES — PREMIUM LUXURY
 ============================================================ */
@@ -139,6 +142,7 @@ body {
     font-size: 18px;
     font-weight: bold;
 }
+
 /* ============================================================
    MODAL — GLASS LUXURY
 ============================================================ */
@@ -176,6 +180,7 @@ body {
     color: var(--gold);
     margin-bottom: 15px;
 }
+
 .check-item {
     background: rgba(255,255,255,0.05);
     border-left: 4px solid var(--gold);
@@ -188,6 +193,7 @@ body {
 .check-item:hover {
     background: rgba(255,255,255,0.1);
 }
+
 .armory-item {
     background: var(--panel-bg);
     border-left: 4px solid var(--gold);
