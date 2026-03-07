@@ -37,7 +37,6 @@ function loadQuota() {
     const saved = JSON.parse(localStorage.getItem("weeklyQuotaChecklist")) || {};
     container.innerHTML = "";
 
-    // Checklist is members — tick who has completed quota
     currentMembers.forEach(member => {
         const key = member.id || member.name;
         const checked = saved[key] || false;
@@ -59,7 +58,7 @@ function toggleQuota(key) {
     localStorage.setItem("weeklyQuotaChecklist", JSON.stringify(saved));
 }
 
-// Weekly reset (Sunday, Melbourne time) — clears checklist only
+// Weekly reset (Sunday, Melbourne time)
 function scheduleWeeklyQuotaReset() {
     const now = new Date();
     const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
@@ -98,10 +97,137 @@ function saveQuota() {
 
     closeQuotaModal();
 
-    // If quota page is visible, refresh it
-    const quotaPage = document.getElementById("page-quota");
-    if (quotaPage && quotaPage.classList.contains("active")) {
+    if (document.getElementById("page-quota").classList.contains("active")) {
         loadQuota();
+    }
+}
+
+/* ============================================================
+   ⭐ ARMORY SYSTEM (GROUPED)
+============================================================ */
+
+let ARMORY = JSON.parse(localStorage.getItem("armoryData")) || {
+
+    "Armour": [
+        { name: "Heavy Armour", amount: 57 },
+        { name: "Body Armour", amount: 76 },
+        { name: "Zephyr Joints", amount: 11 },
+        { name: "Plain Jane Joints", amount: 231 },
+        { name: "Blue Dream Joints", amount: 229 }
+    ],
+
+    "Bandages": [
+        { name: "IFAK", amount: 4 },
+        { name: "Heavy Bandage", amount: 40 },
+        { name: "Oxy", amount: 79 }
+    ],
+
+    "Guns (Built)": [
+        { name: "Vector", amount: 4 },
+        { name: "Bullpup", amount: 5 },
+        { name: "Pumpys", amount: 6 },
+        { name: "Double Barrel", amount: 17 },
+        { name: "Sawn Offs", amount: 9 },
+        { name: "MP5X", amount: 15 }
+    ],
+
+    "Ammo": [
+        { name: "5.56x45", amount: 24028 },
+        { name: "9mm", amount: 32023 },
+        { name: "12 Gauge", amount: 466 },
+        { name: ".50 AE", amount: 3178 },
+        { name: ".45 ACP + 192", amount: 1075 },
+        { name: ".38 LC", amount: 9609 },
+        { name: ".22 Long Rifle", amount: 45 },
+        { name: ".44 Magnum", amount: 300 }
+    ],
+
+    "Ammo Cases": [
+        { name: ".45", amount: 8 }
+    ],
+
+    "Attachments": [
+        { name: "Suppressor", amount: 2 },
+        { name: "Heavy Suppressor", amount: 1 }
+    ],
+
+    "Blueprints": [
+        { name: "M270D", amount: 1 },
+        { name: "SMG", amount: 1 },
+        { name: "Vector", amount: 1 },
+        { name: "Pumpys", amount: 4 },
+        { name: "Sawn Off", amount: 50 },
+        { name: "Double Barrel", amount: 1 },
+        { name: "Marksman", amount: 94 },
+        { name: "AP Pistol", amount: 10 },
+        { name: "Extended Pistol", amount: 32 },
+        { name: "Suppressor", amount: 15 }
+    ]
+};
+
+function saveArmory() {
+    localStorage.setItem("armoryData", JSON.stringify(ARMORY));
+}
+
+function loadArmory() {
+    const container = document.getElementById("armoryList");
+    container.innerHTML = "";
+
+    Object.keys(ARMORY).forEach(group => {
+        const header = document.createElement("h3");
+        header.className = "checklist-group";
+        header.textContent = group;
+        container.appendChild(header);
+
+        ARMORY[group].forEach((item, index) => {
+            const div = document.createElement("div");
+            div.className = "armory-item";
+
+            div.innerHTML = `
+                <span>${item.name} — <strong>${item.amount}</strong></span>
+                <div>
+                    <button onclick="editArmoryItem('${group}', ${index})">Edit</button>
+                    <button onclick="removeArmoryItem('${group}', ${index})">Remove</button>
+                </div>
+            `;
+
+            container.appendChild(div);
+        });
+    });
+}
+
+document.getElementById("addArmoryBtn")?.addEventListener("click", () => {
+    const name = document.getElementById("armoryName").value.trim();
+    const amount = parseInt(document.getElementById("armoryAmount").value);
+    const group = document.getElementById("armoryGroup").value;
+
+    if (!name || isNaN(amount)) return alert("Enter valid name and amount.");
+
+    ARMORY[group].push({ name, amount });
+    saveArmory();
+    loadArmory();
+
+    document.getElementById("armoryName").value = "";
+    document.getElementById("armoryAmount").value = "";
+});
+
+function editArmoryItem(group, index) {
+    const newName = prompt("New name:", ARMORY[group][index].name);
+    const newAmount = prompt("New amount:", ARMORY[group][index].amount);
+
+    if (newName && !isNaN(parseInt(newAmount))) {
+        ARMORY[group][index].name = newName;
+        ARMORY[group][index].amount = parseInt(newAmount);
+        saveArmory();
+        loadArmory();
+    }
+}
+
+function removeArmoryItem(group, index) {
+    if (confirm("Remove this item?")) {
+        ARMORY[group].splice(index, 1);
+        saveArmory();
+        loadArmory();
     }
 }
 
@@ -174,7 +300,6 @@ function loadPriceList() {
    DASHBOARD DATA
 ============================================================ */
 
-// LOAD DASHBOARD
 async function loadDashboard() {
     const res = await fetch(`${API_BASE}/getData`);
     const data = await res.json();
@@ -186,7 +311,6 @@ async function loadDashboard() {
     updateTopStats(data.funds, data.members, data.transactions);
 }
 
-// TOP STATS
 function updateTopStats(funds, members, transactions) {
     const totalMoney = (funds.clean || 0) + (funds.dirty || 0);
 
@@ -195,13 +319,11 @@ function updateTopStats(funds, members, transactions) {
     document.getElementById("activeMembers").textContent = format(members.length);
 }
 
-// FUNDS UI
 function updateFundsUI(funds) {
     document.getElementById("cleanBalance").innerText = format(funds.clean);
     document.getElementById("dirtyBalance").innerText = format(funds.dirty);
 }
 
-// MEMBERS UI
 function updateMembersUI(members) {
     currentMembers = members || [];
 
@@ -221,7 +343,6 @@ function updateMembersUI(members) {
     });
 }
 
-// TRANSACTIONS PAGE UI
 function updateTransactionsUI(transactions) {
     const container = document.getElementById("transactionsList2");
     container.innerHTML = "";
@@ -242,7 +363,6 @@ function updateTransactionsUI(transactions) {
     });
 }
 
-// DEALS PAGE LOG RENDERER
 function updateDealsTransactionsUI(transactions) {
     const container = document.getElementById("transactionsList");
     if (!container) return;
@@ -265,7 +385,6 @@ function updateDealsTransactionsUI(transactions) {
     });
 }
 
-// ADD TRANSACTION
 async function addTransaction() {
     const description = document.getElementById("txDescription").value;
     const amount = parseFloat(document.getElementById("txAmount").value);
@@ -285,7 +404,6 @@ async function addTransaction() {
     loadDashboard();
 }
 
-// UPDATE FUNDS
 async function updateFunds() {
     const clean = parseFloat(document.getElementById("cleanInput").value) || 0;
     const dirty = parseFloat(document.getElementById("dirtyInput").value) || 0;
@@ -299,7 +417,6 @@ async function updateFunds() {
     loadDashboard();
 }
 
-// ADD MEMBER
 async function updateMembers() {
     const name = document.getElementById("memberName").value;
     const rank = document.getElementById("memberRank").value;
@@ -318,7 +435,6 @@ async function updateMembers() {
     loadDashboard();
 }
 
-// REMOVE MEMBER
 async function removeMember(id) {
     await fetch(`${API_BASE}/updateMembers`, {
         method: "POST",
@@ -381,7 +497,6 @@ function toggleTask(task) {
     localStorage.setItem("dailyChecklist", JSON.stringify(saved));
 }
 
-// DAILY RESET COUNTDOWN
 function updateCountdown() {
     const now = new Date();
     const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
@@ -405,66 +520,6 @@ function updateCountdown() {
     setTimeout(updateCountdown, 1000);
 }
 
-// DAILY RESET
 function scheduleDailyReset() {
     const now = new Date();
-    const melbourneNow = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
-
-    const tomorrow = new Date(melbourneNow);
-    tomorrow.setHours(24, 0, 0, 0);
-
-    const msUntilReset = tomorrow - melbourneNow;
-
-    setTimeout(() => {
-        localStorage.removeItem("dailyChecklist");
-        loadChecklist();
-        scheduleDailyReset();
-    }, msUntilReset);
-}
-
-scheduleDailyReset();
-
-/* ============================================================
-   EDIT MEMBER MODAL
-============================================================ */
-
-function openEditModal(id, name, rank) {
-    editingMemberId = id;
-
-    document.getElementById("editName").value = name;
-    document.getElementById("editRank").value = rank;
-
-    document.getElementById("editModal").style.display = "block";
-}
-
-document.getElementById("cancelEditBtn").addEventListener("click", () => {
-    document.getElementById("editModal").style.display = "none";
-});
-
-document.getElementById("saveEditBtn").addEventListener("click", async () => {
-    const name = document.getElementById("editName").value;
-    const rank = document.getElementById("editRank").value;
-
-    await fetch(`${API_BASE}/updateMembers`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ editId: editingMemberId, name, rank })
-    });
-
-    document.getElementById("editModal").style.display = "none";
-    loadDashboard();
-});
-
-/* ============================================================
-   EVENT LISTENERS
-============================================================ */
-
-document.getElementById("addTxBtn").addEventListener("click", addTransaction);
-document.getElementById("updateFundsBtn").addEventListener("click", updateFunds);
-document.getElementById("updateMembersBtn").addEventListener("click", updateMembers);
-
-/* ============================================================
-   INIT
-============================================================ */
-
-loadDashboard();
+    const melbourneNow = new Date

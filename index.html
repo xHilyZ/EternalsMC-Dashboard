@@ -21,6 +21,7 @@
       <li class="restricted">Checklist</li>
       <li class="restricted">Quota</li>
       <li class="restricted">Price List</li>
+      <li class="restricted">Armory</li> <!-- ⭐ NEW -->
       <li class="restricted">Members</li>
       <li class="restricted">Transactions</li>
     </ul>
@@ -60,7 +61,7 @@
           <span class="action-label">Checklist</span>
         </div>
 
-        <!-- Quota Tile (sets free-text quota) -->
+        <!-- Quota Tile -->
         <div class="action-tile" onclick="openQuotaModal()">
           <span class="action-icon">📦</span>
           <span class="action-label">Quota</span>
@@ -139,6 +140,29 @@
       <div id="priceListContainer"></div>
     </div>
 
+    <!-- ⭐ ARMORY PAGE -->
+    <div id="page-armory" class="page restricted">
+      <h2>Armory</h2>
+
+      <div class="armory-controls">
+        <select id="armoryGroup">
+          <option>Armour</option>
+          <option>Bandages</option>
+          <option>Guns (Built)</option>
+          <option>Ammo</option>
+          <option>Ammo Cases</option>
+          <option>Attachments</option>
+          <option>Blueprints</option>
+        </select>
+
+        <input id="armoryName" type="text" placeholder="Item Name">
+        <input id="armoryAmount" type="number" placeholder="Amount">
+        <button id="addArmoryBtn">Add Item</button>
+      </div>
+
+      <div id="armoryList"></div>
+    </div>
+
   </main>
 
   <!-- EDIT MEMBER MODAL -->
@@ -157,7 +181,7 @@
     </div>
   </div>
 
-  <!-- QUOTA EDIT MODAL (FREE TEXT) -->
+  <!-- QUOTA EDIT MODAL -->
   <div id="quotaModal" class="modal" style="display:none;">
     <div class="modal-content">
       <h3>Set Weekly Quota</h3>
@@ -179,6 +203,7 @@
       "Checklist": "page-checklist",
       "Quota": "page-quota",
       "Price List": "page-pricelist",
+      "Armory": "page-armory",
       "Members": "page-members",
       "Transactions": "page-transactions"
     };
@@ -202,6 +227,10 @@
 
         if (item.innerText === "Price List") {
           loadPriceList();
+        }
+
+        if (item.innerText === "Armory") {
+          loadArmory();
         }
       });
     });
