@@ -31,7 +31,7 @@ function openPage(page) {
 ============================================================ */
 
 async function loadDashboard() {
-    const res = await fetch(`${API_BASE}/getData`);
+    const res = await fetch(`${API_BASE}/getData2`);
     const data = await res.json();
 
     updateFundsUI(data.funds);
