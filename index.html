@@ -51,7 +51,7 @@
         </div>
       </section>
 
-      <!-- CHECKLIST TILE (restricted) -->
+      <!-- CHECKLIST TILE -->
       <div class="quick-actions restricted">
         <div class="action-tile" onclick="openChecklist()">
           <span class="action-icon">📋</span>
@@ -117,7 +117,7 @@
       <div id="checklistContainer"></div>
     </div>
 
-    <!-- ⭐ PRICE LIST PAGE (NEW) -->
+    <!-- ⭐ PRICE LIST PAGE -->
     <div id="page-pricelist" class="page restricted">
       <h2>Price List</h2>
       <div id="priceListContainer"></div>
@@ -158,8 +158,20 @@
         const pageId = pages[item.innerText];
         if (!pageId) return;
 
+        // Switch pages
         document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
         document.getElementById(pageId).classList.add("active");
+
+        // ⭐ Load Price List
+        if (item.innerText === "Price List") {
+          loadPriceList();
+        }
+
+        // ⭐ Load Checklist
+        if (item.innerText === "Checklist") {
+          loadChecklist();
+          updateCountdown();
+        }
       });
     });
   </script>
