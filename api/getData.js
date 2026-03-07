@@ -1,14 +1,12 @@
 // force vercel rebuild
-console.log(">>> getData.js LOADED <<<");
-import pkg from '@supabase/supabase-js';
-const { createClient } = pkg;
+const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
     // Load funds
     const { data: funds, error: fundsError } = await supabase
@@ -45,4 +43,4 @@ export default async function handler(req, res) {
     console.error("getData error:", err);
     res.status(500).json({ error: "Failed to load data" });
   }
-}
+};
