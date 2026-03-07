@@ -15,32 +15,21 @@ module.exports = async function handler(req, res) {
 
     // REMOVE MEMBER
     if (removeId) {
-      const { error: deleteError } = await supabase
-        .from("members")
-        .delete()
-        .eq("id", removeId);
-
-      if (deleteError) throw deleteError;
+      await supabase.from("members").delete().eq("id", removeId);
     }
 
-    // ADD MEMBER (NO ACTION REQUIRED)
+    // ADD MEMBER
     if (name && role && !removeId) {
-      const { error: insertError } = await supabase
-        .from("members")
-        .insert([
-          { name, role, created_at: new Date().toISOString() }
-        ]);
-
-      if (insertError) throw insertError;
+      await supabase.from("members").insert([
+        { name, role, created_at: new Date().toISOString() }
+      ]);
     }
 
     // RETURN UPDATED LIST
-    const { data: updated, error: loadError } = await supabase
+    const { data: updated } = await supabase
       .from("members")
       .select("*")
       .order("created_at", { ascending: true });
-
-    if (loadError) throw loadError;
 
     res.status(200).json({ members: updated });
 

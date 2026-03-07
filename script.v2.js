@@ -103,17 +103,17 @@ async function addTransaction() {
 }
 
 // -------------------------------
-// UPDATE FUNDS (ADD & REMOVE VIA DELTA)
+// UPDATE FUNDS (ADD & REMOVE)
 // -------------------------------
 async function updateFunds() {
-    const cleanDelta = parseFloat(document.getElementById("cleanInput").value) || 0;
-    const dirtyDelta = parseFloat(document.getElementById("dirtyInput").value) || 0;
+    const clean = parseFloat(document.getElementById("cleanInput").value) || 0;
+    const dirty = parseFloat(document.getElementById("dirtyInput").value) || 0;
 
     try {
         await fetch(`${API_BASE}/updateFunds`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ clean: cleanDelta, dirty: dirtyDelta })
+            body: JSON.stringify({ clean, dirty })
         });
 
         loadDashboard();
