@@ -62,7 +62,7 @@ async function addClean() {
     const amount = Number(document.getElementById("fundAmount").value);
     if (!amount) return;
 
-    await fetch(`${API_BASE}/updateFunds`, {
+    await fetch(`${API_BASE}/updateFunds2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ addClean: amount })
@@ -75,7 +75,7 @@ async function removeClean() {
     const amount = Number(document.getElementById("fundAmount").value);
     if (!amount) return;
 
-    await fetch(`${API_BASE}/updateFunds`, {
+    await fetch(`${API_BASE}/updateFunds2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ removeClean: amount })
@@ -88,7 +88,7 @@ async function addDirty() {
     const amount = Number(document.getElementById("fundAmount").value);
     if (!amount) return;
 
-    await fetch(`${API_BASE}/updateFunds`, {
+    await fetch(`${API_BASE}/updateFunds2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ addDirty: amount })
@@ -101,7 +101,7 @@ async function removeDirty() {
     const amount = Number(document.getElementById("fundAmount").value);
     if (!amount) return;
 
-    await fetch(`${API_BASE}/updateFunds`, {
+    await fetch(`${API_BASE}/updateFunds2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ removeDirty: amount })
@@ -146,7 +146,7 @@ async function updateMembers() {
 
     if (!name || !rank) return alert("Enter valid member name and rank.");
 
-    await fetch(`${API_BASE}/updateMembers`, {
+    await fetch(`${API_BASE}/updateMembers2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, rank })
@@ -159,7 +159,7 @@ async function updateMembers() {
 }
 
 async function removeMember(id) {
-    await fetch(`${API_BASE}/updateMembers`, {
+    await fetch(`${API_BASE}/updateMembers2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ removeId: id })
@@ -189,7 +189,7 @@ document.getElementById("saveEditBtn")?.addEventListener("click", async () => {
     const name = document.getElementById("editName").value;
     const rank = document.getElementById("editRank").value;
 
-    await fetch(`${API_BASE}/updateMembers`, {
+    await fetch(`${API_BASE}/updateMembers2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ editId: editingMemberId, name, rank })
@@ -203,14 +203,14 @@ document.getElementById("saveEditBtn")?.addEventListener("click", async () => {
    DEALS / TRANSACTIONS
 ============================================================ */
 
-async function addDeal() {
+async function addTransaction() {
     const description = document.getElementById("dealDesc").value;
     const amount = parseFloat(document.getElementById("dealAmount").value);
     const type = document.getElementById("dealType").value;
 
     if (!description || isNaN(amount)) return alert("Enter valid description and amount.");
 
-    await fetch(`${API_BASE}/addTransaction`, {
+    await fetch(`${API_BASE}/addTransaction2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ description, amount, type })
