@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
       if (deleteError) throw deleteError;
     }
 
-    // ADD MEMBER (original behavior)
+    // ADD MEMBER (NO ACTION REQUIRED)
     if (name && role && !removeId) {
       const { error: insertError } = await supabase
         .from("members")
