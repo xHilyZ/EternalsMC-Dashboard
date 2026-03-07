@@ -184,7 +184,6 @@
         <input id="memberName" placeholder="Member Name">
         <input id="memberRank" placeholder="Rank">
 
-        <!-- FIXED: addMember() → updateMembers() -->
         <button onclick="updateMembers()">Add Member</button>
 
         <div id="membersList"></div>
@@ -202,6 +201,22 @@
 
 </div>
 
+<!-- ⭐ ADDED: EDIT MEMBER MODAL -->
+<div id="editModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h3>Edit Member</h3>
+
+        <input id="editName" placeholder="Name">
+        <input id="editRank" placeholder="Rank">
+
+        <div style="display:flex; justify-content:space-between;">
+            <button id="saveEditBtn">Save</button>
+            <button id="cancelEditBtn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Existing Quota Modal -->
 <div id="quotaModal" class="modal" style="display:none;">
     <div class="modal-content">
         <h3>Set Weekly Quota</h3>
