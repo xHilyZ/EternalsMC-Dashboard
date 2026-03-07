@@ -1,168 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Eternals MC Dashboard</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
+const { createClient } = require('@supabase/supabase-js');
 
-<body>
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <h2>ETERNALS MC</h2>
-    <ul>
-      <li>Dashboard</li>
-      <li class="restricted">Deals</li>
-      <li class="restricted">Bank</li>
-      <li class="restricted">Checklist</li>
-      <li class="restricted">Price List</li>
-      <li class="restricted">Members</li>
-      <li class="restricted">Transactions</li>
-    </ul>
+module.exports = async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-    <!-- USER BOX -->
-    <div id="user-box"></div>
-  </aside>
+  try {
+    const { clean = 0, dirty = 0 } = req.body;
 
-  <!-- MAIN CONTENT -->
-  <main>
+    const { data: funds, error: loadError } = await supabase
+      .from("funds")
+      .select("*")
+      .eq("id", 1)
+      .single();
 
-    <!-- DASHBOARD -->
-    <div id="page-dashboard" class="page active">
-      <h1>Welcome — Eternals MC</h1>
+    if (loadError) throw loadError;
 
-      <section class="stats">
-        <div class="stat-box">
-          <h3>Total Money</h3>
-          <p id="totalMoney">$0</p>
-        </div>
+    const newClean = funds.clean + Number(clean);
+    const newDirty = funds.dirty + Number(dirty);
 
-        <div class="stat-box">
-          <h3>Total Deals</h3>
-          <p id="totalDeals">0</p>
-        </div>
+    const { error: updateError } = await supabase
+      .from("funds")
+      .update({ clean: newClean, dirty: newDirty })
+      .eq("id", 1);
 
-        <div class="stat-box">
-          <h3>Active Members</h3>
-          <p id="activeMembers">0</p>
-        </div>
-      </section>
-    </div>
+    if (updateError) throw updateError;
 
-    <!-- DEALS -->
-    <div id="page-deals" class="page restricted">
-      <h2>Deals</h2>
-
-      <input id="txDescription" type="text" placeholder="Description">
-      <input id="txAmount" type="number" placeholder="Amount">
-
-      <select id="txType">
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-      </select>
-
-      <button id="addTxBtn">Add Transaction</button>
-
-      <div id="transactionsList"></div>
-    </div>
-
-    <!-- BANK -->
-    <div id="page-bank" class="page restricted">
-      <h2>Club Funds</h2>
-
-      <p>Clean: $<span id="cleanBalance">0</span></p>
-      <input id="cleanInput" type="number" placeholder="Add/Remove Clean (+/-)">
-
-      <p>Dirty: $<span id="dirtyBalance">0</span></p>
-      <input id="dirtyInput" type="number" placeholder="Add/Remove Dirty (+/-)">
-
-      <button id="updateFundsBtn">Update Funds</button>
-    </div>
-
-    <!-- MEMBERS -->
-    <div id="page-members" class="page restricted">
-      <h2>Members</h2>
-
-      <input id="memberName" type="text" placeholder="Member Name">
-      <input id="memberRole" type="text" placeholder="Role">
-
-      <button id="updateMembersBtn">Add Member</button>
-
-      <div id="membersList"></div>
-    </div>
-
-    <!-- TRANSACTIONS -->
-    <div id="page-transactions" class="page restricted">
-      <h2>Transactions</h2>
-      <div id="transactionsList"></div>
-    </div>
-
-  </main>
-
-  <!-- SIDEBAR PAGE SWITCHING -->
-  <script>
-    const pages = {
-      "Dashboard": "page-dashboard",
-      "Deals": "page-deals",
-      "Bank": "page-bank",
-      "Checklist": null,
-      "Price List": null,
-      "Members": "page-members",
-      "Transactions": "page-transactions"
-    };
-
-    document.querySelectorAll(".sidebar ul li").forEach(item => {
-      item.addEventListener("click", () => {
-        const pageId = pages[item.innerText];
-        if (!pageId) return;
-
-        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-        document.getElementById(pageId).classList.add("active");
-      });
+    res.status(200).json({
+      clean: newClean,
+      dirty: newDirty
     });
-  </script>
 
-  <!-- MAIN SCRIPT -->
-  <script src="/script.v2.js"></script>
-
-  <!-- SUPABASE AUTH -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script>
-    const sb = supabase.createClient(
-      "https://glgeavemxohcagjrsqnu.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsZ2VhdmVteG9oY2FnanJzcW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2OTk3MDksImV4cCI6MjA4ODI3NTcwOX0.AJERdGpD08N8gRsM0x-cNXD151ZtRlj08GUwuUdg3tk"
-    );
-
-    async function checkAuth() {
-      const { data } = await sb.auth.getSession();
-      const userBox = document.getElementById("user-box");
-
-      if (!data.session) {
-        document.body.classList.add("guest");
-        userBox.innerHTML = `<button class="login-btn" onclick="login()">Login with Discord</button>`;
-      } else {
-        document.body.classList.remove("guest");
-        userBox.innerHTML = `MEMBER<br><button onclick="logout()">Logout</button>`;
-      }
-    }
-
-    async function login() {
-      await sb.auth.signInWithOAuth({
-        provider: "discord",
-        options: {
-          redirectTo: "https://eternals-mc-dashboard.vercel.app/index.html"
-        }
-      });
-    }
-
-    async function logout() {
-      await sb.auth.signOut();
-      window.location.reload();
-    }
-
-    checkAuth();
-  </script>
-
-</body>
-</html>
+  } catch (err) {
+    console.error("updateFunds error:", err);
+    res.status(500).json({ error: "Failed to update funds" });
+  }
+};

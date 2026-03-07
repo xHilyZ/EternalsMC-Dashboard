@@ -103,17 +103,17 @@ async function addTransaction() {
 }
 
 // -------------------------------
-// UPDATE FUNDS (ADD & REMOVE)
+// UPDATE FUNDS (ADD & REMOVE VIA DELTA)
 // -------------------------------
 async function updateFunds() {
-    const clean = parseFloat(document.getElementById("cleanInput").value) || 0;
-    const dirty = parseFloat(document.getElementById("dirtyInput").value) || 0;
+    const cleanDelta = parseFloat(document.getElementById("cleanInput").value) || 0;
+    const dirtyDelta = parseFloat(document.getElementById("dirtyInput").value) || 0;
 
     try {
         await fetch(`${API_BASE}/updateFunds`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cleanDelta: clean, dirtyDelta: dirty })
+            body: JSON.stringify({ clean: cleanDelta, dirty: dirtyDelta })
         });
 
         loadDashboard();
@@ -138,8 +138,11 @@ async function updateMembers() {
         await fetch(`${API_BASE}/updateMembers`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "add", name, role })
+            body: JSON.stringify({ name, role })
         });
+
+        document.getElementById("memberName").value = "";
+        document.getElementById("memberRole").value = "";
 
         loadDashboard();
     } catch (err) {
@@ -155,7 +158,7 @@ async function removeMember(id) {
         await fetch(`${API_BASE}/updateMembers`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "remove", id })
+            body: JSON.stringify({ removeId: id })
         });
 
         loadDashboard();
