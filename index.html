@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <title>Eternals MC Dashboard</title>
     <link rel="stylesheet" href="style.css">
+
+    <!-- Supabase for logout + session handling -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabase = supabase.createClient(
+            "https://glgeavemxohcagjrsqnu.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsZ2VhdmVteG9oY2FnanJzcW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2OTk3MDksImV4cCI6MjA4ODI3NTcwOX0.AJERdGpD08N8gRsM0x-cNXD151ZtRlj08GUwuUdg3tk"
+        );
+    </script>
 </head>
 
 <body>
@@ -201,7 +210,7 @@
 
 </div>
 
-<!-- ⭐ ADDED: EDIT MEMBER MODAL -->
+<!-- ⭐ EDIT MEMBER MODAL -->
 <div id="editModal" class="modal" style="display:none;">
     <div class="modal-content">
         <h3>Edit Member</h3>
@@ -216,7 +225,7 @@
     </div>
 </div>
 
-<!-- Existing Quota Modal -->
+<!-- QUOTA MODAL -->
 <div id="quotaModal" class="modal" style="display:none;">
     <div class="modal-content">
         <h3>Set Weekly Quota</h3>
