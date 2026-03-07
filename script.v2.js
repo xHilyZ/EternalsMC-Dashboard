@@ -380,6 +380,40 @@ function saveQuota() {
     }
 }
 
+/* ============================================================
+   ARMORY DATA (MUST COME BEFORE ANY ARMORY FUNCTIONS)
+============================================================ */
+
+let ARMORY = JSON.parse(localStorage.getItem("armoryData")) || {
+    "Armour": [
+        { name: "Heavy Armour", amount: 57 },
+        { name: "Body Armour", amount: 76 }
+    ],
+    "Bandages": [
+        { name: "IFAK", amount: 4 },
+        { name: "Bandage", amount: 12 }
+    ],
+    "Guns (Built)": [
+        { name: "Vector", amount: 4 },
+        { name: "AK-47", amount: 2 }
+    ],
+    "Ammo": [
+        { name: "9mm", amount: 200 },
+        { name: "5.56", amount: 150 }
+    ],
+    "Ammo Cases": [
+        { name: "Small Ammo Case", amount: 3 },
+        { name: "Large Ammo Case", amount: 1 }
+    ],
+    "Attachments": [
+        { name: "Suppressor", amount: 5 },
+        { name: "Red Dot", amount: 7 }
+    ],
+    "Blueprints": [
+        { name: "Vector Blueprint", amount: 1 },
+        { name: "AK-47 Blueprint", amount: 1 }
+    ]
+};
 
 /* ============================================================
    ARMORY SYSTEM (GROUPED, EDITABLE, SEARCHABLE)
