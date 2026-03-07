@@ -1,3 +1,4 @@
+// force vercel rebuild
 import pkg from '@supabase/supabase-js';
 const { createClient } = pkg;
 
