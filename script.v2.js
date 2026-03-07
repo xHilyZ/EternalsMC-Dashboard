@@ -391,6 +391,11 @@ function saveArmory() {
 
 function loadArmory() {
     const container = document.getElementById("armoryList");
+
+    // ⭐ Reset search every time Armory page opens
+    const search = document.getElementById("armorySearch");
+    if (search) search.value = "";
+
     container.innerHTML = "";
 
     Object.keys(ARMORY).forEach(group => {
