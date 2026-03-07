@@ -12,14 +12,34 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { clean, dirty } = req.body;
+    const body = req.body;
 
-    const { error } = await supabase
+    // Load current funds
+    const { data: funds, error: loadError } = await supabase
+      .from("funds")
+      .select("*")
+      .eq("id", 1)
+      .single();
+
+    if (loadError) throw loadError;
+
+    let clean = funds.clean;
+    let dirty = funds.dirty;
+
+    // Apply changes based on frontend keys
+    if (body.addClean) clean += body.addClean;
+    if (body.removeClean) clean -= body.removeClean;
+
+    if (body.addDirty) dirty += body.addDirty;
+    if (body.removeDirty) dirty -= body.removeDirty;
+
+    // Update DB
+    const { error: updateError } = await supabase
       .from("funds")
       .update({ clean, dirty })
       .eq("id", 1);
 
-    if (error) throw error;
+    if (updateError) throw updateError;
 
     res.status(200).json({ clean, dirty });
 
