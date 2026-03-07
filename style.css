@@ -356,7 +356,7 @@ main h1 {
 }
 
 /* ============================
-   MODAL
+   MODAL (UPDATED + CENTERED)
 ============================ */
 .modal {
     position: fixed;
@@ -368,6 +368,7 @@ main h1 {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 9999;
 }
 
 .modal-content {
@@ -376,6 +377,9 @@ main h1 {
     border-radius: 8px;
     width: 320px;
     border-top: 4px solid #C2B59B;
+
+    /* ⭐ FIX: CENTER THE MODAL */
+    margin: 0 auto;
 }
 
 .modal-content h3 {
@@ -383,7 +387,8 @@ main h1 {
     color: #C2B59B;
 }
 
-.modal-content input {
+.modal-content input,
+.modal-content textarea {
     width: 100%;
 }
 
