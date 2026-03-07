@@ -21,7 +21,7 @@
       <li class="restricted">Checklist</li>
       <li class="restricted">Quota</li>
       <li class="restricted">Price List</li>
-      <li class="restricted">Armory</li> <!-- ⭐ NEW -->
+      <li class="restricted">Armory</li>
       <li class="restricted">Members</li>
       <li class="restricted">Transactions</li>
     </ul>
@@ -142,6 +142,15 @@
     <div id="page-armory" class="page restricted">
       <h2>Armory</h2>
 
+      <!-- ⭐ SEARCH BAR -->
+      <input 
+        id="armorySearch" 
+        type="text" 
+        placeholder="Search items..." 
+        oninput="filterArmory()" 
+        style="width:100%; max-width:350px; padding:10px; margin-bottom:20px; border-radius:6px; border:1px solid #555; background:#1c1c1c; color:#fff;"
+      >
+
       <div class="armory-controls">
         <select id="armoryGroup">
           <option>Armour</option>
@@ -228,6 +237,7 @@
         }
 
         if (item.innerText === "Armory") {
+          document.getElementById("armorySearch").value = "";
           loadArmory();
         }
       });
