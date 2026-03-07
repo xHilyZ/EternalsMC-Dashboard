@@ -319,6 +319,15 @@ function scheduleDailyReset() {
 
 scheduleDailyReset();
 
+/* ============================================================
+   WEEKLY QUOTA DATA (MUST COME BEFORE THE SYSTEM)
+============================================================ */
+
+let WEEKLY_QUOTA_TEXT = localStorage.getItem("weeklyQuotaText") 
+    || "Set this week's quota from the dashboard tile.";
+
+let currentMembers = []; // updated when members load
+
 
 /* ============================================================
    WEEKLY QUOTA SYSTEM
