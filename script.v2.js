@@ -9,6 +9,43 @@ function format(num) {
 // MELBOURNE TIME OFFSET (AEDT = UTC+11)
 const MELBOURNE_OFFSET = 11;
 
+// ⭐ PRICE LIST DATA
+const PRICE_LIST = [
+    {
+        group: "14K Triads",
+        items: [
+            { what: "Heavy SMG BP", price: 1000000, relationship: "Own Vendor" },
+            { what: "Pump Shotgun MK2 BP", price: 850000, relationship: "Own Vendor" }
+        ]
+    },
+    {
+        group: "B13",
+        items: [
+            { what: "SCAR BP", price: 1800000, relationship: "Own Own Vendor" }
+        ]
+    },
+    {
+        group: "ETERNALS MC",
+        items: [
+            { what: "Double barrel shotgun BP", price: 0, relationship: "Own Vendor" },
+            { what: "MPX BP", price: 0, relationship: "Own Vendor" }
+        ]
+    },
+    {
+        group: "FDK",
+        items: [
+            { what: "PPSH BP", price: 0, relationship: "Own Vendor" }
+        ]
+    },
+    {
+        group: "UMBRA",
+        items: [
+            { what: "Deagle BP", price: 400000, relationship: "Own Vendor" },
+            { what: "V-17 BP (Auto Pistol)", price: 650000, relationship: "Own Vendor" }
+        ]
+    }
+];
+
 // DAILY TASKS (GROUPED)
 const DAILY_TASKS = [
     // LEGAL
@@ -32,8 +69,8 @@ async function loadDashboard() {
 
     updateFundsUI(data.funds);
     updateMembersUI(data.members);
-    updateTransactionsUI(data.transactions);      // Transactions page
-    updateDealsTransactionsUI(data.transactions); // Deals page (NEW)
+    updateTransactionsUI(data.transactions);
+    updateDealsTransactionsUI(data.transactions);
     updateTopStats(data.funds, data.members, data.transactions);
 }
 
@@ -91,7 +128,7 @@ function updateTransactionsUI(transactions) {
     });
 }
 
-// ⭐ NEW — DEALS PAGE LOG RENDERER
+// DEALS PAGE LOG RENDERER
 function updateDealsTransactionsUI(transactions) {
     const container = document.getElementById("transactionsList");
     if (!container) return;
@@ -114,6 +151,37 @@ function updateDealsTransactionsUI(transactions) {
     });
 }
 
+// ⭐ PRICE LIST RENDERER
+function loadPriceList() {
+    const container = document.getElementById("priceListContainer");
+    container.innerHTML = "";
+
+    PRICE_LIST.forEach(section => {
+        const header = document.createElement("h3");
+        header.className = "price-group";
+        header.textContent = section.group;
+        container.appendChild(header);
+
+        section.items.forEach(item => {
+            const row = document.createElement("div");
+            row.className = "price-item";
+            row.innerHTML = `
+                <span>${item.what}</span>
+                <span>$${format(item.price)}</span>
+                <span>${item.relationship}</span>
+            `;
+            container.appendChild(row);
+        });
+    });
+}
+
+// ⭐ OPEN PRICE LIST PAGE
+function openPriceList() {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById("page-pricelist").classList.add("active");
+    loadPriceList();
+}
+
 // ADD TRANSACTION
 async function addTransaction() {
     const description = document.getElementById("txDescription").value;
@@ -128,11 +196,9 @@ async function addTransaction() {
         body: JSON.stringify({ description, amount, type })
     });
 
-    // Clear inputs
     document.getElementById("txDescription").value = "";
     document.getElementById("txAmount").value = "";
 
-    // Refresh UI
     loadDashboard();
 }
 
@@ -180,7 +246,7 @@ async function removeMember(id) {
     loadDashboard();
 }
 
-// CHECKLIST LOGIC (GROUPED)
+// CHECKLIST LOGIC
 function loadChecklist() {
     const container = document.getElementById("checklistContainer");
     container.innerHTML = "";
@@ -216,13 +282,13 @@ function toggleTask(task) {
     localStorage.setItem("dailyChecklist", JSON.stringify(saved));
 }
 
-// COUNTDOWN TIMER (5 PM AEST RESET)
+// COUNTDOWN TIMER
 function updateCountdown() {
     const now = new Date();
     const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
 
     const reset = new Date(mel);
-    reset.setHours(17, 0, 0, 0); // 5:00 PM AEST
+    reset.setHours(17, 0, 0, 0);
 
     if (mel > reset) {
         reset.setDate(reset.getDate() + 1);

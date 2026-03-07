@@ -304,7 +304,7 @@ main h1 {
 }
 
 /* ============================
-   CHECKLIST PAGE (OLD BASE)
+   CHECKLIST PAGE
 ============================ */
 .check-item {
     background: #111;
@@ -321,9 +321,7 @@ main h1 {
     font-size: 16px;
 }
 
-/* ============================
-   CHECKLIST — GROUP HEADERS (NEW)
-============================ */
+/* GROUP HEADERS */
 .checklist-group {
     margin-top: 25px;
     margin-bottom: 10px;
@@ -335,9 +333,7 @@ main h1 {
     letter-spacing: 0.5px;
 }
 
-/* ============================
-   CHECKLIST — ITEMS (NEW)
-============================ */
+/* CHECKLIST ITEMS */
 .check-item {
     display: flex;
     align-items: center;
@@ -365,9 +361,7 @@ main h1 {
     color: #ddd;
 }
 
-/* ============================
-   CHECKLIST — COUNTDOWN HEADER
-============================ */
+/* COUNTDOWN HEADER */
 #checklistHeader {
     font-size: 18px;
     color: #C2B59B;
@@ -410,4 +404,44 @@ main h1 {
 .modal-content button {
     width: 48%;
     margin-top: 15px;
+}
+
+/* ============================
+   ⭐ PRICE LIST PAGE (NEW)
+============================ */
+#page-pricelist h2 {
+    margin-bottom: 20px;
+    color: #C2B59B;
+}
+
+/* Group Header */
+.price-group {
+    margin-top: 25px;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #444;
+    padding-bottom: 6px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Item Rows */
+.price-item {
+    display: grid;
+    grid-template-columns: 1fr 120px 150px;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+    color: #ddd;
+    font-size: 15px;
+}
+
+.price-item span {
+    display: flex;
+    align-items: center;
+}
+
+/* Hover effect */
+.price-item:hover {
+    background: rgba(255, 255, 255, 0.05);
 }
