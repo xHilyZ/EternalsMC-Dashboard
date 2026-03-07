@@ -11,7 +11,10 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { clean = 0, dirty = 0 } = req.body;
+    // FORCE JSON PARSE
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
+    const { clean = 0, dirty = 0 } = body;
 
     const { data: funds } = await supabase
       .from("funds")

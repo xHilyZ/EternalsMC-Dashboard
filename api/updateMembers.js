@@ -11,7 +11,10 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { name, role, removeId } = req.body;
+    // FORCE JSON PARSE
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
+    const { name, role, removeId } = body;
 
     // REMOVE MEMBER
     if (removeId) {
