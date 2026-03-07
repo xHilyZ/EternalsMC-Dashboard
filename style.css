@@ -10,6 +10,11 @@ body {
     display: flex;
 }
 
+/* Hide restricted items for guests */
+body.guest .restricted {
+    display: none !important;
+}
+
 /* ============================
    SIDEBAR
 ============================ */
@@ -31,7 +36,7 @@ body {
     letter-spacing: 2px;
 }
 
-/* ⭐ PATCH LOGO ⭐ */
+/* PATCH LOGO */
 .sidebar-patch {
     width: 140px;
     height: auto;
@@ -115,7 +120,7 @@ main h1 {
 }
 
 /* ============================
-   DASHBOARD (UNCHANGED)
+   DASHBOARD
 ============================ */
 .stats {
     display: flex;
@@ -146,10 +151,44 @@ main h1 {
 }
 
 /* ============================
+   CHECKLIST TILE
+============================ */
+.quick-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.action-tile {
+    background: #111;
+    border: 2px solid #3A3A3A;
+    padding: 20px 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    width: 180px;
+    transition: 0.2s;
+}
+
+.action-tile:hover {
+    background: #C2B59B;
+    color: #000;
+}
+
+.action-icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.action-label {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* ============================
    CLEAN UI FOR PAGES
 ============================ */
-
-/* PAGE HEADERS */
 .page h2 {
     font-size: 26px;
     margin-bottom: 20px;
@@ -159,7 +198,6 @@ main h1 {
     color: #C2B59B;
 }
 
-/* INPUTS */
 .page input,
 .page select {
     width: 100%;
@@ -179,7 +217,6 @@ main h1 {
     border-color: #C2B59B;
 }
 
-/* BUTTONS */
 .page button {
     padding: 10px 18px;
     background: #C2B59B;
@@ -264,6 +301,24 @@ main h1 {
 
 #page-bank input {
     max-width: 250px;
+}
+
+/* ============================
+   CHECKLIST PAGE
+============================ */
+.check-item {
+    background: #111;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 4px solid #C2B59B;
+}
+
+.check-item label {
+    font-size: 16px;
 }
 
 /* ============================

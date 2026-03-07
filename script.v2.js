@@ -6,6 +6,18 @@ function format(num) {
     return Number(num).toLocaleString();
 }
 
+// MELBOURNE TIME OFFSET (AEDT = UTC+11)
+const MELBOURNE_OFFSET = 11;
+
+// DAILY TASKS
+const DAILY_TASKS = [
+    "Collect club dues",
+    "Check weapon stock",
+    "Refill drug lab supplies",
+    "Update member activity",
+    "Review deals for the day"
+];
+
 // LOAD DASHBOARD
 async function loadDashboard() {
     const res = await fetch(`${API_BASE}/getData`);
@@ -131,6 +143,56 @@ async function removeMember(id) {
 
     loadDashboard();
 }
+
+// CHECKLIST LOGIC
+function loadChecklist() {
+    const container = document.getElementById("checklistContainer");
+    container.innerHTML = "";
+
+    const saved = JSON.parse(localStorage.getItem("dailyChecklist")) || {};
+
+    DAILY_TASKS.forEach(task => {
+        const checked = saved[task] || false;
+
+        const div = document.createElement("div");
+        div.className = "check-item";
+        div.innerHTML = `
+            <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleTask('${task}')">
+            <label>${task}</label>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function toggleTask(task) {
+    const saved = JSON.parse(localStorage.getItem("dailyChecklist")) || {};
+    saved[task] = !saved[task];
+    localStorage.setItem("dailyChecklist", JSON.stringify(saved));
+}
+
+function scheduleDailyReset() {
+    const now = new Date();
+    const melbourneNow = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
+
+    const tomorrow = new Date(melbourneNow);
+    tomorrow.setHours(24, 0, 0, 0);
+
+    const msUntilReset = tomorrow - melbourneNow;
+
+    setTimeout(() => {
+        localStorage.removeItem("dailyChecklist");
+        loadChecklist();
+        scheduleDailyReset();
+    }, msUntilReset);
+}
+
+function openChecklist() {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById("page-checklist").classList.add("active");
+    loadChecklist();
+}
+
+scheduleDailyReset();
 
 // EDIT MODAL
 function openEditModal(id, name, rank) {

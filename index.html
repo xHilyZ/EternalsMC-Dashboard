@@ -50,6 +50,14 @@
           <p id="activeMembers">0</p>
         </div>
       </section>
+
+      <!-- CHECKLIST TILE (restricted) -->
+      <div class="quick-actions restricted">
+        <div class="action-tile" onclick="openChecklist()">
+          <span class="action-icon">📋</span>
+          <span class="action-label">Checklist</span>
+        </div>
+      </div>
     </div>
 
     <!-- DEALS -->
@@ -100,6 +108,12 @@
       <div id="transactionsList2"></div>
     </div>
 
+    <!-- CHECKLIST PAGE -->
+    <div id="page-checklist" class="page restricted">
+      <h2>Daily Checklist</h2>
+      <div id="checklistContainer"></div>
+    </div>
+
   </main>
 
   <!-- EDIT MEMBER MODAL -->
@@ -124,7 +138,7 @@
       "Dashboard": "page-dashboard",
       "Deals": "page-deals",
       "Bank": "page-bank",
-      "Checklist": null,
+      "Checklist": "page-checklist",
       "Price List": null,
       "Members": "page-members",
       "Transactions": "page-transactions"
@@ -150,7 +164,7 @@
   <script>
     const sb = supabase.createClient(
       "https://glgeavemxohcagjrsqnu.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsZ2VhdmVteG9oY2FnanJzcW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2OTk3MDksImV4cCI6MjA4ODI3NTcwOX0.AJERdGpD08N8gRsM0x-cNXD151ZtRlj08GUwuUdg3tk"
+      "YOUR_PUBLIC_ANON_KEY"
     );
 
     async function checkAuth() {
