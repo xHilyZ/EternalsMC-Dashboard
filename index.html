@@ -54,19 +54,17 @@
 
       <!-- QUICK ACTIONS -->
       <div class="quick-actions restricted">
-
         <!-- Checklist Tile -->
         <div class="action-tile" onclick="openChecklist()">
           <span class="action-icon">📋</span>
           <span class="action-label">Checklist</span>
         </div>
 
-        <!-- ⭐ Quota Tile -->
+        <!-- Quota Tile (sets free-text quota) -->
         <div class="action-tile" onclick="openQuotaModal()">
           <span class="action-icon">📦</span>
           <span class="action-label">Quota</span>
         </div>
-
       </div>
     </div>
 
@@ -127,7 +125,7 @@
       <div id="checklistContainer"></div>
     </div>
 
-    <!-- ⭐ QUOTA PAGE -->
+    <!-- QUOTA PAGE -->
     <div id="page-quota" class="page restricted">
       <h2>Weekly Quota</h2>
 
@@ -159,16 +157,13 @@
     </div>
   </div>
 
-  <!-- ⭐ QUOTA EDIT MODAL -->
+  <!-- QUOTA EDIT MODAL (FREE TEXT) -->
   <div id="quotaModal" class="modal" style="display:none;">
     <div class="modal-content">
       <h3>Set Weekly Quota</h3>
 
-      <label>Clean Money ($):</label>
-      <input id="quotaCleanInput" type="number">
-
-      <label>Coal Amount:</label>
-      <input id="quotaCoalInput" type="number">
+      <label>Quota Description:</label>
+      <textarea id="quotaTextInput" style="width:100%; min-height:80px;"></textarea>
 
       <button onclick="saveQuota()">Save</button>
       <button onclick="closeQuotaModal()">Cancel</button>
@@ -203,7 +198,6 @@
 
         if (item.innerText === "Quota") {
           loadQuota();
-          updateQuotaCountdown();
         }
 
         if (item.innerText === "Price List") {

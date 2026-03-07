@@ -9,21 +9,17 @@ function format(num) {
 // MELBOURNE TIME OFFSET (AEDT = UTC+11)
 const MELBOURNE_OFFSET = 11;
 
+// Keep latest members list for quota checklist
+let currentMembers = [];
+
 /* ============================================================
-   ⭐ WEEKLY QUOTA SYSTEM
+   WEEKLY QUOTA SYSTEM (FREE TEXT + MEMBER CHECKLIST)
 ============================================================ */
 
-// Default quota (can be changed by admin)
-let WEEKLY_QUOTA = {
-    clean: 1000000,
-    coal: 5000
-};
-
-// Quota tasks members must complete
-const QUOTA_TASKS = [
-    { task: "Delivered Clean Money" },
-    { task: "Delivered Coal" }
-];
+// Free-text quota description (stored in localStorage)
+let WEEKLY_QUOTA_TEXT =
+    localStorage.getItem("weeklyQuotaText") ||
+    "Set this week's quota from the dashboard tile.";
 
 // Load quota page
 function loadQuota() {
@@ -32,59 +28,38 @@ function loadQuota() {
 
     header.innerHTML = `
         <div class="quota-box">
-            <p><strong>Clean:</strong> $${format(WEEKLY_QUOTA.clean)}</p>
-            <p><strong>Coal:</strong> ${format(WEEKLY_QUOTA.coal)}</p>
+            <p><strong>Current Quota:</strong></p>
+            <p>${WEEKLY_QUOTA_TEXT}</p>
+            <p style="color:#C2B59B; margin-top:8px;">Resets every Sunday</p>
         </div>
     `;
 
     const saved = JSON.parse(localStorage.getItem("weeklyQuotaChecklist")) || {};
     container.innerHTML = "";
 
-    QUOTA_TASKS.forEach(item => {
-        const checked = saved[item.task] || false;
+    // Checklist is members — tick who has completed quota
+    currentMembers.forEach(member => {
+        const key = member.id || member.name;
+        const checked = saved[key] || false;
 
         const div = document.createElement("div");
         div.className = "check-item";
         div.innerHTML = `
-            <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleQuota('${item.task}')">
-            <label>${item.task}</label>
+            <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleQuota('${key}')">
+            <label>${member.name}</label>
         `;
         container.appendChild(div);
     });
 }
 
-// Toggle quota task
-function toggleQuota(task) {
+// Toggle member quota completion
+function toggleQuota(key) {
     const saved = JSON.parse(localStorage.getItem("weeklyQuotaChecklist")) || {};
-    saved[task] = !saved[task];
+    saved[key] = !saved[key];
     localStorage.setItem("weeklyQuotaChecklist", JSON.stringify(saved));
 }
 
-// Countdown to Sunday reset
-function updateQuotaCountdown() {
-    const now = new Date();
-    const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
-
-    const nextSunday = new Date(mel);
-    nextSunday.setDate(mel.getDate() + ((7 - mel.getDay()) % 7));
-    nextSunday.setHours(0, 0, 0, 0);
-
-    const diff = nextSunday - mel;
-
-    const hours = Math.floor(diff / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    const secs = Math.floor((diff % 60000) / 1000);
-
-    document.getElementById("quotaHeader").innerHTML += `
-        <p style="color:#C2B59B; margin-top:10px;">
-            Resets in ${hours}h ${mins}m ${secs}s
-        </p>
-    `;
-
-    setTimeout(updateQuotaCountdown, 1000);
-}
-
-// Weekly reset
+// Weekly reset (Sunday, Melbourne time) — clears checklist only
 function scheduleWeeklyQuotaReset() {
     const now = new Date();
     const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
@@ -105,6 +80,8 @@ scheduleWeeklyQuotaReset();
 
 // Open quota modal
 function openQuotaModal() {
+    const input = document.getElementById("quotaTextInput");
+    if (input) input.value = WEEKLY_QUOTA_TEXT;
     document.getElementById("quotaModal").style.display = "block";
 }
 
@@ -113,20 +90,23 @@ function closeQuotaModal() {
     document.getElementById("quotaModal").style.display = "none";
 }
 
-// Save quota
+// Save quota text
 function saveQuota() {
-    const clean = parseInt(document.getElementById("quotaCleanInput").value) || 0;
-    const coal = parseInt(document.getElementById("quotaCoalInput").value) || 0;
-
-    WEEKLY_QUOTA.clean = clean;
-    WEEKLY_QUOTA.coal = coal;
+    const text = document.getElementById("quotaTextInput").value || "";
+    WEEKLY_QUOTA_TEXT = text.trim() || "Set this week's quota from the dashboard tile.";
+    localStorage.setItem("weeklyQuotaText", WEEKLY_QUOTA_TEXT);
 
     closeQuotaModal();
-    loadQuota();
+
+    // If quota page is visible, refresh it
+    const quotaPage = document.getElementById("page-quota");
+    if (quotaPage && quotaPage.classList.contains("active")) {
+        loadQuota();
+    }
 }
 
 /* ============================================================
-   ⭐ PRICE LIST SYSTEM
+   PRICE LIST SYSTEM
 ============================================================ */
 
 const PRICE_LIST = [
@@ -167,6 +147,8 @@ const PRICE_LIST = [
 
 function loadPriceList() {
     const container = document.getElementById("priceListContainer");
+    if (!container) return;
+
     container.innerHTML = "";
 
     PRICE_LIST.forEach(section => {
@@ -189,7 +171,7 @@ function loadPriceList() {
 }
 
 /* ============================================================
-   ⭐ EXISTING DASHBOARD SYSTEM
+   DASHBOARD DATA
 ============================================================ */
 
 // LOAD DASHBOARD
@@ -221,6 +203,8 @@ function updateFundsUI(funds) {
 
 // MEMBERS UI
 function updateMembersUI(members) {
+    currentMembers = members || [];
+
     const container = document.getElementById("membersList");
     container.innerHTML = "";
 
@@ -346,7 +330,7 @@ async function removeMember(id) {
 }
 
 /* ============================================================
-   ⭐ DAILY CHECKLIST SYSTEM
+   DAILY CHECKLIST SYSTEM
 ============================================================ */
 
 const DAILY_TASKS = [
@@ -441,7 +425,7 @@ function scheduleDailyReset() {
 scheduleDailyReset();
 
 /* ============================================================
-   ⭐ EDIT MEMBER MODAL
+   EDIT MEMBER MODAL
 ============================================================ */
 
 function openEditModal(id, name, rank) {
@@ -472,7 +456,7 @@ document.getElementById("saveEditBtn").addEventListener("click", async () => {
 });
 
 /* ============================================================
-   ⭐ EVENT LISTENERS
+   EVENT LISTENERS
 ============================================================ */
 
 document.getElementById("addTxBtn").addEventListener("click", addTransaction);
@@ -480,7 +464,7 @@ document.getElementById("updateFundsBtn").addEventListener("click", updateFunds)
 document.getElementById("updateMembersBtn").addEventListener("click", updateMembers);
 
 /* ============================================================
-   ⭐ INIT
+   INIT
 ============================================================ */
 
 loadDashboard();
