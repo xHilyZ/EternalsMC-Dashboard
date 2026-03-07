@@ -11,26 +11,25 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { name, role } = req.body;
+    const { action, id, name, role } = req.body;
 
-    // Insert new member (must be array)
-    const { error: insertError } = await supabase
-      .from("members")
-      .insert([{ 
-        name, 
-        role, 
-        created_at: new Date().toISOString() 
-      }]);
+    // REMOVE MEMBER
+    if (action === "remove" && id) {
+      await supabase.from("members").delete().eq("id", id);
+    }
 
-    if (insertError) throw insertError;
+    // ADD MEMBER
+    if (action === "add" && name && role) {
+      await supabase.from("members").insert([
+        { name, role, created_at: new Date().toISOString() }
+      ]);
+    }
 
-    // Return updated list
-    const { data: updated, error: loadError } = await supabase
+    // RETURN UPDATED LIST
+    const { data: updated } = await supabase
       .from("members")
       .select("*")
       .order("created_at", { ascending: true });
-
-    if (loadError) throw loadError;
 
     res.status(200).json({ members: updated });
 

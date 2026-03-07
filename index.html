@@ -20,14 +20,14 @@
       <li class="restricted">Transactions</li>
     </ul>
 
-    <!-- USER BOX (Login or Member/Logout) -->
+    <!-- USER BOX -->
     <div id="user-box"></div>
   </aside>
 
   <!-- MAIN CONTENT -->
   <main>
 
-    <!-- DASHBOARD ALWAYS VISIBLE -->
+    <!-- DASHBOARD -->
     <div id="page-dashboard" class="page active">
       <h1>Welcome — Eternals MC</h1>
 
@@ -70,11 +70,11 @@
     <div id="page-bank" class="page restricted">
       <h2>Club Funds</h2>
 
-      <p>Clean: <span id="cleanBalance">$0</span></p>
-      <input id="cleanInput" type="number" placeholder="Add Clean Amount">
+      <p>Clean: $<span id="cleanBalance">0</span></p>
+      <input id="cleanInput" type="number" placeholder="Add/Remove Clean (+/-)">
 
-      <p>Dirty: <span id="dirtyBalance">$0</span></p>
-      <input id="dirtyInput" type="number" placeholder="Add Dirty Amount">
+      <p>Dirty: $<span id="dirtyBalance">0</span></p>
+      <input id="dirtyInput" type="number" placeholder="Add/Remove Dirty (+/-)">
 
       <button id="updateFundsBtn">Update Funds</button>
     </div>
@@ -99,7 +99,7 @@
 
   </main>
 
-  <!-- STEP 2: SIDEBAR PAGE SWITCHING -->
+  <!-- SIDEBAR PAGE SWITCHING -->
   <script>
     const pages = {
       "Dashboard": "page-dashboard",
@@ -114,7 +114,6 @@
     document.querySelectorAll(".sidebar ul li").forEach(item => {
       item.addEventListener("click", () => {
         const pageId = pages[item.innerText];
-
         if (!pageId) return;
 
         document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
@@ -123,7 +122,7 @@
     });
   </script>
 
-  <!-- LOAD SCRIPT -->
+  <!-- MAIN SCRIPT -->
   <script src="/script.v2.js"></script>
 
   <!-- SUPABASE AUTH -->

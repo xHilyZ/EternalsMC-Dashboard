@@ -15,7 +15,6 @@ async function loadDashboard() {
         updateMembersUI(data.members);
         updateTransactionsUI(data.transactions);
 
-        // ⭐ NEW: Update top stats
         updateTopStats(data.funds, data.members, data.transactions);
 
     } catch (err) {
@@ -24,17 +23,12 @@ async function loadDashboard() {
 }
 
 // -------------------------------
-// UPDATE TOP STATS (NEW)
+// UPDATE TOP STATS
 // -------------------------------
 function updateTopStats(funds, members, transactions) {
-    // Total Money = clean + dirty
     const totalMoney = (funds.clean || 0) + (funds.dirty || 0);
     document.getElementById("totalMoney").textContent = `$${totalMoney}`;
-
-    // Total Deals = number of transactions
     document.getElementById("totalDeals").textContent = transactions.length;
-
-    // Active Members = number of members
     document.getElementById("activeMembers").textContent = members.length;
 }
 
@@ -55,7 +49,8 @@ function updateMembersUI(members) {
         div.className = "member-item";
         div.innerHTML = `
             <span>${member.name}</span>
-            <span>${member.role}</span>
+            <span>${member.role ?? "Member"}</span>
+            <button class="remove-member-btn" onclick="removeMember(${member.id})">Remove</button>
         `;
         container.appendChild(div);
     });
@@ -108,22 +103,17 @@ async function addTransaction() {
 }
 
 // -------------------------------
-// UPDATE FUNDS
+// UPDATE FUNDS (ADD & REMOVE)
 // -------------------------------
 async function updateFunds() {
-    const clean = parseFloat(document.getElementById("cleanInput").value);
-    const dirty = parseFloat(document.getElementById("dirtyInput").value);
-
-    if (isNaN(clean) || isNaN(dirty)) {
-        alert("Enter valid numbers.");
-        return;
-    }
+    const clean = parseFloat(document.getElementById("cleanInput").value) || 0;
+    const dirty = parseFloat(document.getElementById("dirtyInput").value) || 0;
 
     try {
         await fetch(`${API_BASE}/updateFunds`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ clean, dirty })
+            body: JSON.stringify({ cleanDelta: clean, dirtyDelta: dirty })
         });
 
         loadDashboard();
@@ -133,7 +123,7 @@ async function updateFunds() {
 }
 
 // -------------------------------
-// UPDATE MEMBERS
+// ADD MEMBER
 // -------------------------------
 async function updateMembers() {
     const name = document.getElementById("memberName").value;
@@ -148,12 +138,29 @@ async function updateMembers() {
         await fetch(`${API_BASE}/updateMembers`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, role })
+            body: JSON.stringify({ action: "add", name, role })
         });
 
         loadDashboard();
     } catch (err) {
         console.error("Error updating members:", err);
+    }
+}
+
+// -------------------------------
+// REMOVE MEMBER
+// -------------------------------
+async function removeMember(id) {
+    try {
+        await fetch(`${API_BASE}/updateMembers`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "remove", id })
+        });
+
+        loadDashboard();
+    } catch (err) {
+        console.error("Error removing member:", err);
     }
 }
 
