@@ -1,11 +1,11 @@
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -30,10 +30,8 @@ module.exports = async function handler(req, res) {
     let newDirty = funds.dirty;
 
     if (description.toLowerCase().includes("dirty")) {
-      // Dirty transaction
       newDirty = funds.dirty + delta;
     } else {
-      // Clean transaction
       newClean = funds.clean + delta;
     }
 
@@ -69,4 +67,4 @@ module.exports = async function handler(req, res) {
     console.error("addTransaction error:", err);
     res.status(500).json({ error: "Failed to add transaction" });
   }
-};
+}

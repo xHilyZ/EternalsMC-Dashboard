@@ -32,7 +32,8 @@ async function loadDashboard() {
 
     updateFundsUI(data.funds);
     updateMembersUI(data.members);
-    updateTransactionsUI(data.transactions);
+    updateTransactionsUI(data.transactions);      // Transactions page
+    updateDealsTransactionsUI(data.transactions); // Deals page (NEW)
     updateTopStats(data.funds, data.members, data.transactions);
 }
 
@@ -69,9 +70,32 @@ function updateMembersUI(members) {
     });
 }
 
-// TRANSACTIONS UI
+// TRANSACTIONS PAGE UI
 function updateTransactionsUI(transactions) {
     const container = document.getElementById("transactionsList2");
+    container.innerHTML = "";
+
+    transactions.forEach(tx => {
+        const div = document.createElement("div");
+        div.className = "transaction-item";
+
+        const sign = tx.type === "income" ? "+" : "-";
+        const color = tx.type === "income" ? "green" : "red";
+
+        div.innerHTML = `
+            <span>${tx.description}</span>
+            <span style="color:${color}">${sign}$${format(tx.amount)}</span>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+// ⭐ NEW — DEALS PAGE LOG RENDERER
+function updateDealsTransactionsUI(transactions) {
+    const container = document.getElementById("transactionsList");
+    if (!container) return;
+
     container.innerHTML = "";
 
     transactions.forEach(tx => {
@@ -104,6 +128,11 @@ async function addTransaction() {
         body: JSON.stringify({ description, amount, type })
     });
 
+    // Clear inputs
+    document.getElementById("txDescription").value = "";
+    document.getElementById("txAmount").value = "";
+
+    // Refresh UI
     loadDashboard();
 }
 
