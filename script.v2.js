@@ -2,6 +2,16 @@
    GLOBAL CONFIG
 ============================================================ */
 
+let currentMembers = [];
+
+/* ============================================================
+   WEEKLY QUOTA DATA
+============================================================ */
+
+let WEEKLY_QUOTA_TEXT = localStorage.getItem("weeklyQuotaText") 
+    || "Set this week's quota from the dashboard tile.";
+
+
 const API_BASE = "/api";
 let editingMemberId = null;
 
