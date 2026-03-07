@@ -1,6 +1,11 @@
 const API_BASE = "/api";
 let editingMemberId = null;
 
+// FORMAT NUMBER WITH COMMAS
+function format(num) {
+    return Number(num).toLocaleString();
+}
+
 // LOAD DASHBOARD
 async function loadDashboard() {
     const res = await fetch(`${API_BASE}/getData`);
@@ -15,15 +20,16 @@ async function loadDashboard() {
 // TOP STATS
 function updateTopStats(funds, members, transactions) {
     const totalMoney = (funds.clean || 0) + (funds.dirty || 0);
-    document.getElementById("totalMoney").textContent = `$${totalMoney}`;
-    document.getElementById("totalDeals").textContent = transactions.length;
-    document.getElementById("activeMembers").textContent = members.length;
+
+    document.getElementById("totalMoney").textContent = `$${format(totalMoney)}`;
+    document.getElementById("totalDeals").textContent = format(transactions.length);
+    document.getElementById("activeMembers").textContent = format(members.length);
 }
 
 // FUNDS UI
 function updateFundsUI(funds) {
-    document.getElementById("cleanBalance").innerText = funds.clean;
-    document.getElementById("dirtyBalance").innerText = funds.dirty;
+    document.getElementById("cleanBalance").innerText = format(funds.clean);
+    document.getElementById("dirtyBalance").innerText = format(funds.dirty);
 }
 
 // MEMBERS UI
@@ -58,7 +64,7 @@ function updateTransactionsUI(transactions) {
 
         div.innerHTML = `
             <span>${tx.description}</span>
-            <span style="color:${color}">${sign}$${tx.amount}</span>
+            <span style="color:${color}">${sign}$${format(tx.amount)}</span>
         `;
 
         container.appendChild(div);
