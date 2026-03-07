@@ -1,4 +1,5 @@
 // force vercel rebuild
+console.log(">>> getData.js LOADED <<<");
 import pkg from '@supabase/supabase-js';
 const { createClient } = pkg;
 
