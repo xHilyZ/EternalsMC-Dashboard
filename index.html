@@ -1,295 +1,222 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Eternals MC Dashboard</title>
-  <link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8">
+    <title>Eternals MC Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <h2>ETERNALS MC</h2>
+<div class="sidebar">
+    <div>
+        <h2>ETERNALS MC</h2>
+        <img src="patch.png" class="sidebar-patch">
 
-    <!-- PATCH LOGO -->
-    <img src="/patch.png" class="sidebar-patch" alt="Eternals MC Patch">
+        <ul>
+            <li onclick="openPage('dashboard')">Dashboard</li>
+            <li onclick="openPage('deals')">Deals</li>
+            <li onclick="openPage('bank')">Bank</li>
+            <li onclick="openPage('checklist')">Checklist</li>
+            <li onclick="openPage('quota')">Quota</li>
+            <li onclick="openPage('pricelist')">Price List</li>
+            <li onclick="openPage('armory')">Armory</li>
+            <li onclick="openPage('members')">Members</li>
+            <li onclick="openPage('transactions')">Transactions</li>
+        </ul>
+    </div>
 
-    <ul>
-      <li>Dashboard</li>
-      <li class="restricted">Deals</li>
-      <li class="restricted">Bank</li>
-      <li class="restricted">Checklist</li>
-      <li class="restricted">Quota</li>
-      <li class="restricted">Price List</li>
-      <li class="restricted">Armory</li>
-      <li class="restricted">Members</li>
-      <li class="restricted">Transactions</li>
-    </ul>
+    <div id="user-box">
+        <p>MEMBER</p>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
 
-    <div id="user-box"></div>
-  </aside>
+<main>
 
-  <!-- MAIN CONTENT -->
-  <main>
+<div id="page-dashboard" class="page active">
 
-    <!-- DASHBOARD -->
-    <div id="page-dashboard" class="page active">
-      <h1>Welcome — Eternals MC</h1>
+    <div class="panel">
+        <h1>Welcome — Eternals MC</h1>
 
-      <section class="stats">
-        <div class="stat-box">
-          <h3>Total Money</h3>
-          <p id="totalMoney">$0</p>
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Total Money</h3>
+                <p id="totalMoney">$0</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>Total Deals</h3>
+                <p id="totalDeals">0</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>Active Members</h3>
+                <p id="activeMembers">0</p>
+            </div>
         </div>
+    </div>
 
-        <div class="stat-box">
-          <h3>Total Deals</h3>
-          <p id="totalDeals">0</p>
+    <div class="panel">
+        <div class="quick-actions">
+            <div class="action-tile" onclick="openPage('checklist')">
+                <span class="action-icon">📋</span>
+                <span class="action-label">Checklist</span>
+            </div>
+
+            <div class="action-tile" onclick="openPage('quota')">
+                <span class="action-icon">📦</span>
+                <span class="action-label">Quota</span>
+            </div>
         </div>
-
-        <div class="stat-box">
-          <h3>Active Members</h3>
-          <p id="activeMembers">0</p>
-        </div>
-      </section>
-
-      <!-- QUICK ACTIONS -->
-      <div class="quick-actions restricted">
-        <div class="action-tile" onclick="openChecklist()">
-          <span class="action-icon">📋</span>
-          <span class="action-label">Checklist</span>
-        </div>
-
-        <div class="action-tile" onclick="openQuotaModal()">
-          <span class="action-icon">📦</span>
-          <span class="action-label">Quota</span>
-        </div>
-      </div>
     </div>
 
-    <!-- DEALS -->
-    <div id="page-deals" class="page restricted">
-      <h2>Deals</h2>
+</div>
 
-      <input id="txDescription" type="text" placeholder="Description">
-      <input id="txAmount" type="number" placeholder="Amount">
+<div id="page-deals" class="page">
 
-      <select id="txType">
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-      </select>
+    <div class="panel">
+        <h2>Deals</h2>
 
-      <button id="addTxBtn">Add Transaction</button>
+        <input id="dealDesc" placeholder="Description">
+        <input id="dealAmount" type="number" placeholder="Amount">
 
-      <div id="transactionsList"></div>
-    </div>
-
-    <!-- BANK -->
-    <div id="page-bank" class="page restricted">
-      <h2>Club Funds</h2>
-
-      <p>Clean: $<span id="cleanBalance">0</span></p>
-      <input id="cleanInput" type="number" placeholder="Add/Remove Clean (+/-)">
-
-      <p>Dirty: $<span id="dirtyBalance">0</span></p>
-      <input id="dirtyInput" type="number" placeholder="Add/Remove Dirty (+/-)">
-
-      <button id="updateFundsBtn">Update Funds</button>
-    </div>
-
-    <!-- MEMBERS -->
-    <div id="page-members" class="page restricted">
-      <h2>Members</h2>
-
-      <input id="memberName" type="text" placeholder="Member Name">
-      <input id="memberRank" type="text" placeholder="Rank">
-
-      <button id="updateMembersBtn">Add Member</button>
-
-      <div id="membersList"></div>
-    </div>
-
-    <!-- TRANSACTIONS -->
-    <div id="page-transactions" class="page restricted">
-      <h2>Transactions</h2>
-      <div id="transactionsList2"></div>
-    </div>
-
-    <!-- CHECKLIST PAGE -->
-    <div id="page-checklist" class="page restricted">
-      <h2>Daily Checklist</h2>
-
-      <div id="checklistHeader" style="margin-bottom: 15px; color:#C2B59B; font-size: 18px;"></div>
-
-      <div id="checklistContainer"></div>
-    </div>
-
-    <!-- QUOTA PAGE -->
-    <div id="page-quota" class="page restricted">
-      <h2>Weekly Quota</h2>
-
-      <div id="quotaHeader"></div>
-      <div id="quotaContainer"></div>
-    </div>
-
-    <!-- PRICE LIST PAGE -->
-    <div id="page-pricelist" class="page restricted">
-      <h2>Price List</h2>
-      <div id="priceListContainer"></div>
-    </div>
-
-    <!-- ⭐ ARMORY PAGE -->
-    <div id="page-armory" class="page restricted">
-      <h2>Armory</h2>
-
-      <!-- ⭐ SEARCH BAR -->
-      <input 
-        id="armorySearch" 
-        type="text" 
-        placeholder="Search items..." 
-        oninput="filterArmory()" 
-        style="width:100%; max-width:350px; padding:10px; margin-bottom:20px; border-radius:6px; border:1px solid #555; background:#1c1c1c; color:#fff;"
-      >
-
-      <!-- ⭐ ARMORY INPUT CONTROLS -->
-      <div class="armory-controls" style="margin-bottom:25px;">
-        <select id="armoryGroup">
-          <option>Armour</option>
-          <option>Bandages</option>
-          <option>Guns (Built)</option>
-          <option>Ammo</option>
-          <option>Ammo Cases</option>
-          <option>Attachments</option>
-          <option>Blueprints</option>
+        <select id="dealType">
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
         </select>
 
-        <input id="armoryName" type="text" placeholder="Item Name">
+        <button onclick="addDeal()">Add Transaction</button>
+
+        <div id="transactionsList2"></div>
+    </div>
+
+</div>
+
+<div id="page-bank" class="page">
+
+    <div class="panel">
+        <h2>Club Funds</h2>
+
+        <p>Clean: <span id="cleanMoney">$0</span></p>
+        <p>Dirty: <span id="dirtyMoney">$0</span></p>
+
+        <input id="fundAmount" type="number" placeholder="Amount">
+
+        <button onclick="addClean()">+ Clean</button>
+        <button onclick="removeClean()">- Clean</button>
+
+        <button onclick="addDirty()">+ Dirty</button>
+        <button onclick="removeDirty()">- Dirty</button>
+
+        <button onclick="updateFunds()">Update Funds</button>
+    </div>
+
+</div>
+
+<div id="page-checklist" class="page">
+
+    <div class="panel">
+        <h2>Checklist</h2>
+
+        <p id="checklistHeader"></p>
+
+        <div id="checklistContainer"></div>
+    </div>
+
+</div>
+
+<div id="page-quota" class="page">
+
+    <div class="panel">
+        <h2>Weekly Quota</h2>
+
+        <div id="quotaHeader"></div>
+        <div id="quotaContainer"></div>
+
+        <button onclick="openQuotaModal()">Set Quota</button>
+    </div>
+
+</div>
+
+<div id="page-pricelist" class="page">
+
+    <div class="panel">
+        <h2>Price List</h2>
+
+        <div id="priceListContainer"></div>
+    </div>
+
+</div>
+
+<div id="page-armory" class="page">
+
+    <div class="panel">
+        <h2>Armory</h2>
+
+        <input id="armoryName" placeholder="Item Name">
         <input id="armoryAmount" type="number" placeholder="Amount">
+
+        <select id="armoryGroup">
+            <option>Armour</option>
+            <option>Bandages</option>
+            <option>Guns (Built)</option>
+            <option>Ammo</option>
+            <option>Ammo Cases</option>
+            <option>Attachments</option>
+            <option>Blueprints</option>
+        </select>
+
         <button id="addArmoryBtn">Add Item</button>
-      </div>
 
-      <!-- ⭐ ARMORY LIST -->
-      <div id="armoryList" style="margin-top:20px;"></div>
+        <input id="armorySearch" placeholder="Search..." oninput="filterArmory()">
+
+        <div id="armoryList"></div>
     </div>
 
-  </main>
+</div>
 
-  <!-- EDIT MEMBER MODAL -->
-  <div id="editModal" class="modal" style="display:none;">
+<div id="page-members" class="page">
+
+    <div class="panel">
+        <h2>Members</h2>
+
+        <input id="memberName" placeholder="Member Name">
+        <input id="memberRank" placeholder="Rank">
+
+        <button onclick="addMember()">Add Member</button>
+
+        <div id="membersList"></div>
+    </div>
+
+</div>
+
+<div id="page-transactions" class="page">
+
+    <div class="panel">
+        <h2>All Transactions</h2>
+
+        <div id="transactionsList"></div>
+    </div>
+
+</div>
+
+<div id="quotaModal" class="modal" style="display:none;">
     <div class="modal-content">
-      <h3>Edit Member</h3>
+        <h3>Set Weekly Quota</h3>
 
-      <label>Name:</label>
-      <input id="editName" type="text">
+        <textarea id="quotaTextInput" rows="4"></textarea>
 
-      <label>Rank:</label>
-      <input id="editRank" type="text">
-
-      <button id="saveEditBtn">Save</button>
-      <button id="cancelEditBtn">Cancel</button>
+        <div style="display:flex; justify-content:space-between;">
+            <button onclick="saveQuota()">Save</button>
+            <button onclick="closeQuotaModal()">Cancel</button>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- QUOTA EDIT MODAL -->
-  <div id="quotaModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <h3>Set Weekly Quota</h3>
+</main>
 
-      <label>Quota Description:</label>
-      <textarea id="quotaTextInput" style="width:100%; min-height:80px;"></textarea>
-
-      <button onclick="saveQuota()">Save</button>
-      <button onclick="closeQuotaModal()">Cancel</button>
-    </div>
-  </div>
-
-  <!-- PAGE SWITCHING -->
-  <script>
-    const pages = {
-      "Dashboard": "page-dashboard",
-      "Deals": "page-deals",
-      "Bank": "page-bank",
-      "Checklist": "page-checklist",
-      "Quota": "page-quota",
-      "Price List": "page-pricelist",
-      "Armory": "page-armory",
-      "Members": "page-members",
-      "Transactions": "page-transactions"
-    };
-
-    document.querySelectorAll(".sidebar ul li").forEach(item => {
-      item.addEventListener("click", () => {
-        const pageId = pages[item.innerText];
-        if (!pageId) return;
-
-        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-        document.getElementById(pageId).classList.add("active");
-
-        if (item.innerText === "Checklist") {
-          loadChecklist();
-          updateCountdown();
-        }
-
-        if (item.innerText === "Quota") {
-          loadQuota();
-        }
-
-        if (item.innerText === "Price List") {
-          loadPriceList();
-        }
-
-        if (item.innerText === "Armory") {
-          document.getElementById("armorySearch").value = "";
-          loadArmory();
-        }
-      });
-    });
-  </script>
-
-  <!-- MAIN SCRIPT -->
-  <script src="/script.v2.js"></script>
-
-  <!-- SUPABASE AUTH -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script>
-    const sb = supabase.createClient(
-      "https://glgeavemxohcagjrsqnu.supabase.co",
-      "sb_publishable_qQquFMH_seITOJyy581rxw_Rp0Vqafo"
-    );
-
-    async function checkAuth() {
-      const { data, error } = await sb.auth.getSession();
-      const userBox = document.getElementById("user-box");
-
-      if (error || !data) return;
-
-      if (!data.session) {
-        document.body.classList.add("guest");
-        userBox.innerHTML = `<button class="login-btn" onclick="login()">Login with Discord</button>`;
-      } else {
-        document.body.classList.remove("guest");
-        userBox.innerHTML = `MEMBER<br><button onclick="logout()">Logout</button>`;
-      }
-    }
-
-    async function login() {
-      await sb.auth.signInWithOAuth({
-        provider: "discord",
-        options: {
-          redirectTo: "https://eternals-mc-dashboard.vercel.app/index.html"
-        }
-      });
-    }
-
-    async function logout() {
-      await sb.auth.signOut();
-      window.location.reload();
-    }
-
-    checkAuth();
-    setTimeout(checkAuth, 500);
-  </script>
+<script src="script.js"></script>
 
 </body>
 </html>

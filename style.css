@@ -2,23 +2,31 @@
    GLOBAL LUXURY THEME — MATTE BLACK MARBLE + SOFT GOLD
 ============================================================ */
 
+:root {
+    --gold: #C2B59B;
+    --gold-soft: rgba(194,181,155,0.45);
+    --panel-bg: rgba(20,20,20,0.55);
+    --panel-border: rgba(194,181,155,0.35);
+}
+
 body {
     margin: 0;
     padding: 0;
     font-family: "Poppins", Arial, sans-serif;
-    background: url('https://i.imgur.com/3xQJQyX.jpeg'); /* matte black marble */
+    background: #0a0a0a;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03), transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.03), transparent 60%),
+        linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.2) 100%);
     background-size: cover;
     background-attachment: fixed;
     color: #E8E6E3;
     display: flex;
 }
 
-/* Soft gold accent color */
-:root {
-    --gold: #C2B59B;
-    --gold-soft: rgba(194,181,155,0.45);
-    --panel-bg: rgba(20,20,20,0.55);
-    --panel-border: rgba(194,181,155,0.35);
+/* Hide restricted items for guests */
+body.guest .restricted {
+    display: none !important;
 }
 
 /* ============================================================
@@ -35,6 +43,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    z-index: 3;
 }
 
 .sidebar h2 {
@@ -46,15 +55,22 @@ body {
     text-shadow: 0 0 8px rgba(194,181,155,0.4);
 }
 
-/* Patch glow */
+/* PATCH LOGO */
 .sidebar-patch {
     width: 150px;
+    height: auto;
     display: block;
     margin: 0 auto 25px auto;
     filter: drop-shadow(0 0 12px rgba(194,181,155,0.35));
 }
 
-/* Navigation */
+/* NAVIGATION */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
 .sidebar ul li {
     padding: 14px 22px;
     cursor: pointer;
@@ -70,6 +86,79 @@ body {
     border-left: 3px solid var(--gold);
 }
 
+/* USER BOX */
+#user-box {
+    padding: 20px;
+    color: var(--gold);
+    font-size: 14px;
+    text-align: center;
+}
+
+#user-box button {
+    margin-top: 10px;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#user-box button:hover {
+    background: #E6DCC5;
+}
+
+/* ============================================================
+   MAIN CONTENT
+============================================================ */
+
+main {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    height: 100vh;
+    position: relative;
+    z-index: 2;
+}
+
+main h1 {
+    color: var(--gold);
+    font-size: 28px;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+/* ============================================================
+   PAGE SYSTEM
+============================================================ */
+
+.page {
+    display: none;
+    opacity: 0;
+    overflow-y: auto;
+    padding-bottom: 80px;
+}
+
+.page.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ============================================================
+   PANEL WRAPPER (GLASS PANELS)
+============================================================ */
+
+.panel {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    padding: 25px;
+    border-radius: 14px;
+    margin-bottom: 35px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.45);
+}
+
 /* ============================================================
    DASHBOARD STATS — GLASS PANELS
 ============================================================ */
@@ -78,7 +167,7 @@ body {
     display: flex;
     justify-content: center;
     gap: 40px;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
 }
 
 .stat-box {
@@ -111,8 +200,16 @@ body {
 }
 
 /* ============================================================
-   ACTION TILES — PREMIUM LUXURY
+   CHECKLIST / QUOTA TILES — PREMIUM
 ============================================================ */
+
+.quick-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
 
 .action-tile {
     background: var(--panel-bg);
@@ -134,6 +231,7 @@ body {
 
 .action-icon {
     font-size: 34px;
+    display: block;
     margin-bottom: 12px;
     color: var(--gold);
 }
@@ -141,6 +239,183 @@ body {
 .action-label {
     font-size: 18px;
     font-weight: bold;
+}
+
+/* ============================================================
+   CLEAN UI FOR PAGES
+============================================================ */
+
+.page h2 {
+    font-size: 26px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    border-bottom: 2px solid #3A3A3A;
+    padding-bottom: 8px;
+    color: var(--gold);
+}
+
+.page input,
+.page select,
+.page textarea {
+    width: 100%;
+    max-width: 350px;
+    padding: 10px 12px;
+    margin: 8px 0 15px 0;
+    border-radius: 6px;
+    border: 1px solid #555;
+    background: #1c1c1c;
+    color: #fff;
+    font-size: 15px;
+}
+
+.page input:focus,
+.page select:focus,
+.page textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+.page button {
+    padding: 10px 18px;
+    background: var(--gold);
+    border: none;
+    border-radius: 6px;
+    color: #000;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: 0.2s;
+    font-weight: bold;
+}
+
+.page button:hover {
+    background: #E6DCC5;
+}
+
+/* ============================================================
+   MEMBERS PAGE
+============================================================ */
+
+#membersList {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.member-item {
+    background: #111;
+    padding: 14px 16px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--gold);
+}
+
+.member-item span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.member-item button {
+    background: #333;
+    padding: 6px 12px;
+    margin-left: 8px;
+    border-radius: 4px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.member-item button:hover {
+    background: #444;
+}
+
+/* ============================================================
+   TRANSACTIONS PAGE
+============================================================ */
+
+#transactionsList2,
+#transactionsList {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.transaction-item {
+    background: #111;
+    padding: 14px 16px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    border-left: 4px solid #1976d2;
+}
+
+/* ============================================================
+   BANK PAGE
+============================================================ */
+
+#page-bank p {
+    font-size: 18px;
+    margin: 10px 0 5px 0;
+}
+
+#page-bank input {
+    max-width: 250px;
+}
+
+/* ============================================================
+   CHECKLIST / QUOTA ITEMS
+============================================================ */
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    transition: background 0.2s ease;
+    border-left: 4px solid var(--gold);
+}
+
+.check-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.check-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.check-item label {
+    cursor: pointer;
+    font-size: 15px;
+    color: #ddd;
+}
+
+/* GROUP HEADERS */
+.checklist-group {
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: var(--gold);
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* COUNTDOWN HEADER */
+#checklistHeader {
+    font-size: 18px;
+    color: var(--gold);
+    margin-bottom: 15px;
+    font-weight: 500;
 }
 
 /* ============================================================
@@ -169,6 +444,7 @@ body {
     border: 1px solid var(--panel-border);
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
     animation: pop 0.25s ease;
+    margin: 0 auto;
 }
 
 @keyframes pop {
@@ -177,29 +453,94 @@ body {
 }
 
 .modal-content h3 {
-    color: var(--gold);
     margin-bottom: 15px;
+    color: var(--gold);
 }
 
-.check-item {
-    background: rgba(255,255,255,0.05);
-    border-left: 4px solid var(--gold);
-    padding: 10px 12px;
-    border-radius: 8px;
-    margin: 8px 0;
-    transition: 0.25s ease;
+.modal-content input,
+.modal-content textarea {
+    width: 100%;
 }
 
-.check-item:hover {
-    background: rgba(255,255,255,0.1);
+.modal-content button {
+    width: 48%;
+    margin-top: 15px;
+}
+
+/* ============================================================
+   PRICE LIST PAGE
+============================================================ */
+
+#page-pricelist h2 {
+    margin-bottom: 20px;
+    color: var(--gold);
+}
+
+.price-group {
+    margin-top: 25px;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #444;
+    padding-bottom: 6px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.price-item {
+    display: grid;
+    grid-template-columns: 1fr 120px 150px;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+    color: #ddd;
+    font-size: 15px;
+}
+
+.price-item span {
+    display: flex;
+    align-items: center;
+}
+
+.price-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================================
+   ARMORY PAGE
+============================================================ */
+
+#armoryList {
+    margin-top: 20px;
 }
 
 .armory-item {
     background: var(--panel-bg);
-    border-left: 4px solid var(--gold);
     padding: 14px 16px;
     border-radius: 10px;
-    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--gold);
+    margin-bottom: 10px;
+    color: #fff;
     backdrop-filter: blur(8px);
     border: 1px solid var(--panel-border);
+}
+
+.armory-item span {
+    font-size: 16px;
+}
+
+.armory-item button {
+    background: #333;
+    padding: 6px 12px;
+    border-radius: 4px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.armory-item button:hover {
+    background: #444;
 }
