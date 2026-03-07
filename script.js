@@ -629,8 +629,9 @@ function loadPriceList() {
     });
 }
 
-function logout() {
-    window.location.href = "/api/auth/logout";
+async function logout() {
+    const { error } = await supabase.auth.signOut();
+    window.location.href = "/login.html";
 }
 
 /* ============================================================
