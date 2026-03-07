@@ -27,8 +27,8 @@ const PRICE_LIST = [
     {
         group: "ETERNALS MC",
         items: [
-            { what: "Double barrel shotgun BP", price: 0, relationship: "Own Vendor" },
-            { what: "MPX BP", price: 0, relationship: "Own Vendor" }
+            { what: "Double barrel shotgun BP", price: 700000, relationship: "Own Vendor" },
+            { what: "MPX BP", price: 600000, relationship: "Own Vendor" }
         ]
     },
     {
