@@ -37,6 +37,7 @@ function loadQuota() {
     const saved = JSON.parse(localStorage.getItem("weeklyQuotaChecklist")) || {};
     container.innerHTML = "";
 
+    // Checklist is members — tick who has completed quota
     currentMembers.forEach(member => {
         const key = member.id || member.name;
         const checked = saved[key] || false;
@@ -58,7 +59,7 @@ function toggleQuota(key) {
     localStorage.setItem("weeklyQuotaChecklist", JSON.stringify(saved));
 }
 
-// Weekly reset (Sunday, Melbourne time)
+// Weekly reset (Sunday, Melbourne time) — clears checklist only
 function scheduleWeeklyQuotaReset() {
     const now = new Date();
     const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
@@ -97,15 +98,18 @@ function saveQuota() {
 
     closeQuotaModal();
 
-    if (document.getElementById("page-quota").classList.contains("active")) {
+    // If quota page is visible, refresh it
+    const quotaPage = document.getElementById("page-quota");
+    if (quotaPage && quotaPage.classList.contains("active")) {
         loadQuota();
     }
 }
 
 /* ============================================================
-   ⭐ ARMORY SYSTEM (GROUPED)
+   ⭐ ARMORY SYSTEM (GROUPED, EDITABLE)
 ============================================================ */
 
+// Default Armory Data (your list)
 let ARMORY = JSON.parse(localStorage.getItem("armoryData")) || {
 
     "Armour": [
@@ -165,26 +169,32 @@ let ARMORY = JSON.parse(localStorage.getItem("armoryData")) || {
     ]
 };
 
+// Save to localStorage
 function saveArmory() {
     localStorage.setItem("armoryData", JSON.stringify(ARMORY));
 }
 
+// Load Armory Page
 function loadArmory() {
     const container = document.getElementById("armoryList");
+    if (!container) return;
+
     container.innerHTML = "";
 
     Object.keys(ARMORY).forEach(group => {
+        // Group Header
         const header = document.createElement("h3");
         header.className = "checklist-group";
         header.textContent = group;
         container.appendChild(header);
 
+        // Items
         ARMORY[group].forEach((item, index) => {
             const div = document.createElement("div");
             div.className = "armory-item";
 
             div.innerHTML = `
-                <span>${item.name} — <strong>${item.amount}</strong></span>
+                <span>${item.name} — <strong>${format(item.amount)}</strong></span>
                 <div>
                     <button onclick="editArmoryItem('${group}', ${index})">Edit</button>
                     <button onclick="removeArmoryItem('${group}', ${index})">Remove</button>
@@ -196,39 +206,47 @@ function loadArmory() {
     });
 }
 
-document.getElementById("addArmoryBtn")?.addEventListener("click", () => {
-    const name = document.getElementById("armoryName").value.trim();
-    const amount = parseInt(document.getElementById("armoryAmount").value);
-    const group = document.getElementById("armoryGroup").value;
+// Add new item
+document.addEventListener("DOMContentLoaded", () => {
+    const addBtn = document.getElementById("addArmoryBtn");
+    if (addBtn) {
+        addBtn.addEventListener("click", () => {
+            const name = document.getElementById("armoryName").value.trim();
+            const amount = parseInt(document.getElementById("armoryAmount").value);
+            const group = document.getElementById("armoryGroup").value;
 
-    if (!name || isNaN(amount)) return alert("Enter valid name and amount.");
+            if (!name || isNaN(amount)) return alert("Enter valid name and amount.");
 
-    ARMORY[group].push({ name, amount });
-    saveArmory();
-    loadArmory();
+            ARMORY[group].push({ name, amount });
+            saveArmory();
+            loadArmory();
 
-    document.getElementById("armoryName").value = "";
-    document.getElementById("armoryAmount").value = "";
+            document.getElementById("armoryName").value = "";
+            document.getElementById("armoryAmount").value = "";
+        });
+    }
 });
 
+// Edit item (name + amount)
 function editArmoryItem(group, index) {
-    const newName = prompt("New name:", ARMORY[group][index].name);
-    const newAmount = prompt("New amount:", ARMORY[group][index].amount);
+    const current = ARMORY[group][index];
+    const newName = prompt("New name:", current.name);
+    const newAmount = prompt("New amount:", current.amount);
 
-    if (newName && !isNaN(parseInt(newAmount))) {
-        ARMORY[group][index].name = newName;
-        ARMORY[group][index].amount = parseInt(newAmount);
-        saveArmory();
-        loadArmory();
-    }
+    if (!newName || isNaN(parseInt(newAmount))) return;
+
+    ARMORY[group][index].name = newName;
+    ARMORY[group][index].amount = parseInt(newAmount);
+    saveArmory();
+    loadArmory();
 }
 
+// Remove item
 function removeArmoryItem(group, index) {
-    if (confirm("Remove this item?")) {
-        ARMORY[group].splice(index, 1);
-        saveArmory();
-        loadArmory();
-    }
+    if (!confirm("Remove this item?")) return;
+    ARMORY[group].splice(index, 1);
+    saveArmory();
+    loadArmory();
 }
 
 /* ============================================================
@@ -300,6 +318,7 @@ function loadPriceList() {
    DASHBOARD DATA
 ============================================================ */
 
+// LOAD DASHBOARD
 async function loadDashboard() {
     const res = await fetch(`${API_BASE}/getData`);
     const data = await res.json();
@@ -311,6 +330,7 @@ async function loadDashboard() {
     updateTopStats(data.funds, data.members, data.transactions);
 }
 
+// TOP STATS
 function updateTopStats(funds, members, transactions) {
     const totalMoney = (funds.clean || 0) + (funds.dirty || 0);
 
@@ -319,11 +339,13 @@ function updateTopStats(funds, members, transactions) {
     document.getElementById("activeMembers").textContent = format(members.length);
 }
 
+// FUNDS UI
 function updateFundsUI(funds) {
     document.getElementById("cleanBalance").innerText = format(funds.clean);
     document.getElementById("dirtyBalance").innerText = format(funds.dirty);
 }
 
+// MEMBERS UI
 function updateMembersUI(members) {
     currentMembers = members || [];
 
@@ -343,6 +365,7 @@ function updateMembersUI(members) {
     });
 }
 
+// TRANSACTIONS PAGE UI
 function updateTransactionsUI(transactions) {
     const container = document.getElementById("transactionsList2");
     container.innerHTML = "";
@@ -363,6 +386,7 @@ function updateTransactionsUI(transactions) {
     });
 }
 
+// DEALS PAGE LOG RENDERER
 function updateDealsTransactionsUI(transactions) {
     const container = document.getElementById("transactionsList");
     if (!container) return;
@@ -385,6 +409,7 @@ function updateDealsTransactionsUI(transactions) {
     });
 }
 
+// ADD TRANSACTION
 async function addTransaction() {
     const description = document.getElementById("txDescription").value;
     const amount = parseFloat(document.getElementById("txAmount").value);
@@ -404,6 +429,7 @@ async function addTransaction() {
     loadDashboard();
 }
 
+// UPDATE FUNDS
 async function updateFunds() {
     const clean = parseFloat(document.getElementById("cleanInput").value) || 0;
     const dirty = parseFloat(document.getElementById("dirtyInput").value) || 0;
@@ -417,6 +443,7 @@ async function updateFunds() {
     loadDashboard();
 }
 
+// ADD MEMBER
 async function updateMembers() {
     const name = document.getElementById("memberName").value;
     const rank = document.getElementById("memberRank").value;
@@ -435,6 +462,7 @@ async function updateMembers() {
     loadDashboard();
 }
 
+// REMOVE MEMBER
 async function removeMember(id) {
     await fetch(`${API_BASE}/updateMembers`, {
         method: "POST",
@@ -497,6 +525,7 @@ function toggleTask(task) {
     localStorage.setItem("dailyChecklist", JSON.stringify(saved));
 }
 
+// DAILY RESET COUNTDOWN
 function updateCountdown() {
     const now = new Date();
     const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
@@ -520,6 +549,66 @@ function updateCountdown() {
     setTimeout(updateCountdown, 1000);
 }
 
+// DAILY RESET
 function scheduleDailyReset() {
     const now = new Date();
-    const melbourneNow = new Date
+    const melbourneNow = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
+
+    const tomorrow = new Date(melbourneNow);
+    tomorrow.setHours(24, 0, 0, 0);
+
+    const msUntilReset = tomorrow - melbourneNow;
+
+    setTimeout(() => {
+        localStorage.removeItem("dailyChecklist");
+        loadChecklist();
+        scheduleDailyReset();
+    }, msUntilReset);
+}
+
+scheduleDailyReset();
+
+/* ============================================================
+   EDIT MEMBER MODAL
+============================================================ */
+
+function openEditModal(id, name, rank) {
+    editingMemberId = id;
+
+    document.getElementById("editName").value = name;
+    document.getElementById("editRank").value = rank;
+
+    document.getElementById("editModal").style.display = "block";
+}
+
+document.getElementById("cancelEditBtn").addEventListener("click", () => {
+    document.getElementById("editModal").style.display = "none";
+});
+
+document.getElementById("saveEditBtn").addEventListener("click", async () => {
+    const name = document.getElementById("editName").value;
+    const rank = document.getElementById("editRank").value;
+
+    await fetch(`${API_BASE}/updateMembers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ editId: editingMemberId, name, rank })
+    });
+
+    document.getElementById("editModal").style.display = "none";
+    loadDashboard();
+});
+
+/* ============================================================
+   EVENT LISTENERS
+============================================================ */
+
+document.getElementById("addTxBtn").addEventListener("click", addTransaction);
+document.getElementById("updateFundsBtn").addEventListener("click", updateFunds);
+document.getElementById("updateMembersBtn").addEventListener("click", updateMembers);
+
+/* ============================================================
+   INIT
+============================================================ */
+
+loadDashboard();
