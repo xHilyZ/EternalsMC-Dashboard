@@ -3,6 +3,8 @@
 // -------------------------------
 const API_BASE = "/api";
 
+let editingMemberId = null;
+
 // -------------------------------
 // FETCH INITIAL DATA
 // -------------------------------
@@ -50,14 +52,15 @@ function updateMembersUI(members) {
         div.innerHTML = `
             <span>${member.name}</span>
             <span>${member.role ?? "Member"}</span>
-            <button class="remove-member-btn" onclick="removeMember(${member.id})">Remove</button>
+            <button onclick="openEditModal(${member.id}, '${member.name}', '${member.role}')">Edit</button>
+            <button onclick="removeMember(${member.id})">Remove</button>
         `;
         container.appendChild(div);
     });
 }
 
 function updateTransactionsUI(transactions) {
-    const container = document.getElementById("transactionsList");
+    const container = document.getElementById("transactionsList2");
     container.innerHTML = "";
 
     transactions.forEach(tx => {
@@ -103,7 +106,7 @@ async function addTransaction() {
 }
 
 // -------------------------------
-// UPDATE FUNDS (ADD & REMOVE)
+// UPDATE FUNDS
 // -------------------------------
 async function updateFunds() {
     const clean = parseFloat(document.getElementById("cleanInput").value) || 0;
@@ -166,6 +169,36 @@ async function removeMember(id) {
         console.error("Error removing member:", err);
     }
 }
+
+// -------------------------------
+// EDIT MEMBER MODAL
+// -------------------------------
+function openEditModal(id, name, role) {
+    editingMemberId = id;
+
+    document.getElementById("editName").value = name;
+    document.getElementById("editRole").value = role;
+
+    document.getElementById("editModal").style.display = "block";
+}
+
+document.getElementById("cancelEditBtn").addEventListener("click", () => {
+    document.getElementById("editModal").style.display = "none";
+});
+
+document.getElementById("saveEditBtn").addEventListener("click", async () => {
+    const name = document.getElementById("editName").value;
+    const role = document.getElementById("editRole").value;
+
+    await fetch(`${API_BASE}/updateMembers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ editId: editingMemberId, name, role })
+    });
+
+    document.getElementById("editModal").style.display = "none";
+    loadDashboard();
+});
 
 // -------------------------------
 // EVENT LISTENERS

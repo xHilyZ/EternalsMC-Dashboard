@@ -11,18 +11,25 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // FORCE JSON PARSE
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
-    const { name, role, removeId } = body;
+    const { name, role, removeId, editId } = body;
 
     // REMOVE MEMBER
     if (removeId) {
       await supabase.from("members").delete().eq("id", removeId);
     }
 
+    // EDIT MEMBER
+    if (editId && name && role) {
+      await supabase
+        .from("members")
+        .update({ name, role })
+        .eq("id", editId);
+    }
+
     // ADD MEMBER
-    if (name && role && !removeId) {
+    if (!removeId && !editId && name && role) {
       await supabase.from("members").insert([
         { name, role, created_at: new Date().toISOString() }
       ]);

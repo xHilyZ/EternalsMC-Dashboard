@@ -20,7 +20,6 @@
       <li class="restricted">Transactions</li>
     </ul>
 
-    <!-- USER BOX -->
     <div id="user-box"></div>
   </aside>
 
@@ -94,12 +93,28 @@
     <!-- TRANSACTIONS -->
     <div id="page-transactions" class="page restricted">
       <h2>Transactions</h2>
-      <div id="transactionsList"></div>
+      <div id="transactionsList2"></div>
     </div>
 
   </main>
 
-  <!-- SIDEBAR PAGE SWITCHING -->
+  <!-- EDIT MEMBER MODAL -->
+  <div id="editModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h3>Edit Member</h3>
+
+      <label>Name:</label>
+      <input id="editName" type="text">
+
+      <label>Role:</label>
+      <input id="editRole" type="text">
+
+      <button id="saveEditBtn">Save</button>
+      <button id="cancelEditBtn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- PAGE SWITCHING -->
   <script>
     const pages = {
       "Dashboard": "page-dashboard",
