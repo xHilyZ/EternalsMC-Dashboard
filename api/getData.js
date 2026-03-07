@@ -1,4 +1,5 @@
-const { createClient } = require('@supabase/supabase-js');
+import pkg from '@supabase/supabase-js';
+const { createClient } = pkg;
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
