@@ -630,7 +630,7 @@ function loadPriceList() {
 }
 
 async function logout() {
-    const { error } = await supabase.auth.signOut();
+    await sb.auth.signOut();
     window.location.href = "/login.html";
 }
 
