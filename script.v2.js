@@ -5,17 +5,26 @@
 const API_BASE = "/api";
 let editingMemberId = null;
 
-// Format numbers with commas
 function format(num) {
     return Number(num).toLocaleString();
 }
 
-// Melbourne timezone offset (UTC+11)
 const MELBOURNE_OFFSET = 11;
-
-// Members list used for quota checklist
 let currentMembers = [];
 
+/* ============================================================
+   PAGE SWITCHING
+============================================================ */
+
+function openPage(page) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById("page-" + page).classList.add("active");
+
+    if (page === "checklist") loadChecklist();
+    if (page === "quota") loadQuota();
+    if (page === "armory") loadArmory();
+    if (page === "pricelist") loadPriceList();
+}
 
 /* ============================================================
    DASHBOARD LOADING
@@ -40,29 +49,71 @@ function updateTopStats(funds, members, transactions) {
     document.getElementById("activeMembers").textContent = format(members.length);
 }
 
-
 /* ============================================================
    FUNDS SYSTEM
 ============================================================ */
 
 function updateFundsUI(funds) {
-    document.getElementById("cleanBalance").innerText = format(funds.clean);
-    document.getElementById("dirtyBalance").innerText = format(funds.dirty);
+    document.getElementById("cleanMoney").innerText = `$${format(funds.clean)}`;
+    document.getElementById("dirtyMoney").innerText = `$${format(funds.dirty)}`;
 }
 
-async function updateFunds() {
-    const clean = parseFloat(document.getElementById("cleanInput").value) || 0;
-    const dirty = parseFloat(document.getElementById("dirtyInput").value) || 0;
+async function addClean() {
+    const amount = Number(document.getElementById("fundAmount").value);
+    if (!amount) return;
 
     await fetch(`${API_BASE}/updateFunds`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ clean, dirty })
+        body: JSON.stringify({ addClean: amount })
     });
 
     loadDashboard();
 }
 
+async function removeClean() {
+    const amount = Number(document.getElementById("fundAmount").value);
+    if (!amount) return;
+
+    await fetch(`${API_BASE}/updateFunds`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ removeClean: amount })
+    });
+
+    loadDashboard();
+}
+
+async function addDirty() {
+    const amount = Number(document.getElementById("fundAmount").value);
+    if (!amount) return;
+
+    await fetch(`${API_BASE}/updateFunds`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ addDirty: amount })
+    });
+
+    loadDashboard();
+}
+
+async function removeDirty() {
+    const amount = Number(document.getElementById("fundAmount").value);
+    if (!amount) return;
+
+    await fetch(`${API_BASE}/updateFunds`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ removeDirty: amount })
+    });
+
+    loadDashboard();
+}
+
+// Your choice: Update Funds = refresh only
+function updateFunds() {
+    loadDashboard();
+}
 
 /* ============================================================
    MEMBERS SYSTEM
@@ -117,7 +168,6 @@ async function removeMember(id) {
     loadDashboard();
 }
 
-
 /* ============================================================
    EDIT MEMBER MODAL
 ============================================================ */
@@ -131,11 +181,11 @@ function openEditModal(id, name, rank) {
     document.getElementById("editModal").style.display = "block";
 }
 
-document.getElementById("cancelEditBtn").addEventListener("click", () => {
+document.getElementById("cancelEditBtn")?.addEventListener("click", () => {
     document.getElementById("editModal").style.display = "none";
 });
 
-document.getElementById("saveEditBtn").addEventListener("click", async () => {
+document.getElementById("saveEditBtn")?.addEventListener("click", async () => {
     const name = document.getElementById("editName").value;
     const rank = document.getElementById("editRank").value;
 
@@ -149,15 +199,14 @@ document.getElementById("saveEditBtn").addEventListener("click", async () => {
     loadDashboard();
 });
 
-
 /* ============================================================
-   DEALS / TRANSACTIONS SYSTEM
+   DEALS / TRANSACTIONS
 ============================================================ */
 
-async function addTransaction() {
-    const description = document.getElementById("txDescription").value;
-    const amount = parseFloat(document.getElementById("txAmount").value);
-    const type = document.getElementById("txType").value;
+async function addDeal() {
+    const description = document.getElementById("dealDesc").value;
+    const amount = parseFloat(document.getElementById("dealAmount").value);
+    const type = document.getElementById("dealType").value;
 
     if (!description || isNaN(amount)) return alert("Enter valid description and amount.");
 
@@ -167,8 +216,8 @@ async function addTransaction() {
         body: JSON.stringify({ description, amount, type })
     });
 
-    document.getElementById("txDescription").value = "";
-    document.getElementById("txAmount").value = "";
+    document.getElementById("dealDesc").value = "";
+    document.getElementById("dealAmount").value = "";
 
     loadDashboard();
 }
@@ -215,17 +264,8 @@ function updateDealsTransactionsUI(transactions) {
     });
 }
 
-
 /* ============================================================
-   EVENT LISTENERS
-============================================================ */
-
-document.getElementById("addTxBtn").addEventListener("click", addTransaction);
-document.getElementById("updateFundsBtn").addEventListener("click", updateFunds);
-document.getElementById("updateMembersBtn").addEventListener("click", updateMembers);
-
-/* ============================================================
-   DAILY CHECKLIST SYSTEM
+   DAILY CHECKLIST
 ============================================================ */
 
 const DAILY_TASKS = [
@@ -276,7 +316,6 @@ function toggleTask(task) {
     localStorage.setItem("dailyChecklist", JSON.stringify(saved));
 }
 
-
 /* ============================================================
    DAILY RESET COUNTDOWN
 ============================================================ */
@@ -320,15 +359,11 @@ function scheduleDailyReset() {
 scheduleDailyReset();
 
 /* ============================================================
-   WEEKLY QUOTA DATA
+   WEEKLY QUOTA SYSTEM
 ============================================================ */
 
 let WEEKLY_QUOTA_TEXT = localStorage.getItem("weeklyQuotaText") 
     || "Set this week's quota from the dashboard tile.";
-
-/* ============================================================
-   WEEKLY QUOTA SYSTEM
-============================================================ */
 
 function loadQuota() {
     const header = document.getElementById("quotaHeader");
@@ -367,7 +402,7 @@ function toggleQuota(key) {
 
 function openQuotaModal() {
     document.getElementById("quotaTextInput").value = WEEKLY_QUOTA_TEXT;
-    document.getElementById("quotaModal").style.display = "block";
+    document.getElementById("quotaModal").style.display = "flex";
 }
 
 function closeQuotaModal() {
@@ -387,7 +422,7 @@ function saveQuota() {
 }
 
 /* ============================================================
-   ARMORY DATA (MUST COME BEFORE ANY ARMORY FUNCTIONS)
+   ARMORY SYSTEM
 ============================================================ */
 
 let ARMORY = JSON.parse(localStorage.getItem("armoryData")) || {
@@ -421,10 +456,6 @@ let ARMORY = JSON.parse(localStorage.getItem("armoryData")) || {
     ]
 };
 
-/* ============================================================
-   ARMORY SYSTEM (GROUPED, EDITABLE, SEARCHABLE)
-============================================================ */
-
 function saveArmory() {
     localStorage.setItem("armoryData", JSON.stringify(ARMORY));
 }
@@ -432,7 +463,6 @@ function saveArmory() {
 function loadArmory() {
     const container = document.getElementById("armoryList");
 
-    // ⭐ Reset search every time Armory page opens
     const search = document.getElementById("armorySearch");
     if (search) search.value = "";
 
@@ -461,7 +491,6 @@ function loadArmory() {
     });
 }
 
-/* ⭐ SEARCH BY ITEM NAME ONLY */
 function filterArmory() {
     const query = document.getElementById("armorySearch").value.toLowerCase();
     const container = document.getElementById("armoryList");
@@ -535,10 +564,45 @@ function removeArmoryItem(group, index) {
     loadArmory();
 }
 
-
 /* ============================================================
    PRICE LIST SYSTEM
 ============================================================ */
+
+const PRICE_LIST = [
+    {
+        group: "14K Triads",
+        items: [
+            { what: "Heavy SMG BP", price: 1000000, relationship: "Own Vendor" },
+            { what: "Pump Shotgun MK2 BP", price: 850000, relationship: "Own Vendor" }
+        ]
+    },
+    {
+        group: "B13",
+        items: [
+            { what: "SCAR BP", price: 1800000, relationship: "Own Vendor" }
+        ]
+    },
+    {
+        group: "ETERNALS MC",
+        items: [
+            { what: "Sawn-Off Shotgun BP", price: 0, relationship: "Own Vendor" },
+            { what: "MPX BP", price: 0, relationship: "Own Vendor" }
+        ]
+    },
+    {
+        group: "FDK",
+        items: [
+            { what: "PPSH BP", price: 0, relationship: "Own Vendor" }
+        ]
+    },
+    {
+        group: "UMBRA",
+        items: [
+            { what: "Deagle BP", price: 400000, relationship: "Own Vendor" },
+            { what: "V-17 BP (Auto Pistol)", price: 650000, relationship: "Own Vendor" }
+        ]
+    }
+];
 
 function loadPriceList() {
     const container = document.getElementById("priceListContainer");
@@ -565,9 +629,9 @@ function loadPriceList() {
     });
 }
 
-
 /* ============================================================
    INIT
 ============================================================ */
 
+updateCountdown();
 loadDashboard();
