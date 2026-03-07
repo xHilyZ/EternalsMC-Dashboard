@@ -1,32 +1,18 @@
-// -------------------------------
-// CONFIG
-// -------------------------------
 const API_BASE = "/api";
-
 let editingMemberId = null;
 
-// -------------------------------
-// FETCH INITIAL DATA
-// -------------------------------
+// LOAD DASHBOARD
 async function loadDashboard() {
-    try {
-        const res = await fetch(`${API_BASE}/getData`);
-        const data = await res.json();
+    const res = await fetch(`${API_BASE}/getData`);
+    const data = await res.json();
 
-        updateFundsUI(data.funds);
-        updateMembersUI(data.members);
-        updateTransactionsUI(data.transactions);
-
-        updateTopStats(data.funds, data.members, data.transactions);
-
-    } catch (err) {
-        console.error("Error loading dashboard:", err);
-    }
+    updateFundsUI(data.funds);
+    updateMembersUI(data.members);
+    updateTransactionsUI(data.transactions);
+    updateTopStats(data.funds, data.members, data.transactions);
 }
 
-// -------------------------------
-// UPDATE TOP STATS
-// -------------------------------
+// TOP STATS
 function updateTopStats(funds, members, transactions) {
     const totalMoney = (funds.clean || 0) + (funds.dirty || 0);
     document.getElementById("totalMoney").textContent = `$${totalMoney}`;
@@ -34,14 +20,13 @@ function updateTopStats(funds, members, transactions) {
     document.getElementById("activeMembers").textContent = members.length;
 }
 
-// -------------------------------
-// UPDATE UI SECTIONS
-// -------------------------------
+// FUNDS UI
 function updateFundsUI(funds) {
     document.getElementById("cleanBalance").innerText = funds.clean;
     document.getElementById("dirtyBalance").innerText = funds.dirty;
 }
 
+// MEMBERS UI
 function updateMembersUI(members) {
     const container = document.getElementById("membersList");
     container.innerHTML = "";
@@ -51,14 +36,15 @@ function updateMembersUI(members) {
         div.className = "member-item";
         div.innerHTML = `
             <span>${member.name}</span>
-            <span>${member.role ?? "Member"}</span>
-            <button onclick="openEditModal(${member.id}, '${member.name}', '${member.role}')">Edit</button>
-            <button onclick="removeMember(${member.id})">Remove</button>
+            <span>${member.rank ?? "Member"}</span>
+            <button onclick="openEditModal('${member.id}', '${member.name}', '${member.rank}')">Edit</button>
+            <button onclick="removeMember('${member.id}')">Remove</button>
         `;
         container.appendChild(div);
     });
 }
 
+// TRANSACTIONS UI
 function updateTransactionsUI(transactions) {
     const container = document.getElementById("transactionsList2");
     container.innerHTML = "";
@@ -79,105 +65,73 @@ function updateTransactionsUI(transactions) {
     });
 }
 
-// -------------------------------
 // ADD TRANSACTION
-// -------------------------------
 async function addTransaction() {
     const description = document.getElementById("txDescription").value;
     const amount = parseFloat(document.getElementById("txAmount").value);
     const type = document.getElementById("txType").value;
 
-    if (!description || isNaN(amount)) {
-        alert("Enter valid description and amount.");
-        return;
-    }
+    if (!description || isNaN(amount)) return alert("Enter valid description and amount.");
 
-    try {
-        await fetch(`${API_BASE}/addTransaction`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ description, amount, type })
-        });
+    await fetch(`${API_BASE}/addTransaction`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description, amount, type })
+    });
 
-        loadDashboard();
-    } catch (err) {
-        console.error("Error adding transaction:", err);
-    }
+    loadDashboard();
 }
 
-// -------------------------------
 // UPDATE FUNDS
-// -------------------------------
 async function updateFunds() {
     const clean = parseFloat(document.getElementById("cleanInput").value) || 0;
     const dirty = parseFloat(document.getElementById("dirtyInput").value) || 0;
 
-    try {
-        await fetch(`${API_BASE}/updateFunds`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ clean, dirty })
-        });
+    await fetch(`${API_BASE}/updateFunds`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clean, dirty })
+    });
 
-        loadDashboard();
-    } catch (err) {
-        console.error("Error updating funds:", err);
-    }
+    loadDashboard();
 }
 
-// -------------------------------
 // ADD MEMBER
-// -------------------------------
 async function updateMembers() {
     const name = document.getElementById("memberName").value;
-    const role = document.getElementById("memberRole").value;
+    const rank = document.getElementById("memberRank").value;
 
-    if (!name || !role) {
-        alert("Enter valid member name and role.");
-        return;
-    }
+    if (!name || !rank) return alert("Enter valid member name and rank.");
 
-    try {
-        await fetch(`${API_BASE}/updateMembers`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, role })
-        });
+    await fetch(`${API_BASE}/updateMembers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, rank })
+    });
 
-        document.getElementById("memberName").value = "";
-        document.getElementById("memberRole").value = "";
+    document.getElementById("memberName").value = "";
+    document.getElementById("memberRank").value = "";
 
-        loadDashboard();
-    } catch (err) {
-        console.error("Error updating members:", err);
-    }
+    loadDashboard();
 }
 
-// -------------------------------
 // REMOVE MEMBER
-// -------------------------------
 async function removeMember(id) {
-    try {
-        await fetch(`${API_BASE}/updateMembers`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ removeId: id })
-        });
+    await fetch(`${API_BASE}/updateMembers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ removeId: id })
+    });
 
-        loadDashboard();
-    } catch (err) {
-        console.error("Error removing member:", err);
-    }
+    loadDashboard();
 }
 
-// -------------------------------
-// EDIT MEMBER MODAL
-// -------------------------------
-function openEditModal(id, name, role) {
+// EDIT MODAL
+function openEditModal(id, name, rank) {
     editingMemberId = id;
 
     document.getElementById("editName").value = name;
-    document.getElementById("editRole").value = role;
+    document.getElementById("editRank").value = rank;
 
     document.getElementById("editModal").style.display = "block";
 }
@@ -188,26 +142,22 @@ document.getElementById("cancelEditBtn").addEventListener("click", () => {
 
 document.getElementById("saveEditBtn").addEventListener("click", async () => {
     const name = document.getElementById("editName").value;
-    const role = document.getElementById("editRole").value;
+    const rank = document.getElementById("editRank").value;
 
     await fetch(`${API_BASE}/updateMembers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ editId: editingMemberId, name, role })
+        body: JSON.stringify({ editId: editingMemberId, name, rank })
     });
 
     document.getElementById("editModal").style.display = "none";
     loadDashboard();
 });
 
-// -------------------------------
 // EVENT LISTENERS
-// -------------------------------
 document.getElementById("addTxBtn").addEventListener("click", addTransaction);
 document.getElementById("updateFundsBtn").addEventListener("click", updateFunds);
 document.getElementById("updateMembersBtn").addEventListener("click", updateMembers);
 
-// -------------------------------
 // INIT
-// -------------------------------
 loadDashboard();

@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
-    const { name, role, removeId, editId } = body;
+    const { name, rank, removeId, editId } = body;
 
     // REMOVE MEMBER
     if (removeId) {
@@ -21,17 +21,17 @@ module.exports = async function handler(req, res) {
     }
 
     // EDIT MEMBER
-    if (editId && name && role) {
+    if (editId && name && rank) {
       await supabase
         .from("members")
-        .update({ name, role })
+        .update({ name, rank })
         .eq("id", editId);
     }
 
     // ADD MEMBER
-    if (!removeId && !editId && name && role) {
+    if (!removeId && !editId && name && rank) {
       await supabase.from("members").insert([
-        { name, role, created_at: new Date().toISOString() }
+        { name, rank, created_at: new Date().toISOString() }
       ]);
     }
 
