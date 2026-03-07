@@ -7,7 +7,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   try {
     // Load funds
     const { data: funds, error: fundsError } = await supabase
@@ -44,4 +44,4 @@ module.exports = async function handler(req, res) {
     console.error("getData error:", err);
     res.status(500).json({ error: "Failed to load data" });
   }
-};
+}
