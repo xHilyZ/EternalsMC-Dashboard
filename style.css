@@ -1,4 +1,6 @@
-/* GLOBAL */
+/* ============================
+   GLOBAL
+============================ */
 body {
     margin: 0;
     padding: 0;
@@ -8,16 +10,9 @@ body {
     display: flex;
 }
 
-/* TOP BAR */
-.top-bar {
-    background: #111;
-    padding: 12px 20px;
-    color: #C2B59B;
-    font-size: 14px;
-    border-bottom: 1px solid #3A3A3A;
-}
-
-/* SIDEBAR */
+/* ============================
+   SIDEBAR
+============================ */
 .sidebar {
     width: 260px;
     background: #0D0D0D;
@@ -28,204 +23,30 @@ body {
     justify-content: space-between;
 }
 
-.sidebar-header {
+.sidebar h2 {
     text-align: center;
-    padding: 20px;
-}
-
-.sidebar-patch {
-    width: 140px;
-    height: auto;
-    margin-bottom: 10px;
-}
-
-.sidebar-header h1 {
+    padding: 20px 0;
     color: #C2B59B;
-    font-size: 20px;
+    font-size: 22px;
     letter-spacing: 2px;
 }
 
-/* NAVIGATION */
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.nav-item {
-    background: transparent;
-    border: none;
+.sidebar ul li {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: 0.2s;
     color: #E6E6E6;
-    padding: 12px 15px;
-    text-align: left;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-bottom: 5px;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
-.nav-item:hover {
+.sidebar ul li:hover {
     background: #C2B59B;
     color: #000;
-}
-
-.icon {
-    color: #C2B59B;
-    font-size: 18px;
-}
-
-/* MAIN CONTENT */
-.main {
-    flex: 1;
-}
-
-/* PAGE SYSTEM */
-.page {
-    display: none;
-    padding: 20px;
-}
-
-/* ⭐ SLIDE ANIMATION ⭐ */
-.page {
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.35s ease;
-}
-
-.page.active {
-    opacity: 1;
-    max-height: 2000px;
-}
-/* ⭐ END ⭐ */
-
-/* TOP STATS */
-.top-stats {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.money-main label {
-    color: #C2B59B;
-    font-size: 16px;
-}
-
-.money-main span {
-    display: block;
-    font-size: 32px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
-.sub-stats {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 15px;
-}
-
-.sub-stat label {
-    color: #C2B59B;
-    font-size: 14px;
-}
-
-.sub-stat span {
-    display: block;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-/* QUICK ACTION TILES */
-.quick-actions {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    margin-bottom: 30px;
-}
-
-.action-tile {
-    width: 90px;
-    height: 90px;
-    background: #0D0D0D;
-    border: 2px solid #C2B59B;
-    border-radius: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.2s;
-    padding-top: 10px;
-}
-
-.action-tile:hover {
-    background: #1A1A1A;
-    border-color: #E6DCC5;
-}
-
-.action-icon {
-    font-size: 24px;
-    color: #C2B59B;
-    margin-bottom: 5px;
-}
-
-.action-label {
-    font-size: 12px;
-    font-weight: bold;
-}
-
-/* CARDS */
-.card {
-    background: #0D0D0D;
-    padding: 20px;
-    margin: 0 20px 30px 20px;
-    border-radius: 8px;
-    border: 1px solid #3A3A3A;
-}
-
-.card-title {
-    background: #C2B59B;
-    color: #000;
-    padding: 10px 15px;
-    font-weight: bold;
-    font-size: 18px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-/* LISTS */
-.list {
-    background: #111;
-    padding: 10px;
-    border-radius: 6px;
-    max-height: 250px;
-    overflow-y: auto;
-    border: 1px solid #222;
-}
-
-/* AUTH VISIBILITY */
-body.guest .restricted {
-    display: none !important;
-}
-
-/* LOGIN BUTTON */
-.login-btn {
-    background: #5865F2;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-}
-
-.login-btn:hover {
-    background: #4752C4;
 }
 
 /* USER BOX */
@@ -251,9 +72,73 @@ body.guest .restricted {
     background: #E6DCC5;
 }
 
-/* ================================
-   CLEAN OUTLAW PAGE UI (NEW)
-   ================================ */
+/* ============================
+   MAIN CONTENT
+============================ */
+main {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+main h1 {
+    color: #C2B59B;
+    font-size: 28px;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+/* ============================
+   PAGE SYSTEM
+============================ */
+.page {
+    display: none;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.35s ease;
+}
+
+.page.active {
+    display: block;
+    opacity: 1;
+    max-height: 2000px;
+}
+
+/* ============================
+   DASHBOARD (UNCHANGED)
+============================ */
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.stat-box {
+    background: #0D0D0D;
+    border: 2px solid #3A3A3A;
+    padding: 20px 30px;
+    border-radius: 10px;
+    text-align: center;
+    width: 180px;
+}
+
+.stat-box h3 {
+    color: #C2B59B;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.stat-box p {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* ============================
+   CLEAN UI FOR PAGES
+============================ */
 
 /* PAGE HEADERS */
 .page h2 {
@@ -266,7 +151,7 @@ body.guest .restricted {
 }
 
 /* INPUTS */
-.page input, 
+.page input,
 .page select {
     width: 100%;
     max-width: 350px;
@@ -303,7 +188,9 @@ body.guest .restricted {
     background: #E6DCC5;
 }
 
-/* MEMBERS LIST */
+/* ============================
+   MEMBERS PAGE
+============================ */
 #membersList {
     margin-top: 20px;
     display: flex;
@@ -326,7 +213,6 @@ body.guest .restricted {
     font-weight: 500;
 }
 
-/* MEMBER BUTTONS */
 .member-item button {
     background: #333;
     padding: 6px 12px;
@@ -339,8 +225,11 @@ body.guest .restricted {
     background: #444;
 }
 
-/* TRANSACTIONS LIST */
-#transactionsList2, #transactionsList {
+/* ============================
+   TRANSACTIONS PAGE
+============================ */
+#transactionsList2,
+#transactionsList {
     margin-top: 20px;
     display: flex;
     flex-direction: column;
@@ -356,7 +245,9 @@ body.guest .restricted {
     border-left: 4px solid #1976d2;
 }
 
-/* FUNDS PAGE */
+/* ============================
+   BANK PAGE
+============================ */
 #page-bank p {
     font-size: 18px;
     margin: 10px 0 5px 0;
@@ -366,7 +257,9 @@ body.guest .restricted {
     max-width: 250px;
 }
 
-/* MODAL */
+/* ============================
+   MODAL
+============================ */
 .modal {
     position: fixed;
     top: 0;
