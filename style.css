@@ -304,7 +304,7 @@ main h1 {
 }
 
 /* ============================
-   CHECKLIST PAGE
+   CHECKLIST PAGE (OLD BASE)
 ============================ */
 .check-item {
     background: #111;
@@ -319,6 +319,60 @@ main h1 {
 
 .check-item label {
     font-size: 16px;
+}
+
+/* ============================
+   CHECKLIST — GROUP HEADERS (NEW)
+============================ */
+.checklist-group {
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: #C2B59B;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ============================
+   CHECKLIST — ITEMS (NEW)
+============================ */
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.check-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.check-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.check-item label {
+    cursor: pointer;
+    font-size: 15px;
+    color: #ddd;
+}
+
+/* ============================
+   CHECKLIST — COUNTDOWN HEADER
+============================ */
+#checklistHeader {
+    font-size: 18px;
+    color: #C2B59B;
+    margin-bottom: 15px;
+    font-weight: 500;
 }
 
 /* ============================

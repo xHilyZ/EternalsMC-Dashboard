@@ -9,13 +9,20 @@ function format(num) {
 // MELBOURNE TIME OFFSET (AEDT = UTC+11)
 const MELBOURNE_OFFSET = 11;
 
-// DAILY TASKS
+// DAILY TASKS (GROUPED)
 const DAILY_TASKS = [
-    "Collect club dues",
-    "Check weapon stock",
-    "Refill drug lab supplies",
-    "Update member activity",
-    "Review deals for the day"
+    // LEGAL
+    { group: "Legal Operations", task: "Mining Runs — 30–60 minutes of mining" },
+    { group: "Legal Operations", task: "Scrapyard Work — 30–60 minutes salvaging" },
+    { group: "Legal Operations", task: "Dumpster Sweeps — 20 minutes of bin diving" },
+    { group: "Legal Operations", task: "Electrician Contracts — 10–45 minutes depending on level" },
+    { group: "Legal Operations", task: "Metal Detecting — 30–60 minutes searching" },
+
+    // ILLEGAL
+    { group: "Illegal Operations", task: "Meth Supply Pickups — PC:1005, collect crates, do NOT open" },
+    { group: "Illegal Operations", task: "Crime Tablet Missions — avoid graffiti & laundering missions" },
+    { group: "Illegal Operations", task: "Door Heist Jobs — PC:645, best bullet casing payout" },
+    { group: "Illegal Operations", task: "Chop Shop Runs — Chop 2–10 cars at PC:102" }
 ];
 
 // LOAD DASHBOARD
@@ -144,21 +151,31 @@ async function removeMember(id) {
     loadDashboard();
 }
 
-// CHECKLIST LOGIC
+// CHECKLIST LOGIC (GROUPED)
 function loadChecklist() {
     const container = document.getElementById("checklistContainer");
     container.innerHTML = "";
 
     const saved = JSON.parse(localStorage.getItem("dailyChecklist")) || {};
 
-    DAILY_TASKS.forEach(task => {
-        const checked = saved[task] || false;
+    let currentGroup = "";
+
+    DAILY_TASKS.forEach(item => {
+        if (item.group !== currentGroup) {
+            currentGroup = item.group;
+            const header = document.createElement("h3");
+            header.textContent = currentGroup;
+            header.className = "checklist-group";
+            container.appendChild(header);
+        }
+
+        const checked = saved[item.task] || false;
 
         const div = document.createElement("div");
         div.className = "check-item";
         div.innerHTML = `
-            <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleTask('${task}')">
-            <label>${task}</label>
+            <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleTask('${item.task}')">
+            <label>${item.task}</label>
         `;
         container.appendChild(div);
     });
@@ -170,6 +187,38 @@ function toggleTask(task) {
     localStorage.setItem("dailyChecklist", JSON.stringify(saved));
 }
 
+// COUNTDOWN TIMER (5 PM AEST RESET)
+function updateCountdown() {
+    const now = new Date();
+    const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
+
+    const reset = new Date(mel);
+    reset.setHours(17, 0, 0, 0); // 5:00 PM AEST
+
+    if (mel > reset) {
+        reset.setDate(reset.getDate() + 1);
+    }
+
+    const diff = reset - mel;
+
+    const hours = Math.floor(diff / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+
+    document.getElementById("checklistHeader").innerHTML =
+        `Resets in ${hours}h ${mins}m ${secs}s`;
+
+    setTimeout(updateCountdown, 1000);
+}
+
+function openChecklist() {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById("page-checklist").classList.add("active");
+    loadChecklist();
+    updateCountdown();
+}
+
+// DAILY RESET
 function scheduleDailyReset() {
     const now = new Date();
     const melbourneNow = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
@@ -184,12 +233,6 @@ function scheduleDailyReset() {
         loadChecklist();
         scheduleDailyReset();
     }, msUntilReset);
-}
-
-function openChecklist() {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById("page-checklist").classList.add("active");
-    loadChecklist();
 }
 
 scheduleDailyReset();
