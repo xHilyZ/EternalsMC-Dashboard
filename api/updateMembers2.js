@@ -12,24 +12,55 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { members } = req.body;
+    const { name, rank, removeId, editId } = req.body;
 
-    // Clear table
-    const { error: deleteError } = await supabase
-      .from("members")
-      .delete()
-      .neq("id", 0);
+    // ============================
+    // REMOVE MEMBER
+    // ============================
+    if (removeId) {
+      const { error } = await supabase
+        .from("members")
+        .delete()
+        .eq("id", removeId);
 
-    if (deleteError) throw deleteError;
+      if (error) throw error;
 
-    // Insert new members
-    const { error: insertError } = await supabase
-      .from("members")
-      .insert(members);
+      return res.status(200).json({ success: true });
+    }
 
-    if (insertError) throw insertError;
+    // ============================
+    // EDIT MEMBER
+    // ============================
+    if (editId) {
+      const { error } = await supabase
+        .from("members")
+        .update({ name, rank })
+        .eq("id", editId);
 
-    res.status(200).json({ success: true });
+      if (error) throw error;
+
+      return res.status(200).json({ success: true });
+    }
+
+    // ============================
+    // ADD MEMBER
+    // ============================
+    if (name && rank) {
+      const { error } = await supabase
+        .from("members")
+        .insert({
+          id: crypto.randomUUID(),
+          name,
+          rank,
+          created_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      return res.status(200).json({ success: true });
+    }
+
+    return res.status(400).json({ error: "Invalid request" });
 
   } catch (err) {
     console.error("updateMembers error:", err);
