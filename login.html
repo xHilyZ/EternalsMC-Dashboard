@@ -5,7 +5,7 @@
     <title>EMC Login</title>
     <style>
         body {
-            background: #111;
+            background: #0d0d0d;
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
@@ -14,33 +14,60 @@
             height: 100vh;
             margin: 0;
         }
-        .login-box {
-            background: #1a1a1a;
-            padding: 30px;
-            border-radius: 10px;
-            width: 300px;
+
+        .login-container {
             text-align: center;
-            border: 1px solid #444;
         }
+
+        .patch {
+            width: 160px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 8px rgba(0,0,0,0.6));
+        }
+
+        .login-box {
+            background: rgba(20, 20, 20, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            width: 320px;
+            border: 1px solid #C2B59B;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #C2B59B;
+            letter-spacing: 1px;
+        }
+
         input {
             width: 90%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
+            background: #1a1a1a;
+            color: white;
+            border: 1px solid #333;
         }
+
         button {
             width: 100%;
             padding: 12px;
             background: #C2B59B;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            color: #111;
+            margin-top: 10px;
         }
+
         button:hover {
             background: #a89f8a;
         }
+
         .error {
             color: #ff4d4d;
             margin-top: 10px;
@@ -49,12 +76,21 @@
 </head>
 <body>
 
-<div class="login-box">
-    <h2>EMC Login</h2>
-    <input id="username" type="text" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <p id="error" class="error"></p>
+<div class="login-container">
+
+    <!-- Your patch -->
+    <img src="patch.png" class="patch">
+
+    <div class="login-box">
+        <h2>EMC Login</h2>
+
+        <input id="username" type="text" placeholder="Username">
+        <input id="password" type="password" placeholder="Password">
+
+        <button onclick="login()">Login</button>
+
+        <p id="error" class="error"></p>
+    </div>
 </div>
 
 <script>
