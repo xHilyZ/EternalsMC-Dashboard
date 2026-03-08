@@ -45,7 +45,12 @@ async function applyAuthVisibility() {
 }
 
 function login() {
-    window.location.href = "/login.html";
+    sb.auth.signInWithOAuth({
+        provider: "discord",
+        options: {
+            redirectTo: window.location.origin
+        }
+    });
 }
 
 // Run on load
@@ -670,7 +675,7 @@ function loadPriceList() {
 
 async function logout() {
     await sb.auth.signOut();
-    window.location.href = "/login.html";
+    window.location.reload();
 }
 
 /* ============================================================
