@@ -13,6 +13,45 @@ const MELBOURNE_OFFSET = 11;
 let currentMembers = [];
 
 /* ============================================================
+   AUTH VISIBILITY CONTROL
+============================================================ */
+
+async function applyAuthVisibility() {
+    const { data: { user } } = await sb.auth.getUser();
+    const loggedIn = !!user;
+
+    // Sidebar items to hide before login
+    const restrictedSidebar = [
+        "deals", "bank", "checklist", "quota",
+        "pricelist", "armory", "members", "transactions"
+    ];
+
+    restrictedSidebar.forEach(page => {
+        const li = document.querySelector(`li[onclick="openPage('${page}')"]`);
+        if (li) li.style.display = loggedIn ? "block" : "none";
+    });
+
+    // Hide dashboard tiles before login
+    const tiles = document.querySelector(".quick-actions");
+    if (tiles) tiles.style.display = loggedIn ? "flex" : "none";
+
+    // Bottom-left user box
+    const userBox = document.getElementById("user-box");
+    if (!loggedIn) {
+        userBox.innerHTML = `<button onclick="login()">Login with Discord</button>`;
+    } else {
+        userBox.innerHTML = `<p>MEMBER</p><button onclick="logout()">Logout</button>`;
+    }
+}
+
+function login() {
+    window.location.href = "/login.html";
+}
+
+// Run on load
+applyAuthVisibility();
+
+/* ============================================================
    PAGE SWITCHING
 ============================================================ */
 
