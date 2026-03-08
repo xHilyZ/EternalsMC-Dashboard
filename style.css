@@ -558,8 +558,7 @@ main h1 {
 
 #footer-credit {
     text-align: center;
-    margin-top: 50px;
-    padding: 20px 0;
+    padding: 25px 0;
     font-size: 15px;
     letter-spacing: 1.5px;
     color: var(--gold);
@@ -567,5 +566,9 @@ main h1 {
     font-weight: 600;
     text-shadow: 0 0 10px rgba(194,181,155,0.35);
     user-select: none;
-}
 
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+}
