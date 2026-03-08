@@ -673,14 +673,20 @@ function loadPriceList() {
     });
 }
 
-async function logout() {
-    await sb.auth.signOut();
-    window.location.reload();
-}
-
 /* ============================================================
    INIT
 ============================================================ */
 
-updateCountdown();
-loadDashboard();
+async function init() {
+    // Wait for Supabase to restore session from URL hash
+    await sb.auth.getSession();
+
+    // Now apply login visibility
+    await applyAuthVisibility();
+
+    // Load dashboard data
+    updateCountdown();
+    loadDashboard();
+}
+
+init();
