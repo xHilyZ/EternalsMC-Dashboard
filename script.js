@@ -1,4 +1,17 @@
 /* ============================================================
+   LOGIN PROTECTION (NEW)
+============================================================ */
+
+if (localStorage.getItem("loggedIn") !== "true") {
+    window.location.href = "login.html";
+}
+
+function logout() {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "login.html";
+}
+
+/* ============================================================
    GLOBAL CONFIG
 ============================================================ */
 
@@ -11,47 +24,6 @@ function format(num) {
 
 const MELBOURNE_OFFSET = 11;
 let currentMembers = [];
-
-/* ============================================================
-   AUTH VISIBILITY CONTROL
-============================================================ */
-
-async function applyAuthVisibility() {
-    const { data: { user } } = await sb.auth.getUser();
-    const loggedIn = !!user;
-
-    // Sidebar items to hide before login
-    const restrictedSidebar = [
-        "deals", "bank", "checklist", "quota",
-        "pricelist", "armory", "members", "transactions"
-    ];
-
-    restrictedSidebar.forEach(page => {
-        const li = document.querySelector(`li[onclick="openPage('${page}')"]`);
-        if (li) li.style.display = loggedIn ? "block" : "none";
-    });
-
-    // Hide dashboard tiles before login
-    const tiles = document.querySelector(".quick-actions");
-    if (tiles) tiles.style.display = loggedIn ? "flex" : "none";
-
-    // Bottom-left user box
-    const userBox = document.getElementById("user-box");
-    if (!loggedIn) {
-        userBox.innerHTML = `<button onclick="login()">Login with Discord</button>`;
-    } else {
-        userBox.innerHTML = `<p>MEMBER</p><button onclick="logout()">Logout</button>`;
-    }
-}
-
-function login() {
-    sb.auth.signInWithOAuth({
-        provider: "discord",
-        options: {
-            redirectTo: window.location.origin
-        }
-    });
-}
 
 /* ============================================================
    PAGE SWITCHING
@@ -151,7 +123,6 @@ async function removeDirty() {
     loadDashboard();
 }
 
-// Your choice: Update Funds = refresh only
 function updateFunds() {
     loadDashboard();
 }
@@ -674,32 +645,7 @@ function loadPriceList() {
    INIT
 ============================================================ */
 
-async function init() {
-    // 1. Check if Discord returned tokens in URL hash
-    const hash = window.location.hash;
-    if (hash.includes("access_token")) {
-        const params = new URLSearchParams(hash.substring(1));
-        const access_token = params.get("access_token");
-        const refresh_token = params.get("refresh_token");
-
-        if (access_token && refresh_token) {
-            await sb.auth.setSession({
-                access_token,
-                refresh_token
-            });
-
-            // Remove the ugly hash from the URL
-            window.history.replaceState({}, document.title, "/");
-        }
-    }
-
-    // 2. Now Supabase can restore the session normally
-    await sb.auth.getSession();
-
-    // 3. Apply login visibility
-    await applyAuthVisibility();
-
-    // 4. Load dashboard data
+function init() {
     updateCountdown();
     loadDashboard();
 }
