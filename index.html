@@ -78,15 +78,31 @@ if (localStorage.getItem("loggedIn") !== "true") {
 
     <div class="panel">
         <div class="quick-actions">
+
+            <!-- CHECKLIST TILE -->
             <div class="action-tile" onclick="openPage('checklist')">
                 <span class="action-icon">📋</span>
                 <span class="action-label">Checklist</span>
             </div>
 
+            <!-- QUOTA TILE -->
             <div class="action-tile" onclick="openPage('quota')">
                 <span class="action-icon">📦</span>
                 <span class="action-label">Quota</span>
             </div>
+
+            <!-- ⭐ RADIO TILE (Visible to all, editable only by admins) -->
+            <div class="action-tile" style="position: relative; cursor: default;">
+                <span class="action-icon">📻</span>
+                <span id="radioLabel" class="action-label">Radio: 68.53</span>
+
+                <!-- LIVE BADGE -->
+                <span class="live-badge">LIVE</span>
+
+                <!-- ADMIN-ONLY EDIT ICON -->
+                <span class="edit-radio admin-only" onclick="openRadioModal()">⚙️</span>
+            </div>
+
         </div>
     </div>
 
@@ -252,6 +268,20 @@ if (localStorage.getItem("loggedIn") !== "true") {
         <div style="display:flex; justify-content:space-between;">
             <button onclick="saveQuota()">Save</button>
             <button onclick="closeQuotaModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- RADIO EDIT MODAL (ADMIN ONLY) -->
+<div id="radioModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h3>Edit Radio Channel</h3>
+
+        <input id="radioInput" placeholder="Enter new channel (e.g., 68.53)">
+
+        <div style="display:flex; justify-content:space-between;">
+            <button onclick="saveRadio()">Save</button>
+            <button onclick="closeRadioModal()">Cancel</button>
         </div>
     </div>
 </div>
