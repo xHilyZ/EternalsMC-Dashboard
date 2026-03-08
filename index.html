@@ -73,6 +73,20 @@ if (localStorage.getItem("loggedIn") !== "true") {
                 <h3>Active Members</h3>
                 <p id="activeMembers">0</p>
             </div>
+
+            <!-- ⭐ RADIO STAT (Visible to all, editable only by admins) -->
+            <div class="stat-box" style="position: relative;">
+                <h3>Radio Channel</h3>
+                <p id="radioLabel">68.53</p>
+
+                <!-- LIVE BADGE -->
+                <span class="live-badge" style="top: 10px; right: 10px;">LIVE</span>
+
+                <!-- ADMIN-ONLY EDIT ICON -->
+                <span class="edit-radio admin-only" onclick="openRadioModal()" 
+                      style="bottom: 10px; right: 10px;">⚙️</span>
+            </div>
+
         </div>
     </div>
 
@@ -91,17 +105,7 @@ if (localStorage.getItem("loggedIn") !== "true") {
                 <span class="action-label">Quota</span>
             </div>
 
-            <!-- ⭐ RADIO TILE (Visible to all, editable only by admins) -->
-            <div class="action-tile" style="position: relative; cursor: default;">
-                <span class="action-icon">📻</span>
-                <span id="radioLabel" class="action-label">Radio: 68.53</span>
-
-                <!-- LIVE BADGE -->
-                <span class="live-badge">LIVE</span>
-
-                <!-- ADMIN-ONLY EDIT ICON -->
-                <span class="edit-radio admin-only" onclick="openRadioModal()">⚙️</span>
-            </div>
+            <!-- ⭐ RADIO TILE REMOVED (as requested) -->
 
         </div>
     </div>
