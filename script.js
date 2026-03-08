@@ -678,16 +678,33 @@ function loadPriceList() {
 ============================================================ */
 
 async function init() {
-    // Wait for Supabase to restore session from URL hash
+    // 1. Check if Discord returned tokens in URL hash
+    const hash = window.location.hash;
+    if (hash.includes("access_token")) {
+        const params = new URLSearchParams(hash.substring(1));
+        const access_token = params.get("access_token");
+        const refresh_token = params.get("refresh_token");
+
+        if (access_token && refresh_token) {
+            await sb.auth.setSession({
+                access_token,
+                refresh_token
+            });
+
+            // Remove the ugly hash from the URL
+            window.history.replaceState({}, document.title, "/");
+        }
+    }
+
+    // 2. Now Supabase can restore the session normally
     await sb.auth.getSession();
 
-    // Now apply login visibility
+    // 3. Apply login visibility
     await applyAuthVisibility();
 
-    // Load dashboard data
+    // 4. Load dashboard data
     updateCountdown();
     loadDashboard();
 }
 
 init();
-
