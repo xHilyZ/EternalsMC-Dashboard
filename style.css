@@ -122,11 +122,18 @@ main {
     z-index: 2;
 }
 
+/* ⭐ PREMIUM CENTERED HEADER */
 main h1 {
     color: var(--gold);
-    font-size: 28px;
-    margin-bottom: 30px;
-    letter-spacing: 1px;
+    font-size: 44px;
+    font-weight: 800;
+    text-align: center;
+    margin: 0 auto 40px auto;
+    letter-spacing: 3px;
+    text-shadow: 0 0 18px rgba(194,181,155,0.45);
+    width: 100%;
+    display: block;
+    text-transform: uppercase;
 }
 
 /* ============================================================
