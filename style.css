@@ -551,3 +551,21 @@ main h1 {
 .armory-item button:hover {
     background: #444;
 }
+
+/* ============================================================
+   FOOTER CREDIT — PREMIUM GOLD SIGNATURE
+============================================================ */
+
+#footer-credit {
+    text-align: center;
+    margin-top: 50px;
+    padding: 20px 0;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    opacity: 0.65;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(194,181,155,0.35);
+    user-select: none;
+}
+
