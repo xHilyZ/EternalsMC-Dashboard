@@ -1,33 +1,18 @@
 /* ============================================================
-   LOGIN + ROLE PROTECTION
+   ROLE + LOGIN SYSTEM
 ============================================================ */
 
-if (localStorage.getItem("loggedIn") !== "true") {
-    window.location.href = "login.html";
-}
-
+// Load role
 const ROLE = localStorage.getItem("role") || "member";
 document.body.classList.add(ROLE);
 
+// Logout
 function logout() {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("role");
     window.location.href = "login.html";
 }
 
-/* ============================================================
-   GLOBAL CONFIG
-============================================================ */
-
-const API_BASE = "/api";
-let editingMemberId = null;
-
-function format(num) {
-    return Number(num).toLocaleString();
-}
-
-const MELBOURNE_OFFSET = 11;
-let currentMembers = [];
 
 /* ============================================================
    PAGE SWITCHING
@@ -36,408 +21,307 @@ let currentMembers = [];
 function openPage(page) {
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
     document.getElementById("page-" + page).classList.add("active");
-
-    if (page === "checklist") loadChecklist();
-    if (page === "quota") loadQuota();
-    if (page === "armory") loadArmory();
-    if (page === "pricelist") loadPriceList();
 }
+
 
 /* ============================================================
-   DASHBOARD LOADING
+   RADIO CHANNEL SYSTEM
 ============================================================ */
 
-async function loadDashboard() {
-    const res = await fetch(`${API_BASE}/getData2`);
-    const data = await res.json();
+// Load saved radio channel
+let radioChannel = localStorage.getItem("radioChannel") || "68.53";
+const radioLabel = document.getElementById("radioLabel");
+if (radioLabel) radioLabel.innerText = radioChannel;
 
-    updateFundsUI(data.funds);
-    updateMembersUI(data.members);
-    updateTransactionsUI(data.transactions);
-    updateDealsTransactionsUI(data.transactions);
-    updateTopStats(data.funds, data.members, data.transactions);
+// Open modal (admin only)
+function openRadioModal() {
+    if (ROLE !== "admin") return;
+    document.getElementById("radioInput").value = radioChannel;
+    document.getElementById("radioModal").style.display = "flex";
 }
 
-function updateTopStats(funds, members, transactions) {
-    const totalMoney = (funds.clean || 0) + (funds.dirty || 0);
-
-    document.getElementById("totalMoney").textContent = `$${format(totalMoney)}`;
-    document.getElementById("totalDeals").textContent = format(transactions.length);
-    document.getElementById("activeMembers").textContent = format(members.length);
+// Close modal
+function closeRadioModal() {
+    document.getElementById("radioModal").style.display = "none";
 }
+
+// Save new channel
+function saveRadio() {
+    const newChannel = document.getElementById("radioInput").value.trim();
+    if (!newChannel) return;
+
+    radioChannel = newChannel;
+    localStorage.setItem("radioChannel", radioChannel);
+
+    document.getElementById("radioLabel").innerText = radioChannel;
+
+    closeRadioModal();
+}
+
 
 /* ============================================================
-   FUNDS SYSTEM
+   FETCH INITIAL DATA FROM BACKEND
 ============================================================ */
 
-function updateFundsUI(funds) {
-    document.getElementById("cleanMoney").innerText = `$${format(funds.clean)}`;
-    document.getElementById("dirtyMoney").innerText = `$${format(funds.dirty)}`;
+async function loadData() {
+    try {
+        const res = await fetch("/api/getData");
+        const data = await res.json();
+
+        // Dashboard stats
+        document.getElementById("totalDeals").innerText = data.totalDeals;
+        document.getElementById("activeMembers").innerText = data.members.length;
+
+        if (ROLE === "admin") {
+            document.getElementById("totalMoney").innerText = "$" + data.totalMoney;
+            document.getElementById("cleanMoney").innerText = "$" + data.clean;
+            document.getElementById("dirtyMoney").innerText = "$" + data.dirty;
+        }
+
+        // Members
+        renderMembers(data.members);
+
+        // Transactions
+        renderTransactions(data.transactions);
+
+        // Armory
+        renderArmory(data.armory);
+
+        // Checklist
+        renderChecklist(data.checklist);
+
+        // Quota
+        document.getElementById("quotaHeader").innerText = data.quota || "No quota set.";
+        document.getElementById("quotaContainer").innerHTML = data.quotaText || "";
+
+        // Price List
+        document.getElementById("priceListContainer").innerHTML = data.priceListHTML || "";
+
+    } catch (err) {
+        console.error("Error loading data:", err);
+    }
 }
 
-async function addClean() {
-    if (ROLE !== "admin") return;
-    const amount = Number(document.getElementById("fundAmount").value);
-    if (!amount) return;
+loadData();
 
-    await fetch(`${API_BASE}/updateFunds2`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ addClean: amount })
-    });
-
-    loadDashboard();
-}
-
-async function removeClean() {
-    if (ROLE !== "admin") return;
-    const amount = Number(document.getElementById("fundAmount").value);
-    if (!amount) return;
-
-    await fetch(`${API_BASE}/updateFunds2`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ removeClean: amount })
-    });
-
-    loadDashboard();
-}
-
-async function addDirty() {
-    if (ROLE !== "admin") return;
-    const amount = Number(document.getElementById("fundAmount").value);
-    if (!amount) return;
-
-    await fetch(`${API_BASE}/updateFunds2`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ addDirty: amount })
-    });
-
-    loadDashboard();
-}
-
-async function removeDirty() {
-    if (ROLE !== "admin") return;
-    const amount = Number(document.getElementById("fundAmount").value);
-    if (!amount) return;
-
-    await fetch(`${API_BASE}/updateFunds2`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ removeDirty: amount })
-    });
-
-    loadDashboard();
-}
-
-function updateFunds() {
-    if (ROLE !== "admin") return;
-    loadDashboard();
-}
-
-/* ============================================================
-   MEMBERS SYSTEM
-============================================================ */
-
-function updateMembersUI(members) {
-    currentMembers = members || [];
-
-    const container = document.getElementById("membersList");
-    container.innerHTML = "";
-
-    members.forEach(member => {
-        const div = document.createElement("div");
-        div.className = "member-item";
-
-        div.innerHTML = `
-            <span>${member.name}</span>
-            <span>${member.rank ?? "Member"}</span>
-            ${
-                ROLE === "admin"
-                ? `<button onclick="openEditModal('${member.id}', '${member.name}', '${member.rank}')">Edit</button>
-                   <button onclick="removeMember('${member.id}')">Remove</button>`
-                : ``
-            }
-        `;
-
-        container.appendChild(div);
-    });
-}
-
-async function updateMembers() {
-    if (ROLE !== "admin") return;
-
-    const name = document.getElementById("memberName").value;
-    const rank = document.getElementById("memberRank").value;
-
-    if (!name || !rank) return alert("Enter valid member name and rank.");
-
-    await fetch(`${API_BASE}/updateMembers2`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, rank })
-    });
-
-    document.getElementById("memberName").value = "";
-    document.getElementById("memberRank").value = "";
-
-    loadDashboard();
-}
-
-async function removeMember(id) {
-    if (ROLE !== "admin") return;
-
-    await fetch(`${API_BASE}/updateMembers2`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ removeId: id })
-    });
-
-    loadDashboard();
-}
-
-/* ============================================================
-   EDIT MEMBER MODAL
-============================================================ */
-
-function openEditModal(id, name, rank) {
-    if (ROLE !== "admin") return;
-
-    editingMemberId = id;
-
-    document.getElementById("editName").value = name;
-    document.getElementById("editRank").value = rank;
-
-    document.getElementById("editModal").style.display = "block";
-}
-
-document.getElementById("cancelEditBtn")?.addEventListener("click", () => {
-    document.getElementById("editModal").style.display = "none";
-});
-
-document.getElementById("saveEditBtn")?.addEventListener("click", async () => {
-    if (ROLE !== "admin") return;
-
-    const name = document.getElementById("editName").value;
-    const rank = document.getElementById("editRank").value;
-
-    await fetch(`${API_BASE}/updateMembers2`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ editId: editingMemberId, name, rank })
-    });
-
-    document.getElementById("editModal").style.display = "none";
-    loadDashboard();
-});
 
 /* ============================================================
    DEALS / TRANSACTIONS
 ============================================================ */
 
 async function addTransaction() {
-    if (ROLE !== "admin") return;
-
-    const description = document.getElementById("dealDesc").value;
-    const amount = parseFloat(document.getElementById("dealAmount").value);
+    const desc = document.getElementById("dealDesc").value;
+    const amount = Number(document.getElementById("dealAmount").value);
     const type = document.getElementById("dealType").value;
 
-    if (!description || isNaN(amount)) return alert("Enter valid description and amount.");
+    if (!desc || !amount) return;
 
-    await fetch(`${API_BASE}/addTransaction2`, {
+    await fetch("/api/addTransaction", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description, amount, type })
+        body: JSON.stringify({ desc, amount, type })
     });
 
-    document.getElementById("dealDesc").value = "";
-    document.getElementById("dealAmount").value = "";
-
-    loadDashboard();
+    loadData();
 }
 
-function updateTransactionsUI(transactions) {
-    const container = document.getElementById("transactionsList2");
-    container.innerHTML = "";
-
-    transactions.forEach(tx => {
-        const div = document.createElement("div");
-        div.className = "transaction-item";
-
-        const sign = tx.type === "income" ? "+" : "-";
-        const color = tx.type === "income" ? "green" : "red";
-
-        div.innerHTML = `
-            <span>${tx.description}</span>
-            <span style="color:${color}">${sign}$${format(tx.amount)}</span>
-        `;
-
-        container.appendChild(div);
-    });
-}
-
-function updateDealsTransactionsUI(transactions) {
+function renderTransactions(list) {
     const container = document.getElementById("transactionsList");
-    if (!container) return;
+    const container2 = document.getElementById("transactionsList2");
 
-    container.innerHTML = "";
+    if (container) container.innerHTML = "";
+    if (container2) container2.innerHTML = "";
 
-    transactions.forEach(tx => {
+    list.forEach(t => {
         const div = document.createElement("div");
         div.className = "transaction-item";
-
-        const sign = tx.type === "income" ? "+" : "-";
-        const color = tx.type === "income" ? "green" : "red";
-
         div.innerHTML = `
-            <span>${tx.description}</span>
-            <span style="color:${color}">${sign}$${format(tx.amount)}</span>
+            <span>${t.desc}</span>
+            <span>${t.type === "income" ? "+" : "-"}$${t.amount}</span>
         `;
 
+        if (container) container.appendChild(div);
+        if (container2) container2.appendChild(div.cloneNode(true));
+    });
+}
+
+
+/* ============================================================
+   FUNDS (ADMIN ONLY)
+============================================================ */
+
+async function updateFunds() {
+    await fetch("/api/updateFunds", { method: "POST" });
+    loadData();
+}
+
+async function addClean() {
+    const amount = Number(document.getElementById("fundAmount").value);
+    if (!amount) return;
+
+    await fetch("/api/addClean", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount })
+    });
+
+    loadData();
+}
+
+async function removeClean() {
+    const amount = Number(document.getElementById("fundAmount").value);
+    if (!amount) return;
+
+    await fetch("/api/removeClean", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount })
+    });
+
+    loadData();
+}
+
+async function addDirty() {
+    const amount = Number(document.getElementById("fundAmount").value);
+    if (!amount) return;
+
+    await fetch("/api/addDirty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount })
+    });
+
+    loadData();
+}
+
+async function removeDirty() {
+    const amount = Number(document.getElementById("fundAmount").value);
+    if (!amount) return;
+
+    await fetch("/api/removeDirty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount })
+    });
+
+    loadData();
+}
+
+
+/* ============================================================
+   MEMBERS
+============================================================ */
+
+async function updateMembers() {
+    const name = document.getElementById("memberName").value;
+    const rank = document.getElementById("memberRank").value;
+
+    if (!name || !rank) return;
+
+    await fetch("/api/updateMembers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, rank })
+    });
+
+    loadData();
+}
+
+function renderMembers(list) {
+    const container = document.getElementById("membersList");
+    container.innerHTML = "";
+
+    list.forEach((m, index) => {
+        const div = document.createElement("div");
+        div.className = "member-item";
+        div.innerHTML = `
+            <span>${m.name} — ${m.rank}</span>
+            <div>
+                <button onclick="editMember(${index})">Edit</button>
+                <button onclick="deleteMember(${index})">Delete</button>
+            </div>
+        `;
         container.appendChild(div);
     });
 }
 
+function editMember(index) {
+    document.getElementById("editModal").style.display = "flex";
+    window.editIndex = index;
+}
+
+async function deleteMember(index) {
+    await fetch("/api/deleteMember", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ index })
+    });
+
+    loadData();
+}
+
+
 /* ============================================================
-   DAILY CHECKLIST
+   ARMORY
 ============================================================ */
 
-const DAILY_TASKS = [
-    { group: "Legal Operations", task: "Mining Runs — 30–60 minutes of mining" },
-    { group: "Legal Operations", task: "Scrapyard Work — 30–60 minutes salvaging" },
-    { group: "Legal Operations", task: "Dumpster Sweeps — 20 minutes of bin diving" },
-    { group: "Legal Operations", task: "Electrician Contracts — 10–45 minutes depending on level" },
-    { group: "Legal Operations", task: "Metal Detecting — 30–60 minutes searching" },
+async function addArmoryItem() {
+    const name = document.getElementById("armoryName").value;
+    const amount = Number(document.getElementById("armoryAmount").value);
+    const group = document.getElementById("armoryGroup").value;
 
-    { group: "Illegal Operations", task: "Meth Supply Pickups — PC:1005, collect crates, do NOT open" },
-    { group: "Illegal Operations", task: "Crime Tablet Missions — avoid graffiti & laundering missions" },
-    { group: "Illegal Operations", task: "Door Heist Jobs — PC:645, best bullet casing payout" },
-    { group: "Illegal Operations", task: "Chop Shop Runs — Chop 2–10 cars at PC:102" }
-];
+    if (!name || !amount) return;
 
-function loadChecklist() {
+    await fetch("/api/addArmory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, amount, group })
+    });
+
+    loadData();
+}
+
+function renderArmory(list) {
+    const container = document.getElementById("armoryList");
+    container.innerHTML = "";
+
+    list.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "armory-item";
+        div.innerHTML = `
+            <span>${item.name} (${item.amount})</span>
+            <button onclick="deleteArmory(${index})">Delete</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+async function deleteArmory(index) {
+    await fetch("/api/deleteArmory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ index })
+    });
+
+    loadData();
+}
+
+
+/* ============================================================
+   CHECKLIST
+============================================================ */
+
+function renderChecklist(list) {
     const container = document.getElementById("checklistContainer");
-    container.innerHTML = "";
-
-    const saved = JSON.parse(localStorage.getItem("dailyChecklist")) || {};
-    let currentGroup = "";
-
-    DAILY_TASKS.forEach(item => {
-        if (item.group !== currentGroup) {
-            currentGroup = item.group;
-
-            const header = document.createElement("h3");
-            header.className = "checklist-group";
-            header.textContent = currentGroup;
-            container.appendChild(header);
-        }
-
-        const checked = saved[item.task] || false;
-
-        const div = document.createElement("div");
-        div.className = "check-item";
-        div.innerHTML = `
-            <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleTask('${item.task}')">
-            <label>${item.task}</label>
-        `;
-        container.appendChild(div);
-    });
+    container.innerHTML = list || "";
 }
 
-function toggleTask(task) {
-    const saved = JSON.parse(localStorage.getItem("dailyChecklist")) || {};
-    saved[task] = !saved[task];
-    localStorage.setItem("dailyChecklist", JSON.stringify(saved));
-}
 
 /* ============================================================
-   DAILY RESET COUNTDOWN
+   QUOTA
 ============================================================ */
-
-function updateCountdown() {
-    const now = new Date();
-    const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
-
-    const reset = new Date(mel);
-    reset.setHours(17, 0, 0, 0);
-
-    if (mel > reset) reset.setDate(reset.getDate() + 1);
-
-    const diff = reset - mel;
-    const hours = Math.floor(diff / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    const secs = Math.floor((diff % 60000) / 1000);
-
-    document.getElementById("checklistHeader").innerHTML =
-        `Resets in ${hours}h ${mins}m ${secs}s`;
-
-    setTimeout(updateCountdown, 1000);
-}
-
-function scheduleDailyReset() {
-    const now = new Date();
-    const mel = new Date(now.getTime() + MELBOURNE_OFFSET * 3600 * 1000);
-
-    const tomorrow = new Date(mel);
-    tomorrow.setHours(24, 0, 0, 0);
-
-    const msUntilReset = tomorrow - mel;
-
-    setTimeout(() => {
-        localStorage.removeItem("dailyChecklist");
-        loadChecklist();
-        scheduleDailyReset();
-    }, msUntilReset);
-}
-
-scheduleDailyReset();
-
-/* ============================================================
-   WEEKLY QUOTA SYSTEM
-============================================================ */
-
-let WEEKLY_QUOTA_TEXT = localStorage.getItem("weeklyQuotaText") 
-    || "Set this week's quota from the dashboard tile.";
-
-function loadQuota() {
-    const header = document.getElementById("quotaHeader");
-    const container = document.getElementById("quotaContainer");
-
-    header.innerHTML = `
-        <div class="quota-box">
-            <p><strong>Current Quota:</strong></p>
-            <p>${WEEKLY_QUOTA_TEXT}</p>
-            <p style="color:#C2B59B; margin-top:8px;">Resets every Sunday</p>
-        </div>
-    `;
-
-    const saved = JSON.parse(localStorage.getItem("weeklyQuotaChecklist")) || {};
-    container.innerHTML = "";
-
-    currentMembers.forEach(member => {
-        const key = member.id || member.name;
-        const checked = saved[key] || false;
-
-        const div = document.createElement("div");
-        div.className = "check-item";
-        div.innerHTML = `
-            <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleQuota('${key}')">
-            <label>${member.name}</label>
-        `;
-        container.appendChild(div);
-    });
-}
-
-function toggleQuota(key) {
-    const saved = JSON.parse(localStorage.getItem("weeklyQuotaChecklist")) || {};
-    saved[key] = !saved[key];
-    localStorage.setItem("weeklyQuotaChecklist", JSON.stringify(saved));
-}
 
 function openQuotaModal() {
-    if (ROLE !== "admin") return;
-    document.getElementById("quotaTextInput").value = WEEKLY_QUOTA_TEXT;
     document.getElementById("quotaModal").style.display = "flex";
 }
 
@@ -445,286 +329,15 @@ function closeQuotaModal() {
     document.getElementById("quotaModal").style.display = "none";
 }
 
-function saveQuota() {
-    if (ROLE !== "admin") return;
+async function saveQuota() {
+    const text = document.getElementById("quotaTextInput").value;
 
-    const text = document.getElementById("quotaTextInput").value.trim();
-    WEEKLY_QUOTA_TEXT = text || "Set this week's quota from the dashboard tile.";
-    localStorage.setItem("weeklyQuotaText", WEEKLY_QUOTA_TEXT);
+    await fetch("/api/saveQuota", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+    });
 
+    loadData();
     closeQuotaModal();
-
-    if (document.getElementById("page-quota").classList.contains("active")) {
-        loadQuota();
-    }
 }
-
-/* ============================================================
-   ARMORY SYSTEM
-============================================================ */
-
-let ARMORY = JSON.parse(localStorage.getItem("armoryData")) || {
-    "Armour": [
-        { name: "Heavy Armour", amount: 57 },
-        { name: "Body Armour", amount: 76 }
-    ],
-    "Bandages": [
-        { name: "IFAK", amount: 4 },
-        { name: "Bandage", amount: 12 }
-    ],
-    "Guns (Built)": [
-        { name: "Vector", amount: 4 },
-        { name: "AK-47", amount: 2 }
-    ],
-    "Ammo": [
-        { name: "9mm", amount: 200 },
-        { name: "5.56", amount: 150 }
-    ],
-    "Ammo Cases": [
-        { name: "Small Ammo Case", amount: 3 },
-        { name: "Large Ammo Case", amount: 1 }
-    ],
-    "Attachments": [
-        { name: "Suppressor", amount: 5 },
-        { name: "Red Dot", amount: 7 }
-    ],
-    "Blueprints": [
-        { name: "Vector Blueprint", amount: 1 },
-        { name: "AK-47 Blueprint", amount: 1 }
-    ]
-};
-
-function saveArmory() {
-    localStorage.setItem("armoryData", JSON.stringify(ARMORY));
-}
-
-function loadArmory() {
-    const container = document.getElementById("armoryList");
-
-    const search = document.getElementById("armorySearch");
-    if (search) search.value = "";
-
-    container.innerHTML = "";
-
-    Object.keys(ARMORY).forEach(group => {
-        const header = document.createElement("h3");
-        header.className = "checklist-group";
-        header.textContent = group;
-        container.appendChild(header);
-
-        ARMORY[group].forEach((item, index) => {
-            const div = document.createElement("div");
-            div.className = "armory-item";
-
-            div.innerHTML = `
-                <span>${item.name} — <strong>${format(item.amount)}</strong></span>
-                ${
-                    ROLE === "admin"
-                    ? `<div>
-                           <button onclick="editArmoryItem('${group}', ${index})">Edit</button>
-                           <button onclick="removeArmoryItem('${group}', ${index})">Remove</button>
-                       </div>`
-                    : ``
-                }
-            `;
-
-            container.appendChild(div);
-        });
-    });
-}
-
-function filterArmory() {
-    const query = document.getElementById("armorySearch").value.toLowerCase();
-    const container = document.getElementById("armoryList");
-
-    container.innerHTML = "";
-
-    Object.keys(ARMORY).forEach(group => {
-        const filtered = ARMORY[group].filter(item =>
-            item.name.toLowerCase().includes(query)
-        );
-
-        if (filtered.length === 0) return;
-
-        const header = document.createElement("h3");
-        header.className = "checklist-group";
-        header.textContent = group;
-        container.appendChild(header);
-
-        filtered.forEach((item, index) => {
-            const div = document.createElement("div");
-            div.className = "armory-item";
-
-            div.innerHTML = `
-                <span>${item.name} — <strong>${format(item.amount)}</strong></span>
-                ${
-                    ROLE === "admin"
-                    ? `<div>
-                           <button onclick="editArmoryItem('${group}', ${index})">Edit</button>
-                           <button onclick="removeArmoryItem('${group}', ${index})">Remove</button>
-                       </div>`
-                    : ``
-                }
-            `;
-
-            container.appendChild(div);
-        });
-    });
-}
-
-document.getElementById("addArmoryBtn").addEventListener("click", () => {
-    if (ROLE !== "admin") return;
-
-    const name = document.getElementById("armoryName").value.trim();
-    const amount = parseInt(document.getElementById("armoryAmount").value);
-    const group = document.getElementById("armoryGroup").value;
-
-    if (!name || isNaN(amount)) return alert("Enter valid name and amount.");
-
-    ARMORY[group].push({ name, amount });
-    saveArmory();
-    loadArmory();
-
-    document.getElementById("armoryName").value = "";
-    document.getElementById("armoryAmount").value = "";
-});
-
-function editArmoryItem(group, index) {
-    if (ROLE !== "admin") return;
-
-    const current = ARMORY[group][index];
-
-    const newName = prompt("New name:", current.name);
-    const newAmount = prompt("New amount:", current.amount);
-
-    if (!newName || isNaN(parseInt(newAmount))) return;
-
-    ARMORY[group][index].name = newName;
-    ARMORY[group][index].amount = parseInt(newAmount);
-
-    saveArmory();
-    loadArmory();
-}
-
-function removeArmoryItem(group, index) {
-    if (ROLE !== "admin") return;
-
-    if (!confirm("Remove this item?")) return;
-
-    ARMORY[group].splice(index, 1);
-    saveArmory();
-    loadArmory();
-}
-
-/* ============================================================
-   PRICE LIST SYSTEM
-============================================================ */
-
-const PRICE_LIST = [
-    {
-        group: "14K Triads",
-        items: [
-            { what: "Heavy SMG BP", price: 1000000, relationship: "Own Vendor" },
-            { what: "Pump Shotgun MK2 BP", price: 850000, relationship: "Own Vendor" }
-        ]
-    },
-    {
-        group: "B13",
-        items: [
-            { what: "SCAR BP", price: 1800000, relationship: "Own Vendor" }
-        ]
-    },
-    {
-        group: "ETERNALS MC",
-        items: [
-            { what: "Sawn-Off Shotgun BP", price: 850000, relationship: "Own Vendor" },
-            { what: "MPX BP", price: 750000, relationship: "Own Vendor" }
-        ]
-    },
-    {
-        group: "FDK",
-        items: [
-            { what: "PPSH BP", price: 0, relationship: "Own Vendor" }
-        ]
-    },
-    {
-        group: "UMBRA",
-        items: [
-            { what: "Deagle BP", price: 400000, relationship: "Own Vendor" },
-            { what: "V-17 BP (Auto Pistol)", price: 650000, relationship: "Own Vendor" }
-        ]
-    }
-];
-
-function loadPriceList() {
-    const container = document.getElementById("priceListContainer");
-    container.innerHTML = "";
-
-    PRICE_LIST.forEach(section => {
-        const header = document.createElement("h3");
-        header.className = "price-group";
-        header.textContent = section.group;
-        container.appendChild(header);
-
-        section.items.forEach(item => {
-            const row = document.createElement("div");
-            row.className = "price-item";
-
-            row.innerHTML = `
-                <span>${item.what}</span>
-                <span>$${format(item.price)}</span>
-                <span>${item.relationship}</span>
-            `;
-
-            container.appendChild(row);
-        });
-    });
-}
-
-/* ============================================================
-   ROLE‑BASED UI RESTRICTIONS
-============================================================ */
-
-function applyRoleRestrictions() {
-    if (ROLE === "admin") return;
-
-    // Disable quota editing
-    const quotaBtn = document.querySelector("button[onclick='openQuotaModal()']");
-    if (quotaBtn) quotaBtn.style.display = "none";
-
-    // Disable member adding
-    document.getElementById("memberName").disabled = true;
-    document.getElementById("memberRank").disabled = true;
-
-    const addMemberBtn = document.querySelector("button[onclick='updateMembers()']");
-    if (addMemberBtn) addMemberBtn.style.display = "none";
-
-    // Disable funds editing
-    document.getElementById("fundAmount").disabled = true;
-
-    const fundButtons = [
-        "addClean()", "removeClean()", "addDirty()", "removeDirty()", "updateFunds()"
-    ];
-
-    fundButtons.forEach(fn => {
-        const btn = document.querySelector(`button[onclick="${fn}"]`);
-        if (btn) btn.style.display = "none";
-    });
-
-    // Disable armory adding
-    document.getElementById("armoryName").disabled = true;
-    document.getElementById("armoryAmount").disabled = true;
-    document.getElementById("addArmoryBtn").style.display = "none";
-}
-
-/* ============================================================
-   INIT
-============================================================ */
-
-function init() {
-    updateCountdown();
-    loadDashboard();
-    applyRoleRestrictions();
-}
-
-init();
