@@ -78,7 +78,7 @@
 
 <div class="login-container">
 
-    <!-- Your patch -->
+    <!-- Patch -->
     <img src="patch.png" class="patch">
 
     <div class="login-box">
@@ -98,12 +98,24 @@ function login() {
     const user = document.getElementById("username").value.trim();
     const pass = document.getElementById("password").value.trim();
 
-    if (user === "emc" && pass === "emc") {
+    // ADMIN LOGIN
+    if (user === "admin" && pass === "admin") {
         localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("role", "admin");
         window.location.href = "index.html";
-    } else {
-        document.getElementById("error").textContent = "Invalid username or password.";
+        return;
     }
+
+    // MEMBER LOGIN
+    if (user === "member" && pass === "member") {
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("role", "member");
+        window.location.href = "index.html";
+        return;
+    }
+
+    // INVALID LOGIN
+    document.getElementById("error").textContent = "Invalid username or password.";
 }
 </script>
 

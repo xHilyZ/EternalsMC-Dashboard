@@ -1,13 +1,16 @@
 /* ============================================================
-   LOGIN PROTECTION (NEW)
+   LOGIN + ROLE PROTECTION
 ============================================================ */
 
 if (localStorage.getItem("loggedIn") !== "true") {
     window.location.href = "login.html";
 }
 
+const ROLE = localStorage.getItem("role") || "member";
+
 function logout() {
     localStorage.removeItem("loggedIn");
+    localStorage.removeItem("role");
     window.location.href = "login.html";
 }
 
@@ -72,6 +75,7 @@ function updateFundsUI(funds) {
 }
 
 async function addClean() {
+    if (ROLE !== "admin") return;
     const amount = Number(document.getElementById("fundAmount").value);
     if (!amount) return;
 
@@ -85,6 +89,7 @@ async function addClean() {
 }
 
 async function removeClean() {
+    if (ROLE !== "admin") return;
     const amount = Number(document.getElementById("fundAmount").value);
     if (!amount) return;
 
@@ -98,6 +103,7 @@ async function removeClean() {
 }
 
 async function addDirty() {
+    if (ROLE !== "admin") return;
     const amount = Number(document.getElementById("fundAmount").value);
     if (!amount) return;
 
@@ -111,6 +117,7 @@ async function addDirty() {
 }
 
 async function removeDirty() {
+    if (ROLE !== "admin") return;
     const amount = Number(document.getElementById("fundAmount").value);
     if (!amount) return;
 
@@ -124,6 +131,7 @@ async function removeDirty() {
 }
 
 function updateFunds() {
+    if (ROLE !== "admin") return;
     loadDashboard();
 }
 
@@ -144,8 +152,12 @@ function updateMembersUI(members) {
         div.innerHTML = `
             <span>${member.name}</span>
             <span>${member.rank ?? "Member"}</span>
-            <button onclick="openEditModal('${member.id}', '${member.name}', '${member.rank}')">Edit</button>
-            <button onclick="removeMember('${member.id}')">Remove</button>
+            ${
+                ROLE === "admin"
+                ? `<button onclick="openEditModal('${member.id}', '${member.name}', '${member.rank}')">Edit</button>
+                   <button onclick="removeMember('${member.id}')">Remove</button>`
+                : ``
+            }
         `;
 
         container.appendChild(div);
@@ -153,6 +165,8 @@ function updateMembersUI(members) {
 }
 
 async function updateMembers() {
+    if (ROLE !== "admin") return;
+
     const name = document.getElementById("memberName").value;
     const rank = document.getElementById("memberRank").value;
 
@@ -171,6 +185,8 @@ async function updateMembers() {
 }
 
 async function removeMember(id) {
+    if (ROLE !== "admin") return;
+
     await fetch(`${API_BASE}/updateMembers2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -185,6 +201,8 @@ async function removeMember(id) {
 ============================================================ */
 
 function openEditModal(id, name, rank) {
+    if (ROLE !== "admin") return;
+
     editingMemberId = id;
 
     document.getElementById("editName").value = name;
@@ -198,6 +216,8 @@ document.getElementById("cancelEditBtn")?.addEventListener("click", () => {
 });
 
 document.getElementById("saveEditBtn")?.addEventListener("click", async () => {
+    if (ROLE !== "admin") return;
+
     const name = document.getElementById("editName").value;
     const rank = document.getElementById("editRank").value;
 
@@ -216,6 +236,8 @@ document.getElementById("saveEditBtn")?.addEventListener("click", async () => {
 ============================================================ */
 
 async function addTransaction() {
+    if (ROLE !== "admin") return;
+
     const description = document.getElementById("dealDesc").value;
     const amount = parseFloat(document.getElementById("dealAmount").value);
     const type = document.getElementById("dealType").value;
@@ -413,6 +435,7 @@ function toggleQuota(key) {
 }
 
 function openQuotaModal() {
+    if (ROLE !== "admin") return;
     document.getElementById("quotaTextInput").value = WEEKLY_QUOTA_TEXT;
     document.getElementById("quotaModal").style.display = "flex";
 }
@@ -422,6 +445,8 @@ function closeQuotaModal() {
 }
 
 function saveQuota() {
+    if (ROLE !== "admin") return;
+
     const text = document.getElementById("quotaTextInput").value.trim();
     WEEKLY_QUOTA_TEXT = text || "Set this week's quota from the dashboard tile.";
     localStorage.setItem("weeklyQuotaText", WEEKLY_QUOTA_TEXT);
@@ -492,10 +517,14 @@ function loadArmory() {
 
             div.innerHTML = `
                 <span>${item.name} — <strong>${format(item.amount)}</strong></span>
-                <div>
-                    <button onclick="editArmoryItem('${group}', ${index})">Edit</button>
-                    <button onclick="removeArmoryItem('${group}', ${index})">Remove</button>
-                </div>
+                ${
+                    ROLE === "admin"
+                    ? `<div>
+                           <button onclick="editArmoryItem('${group}', ${index})">Edit</button>
+                           <button onclick="removeArmoryItem('${group}', ${index})">Remove</button>
+                       </div>`
+                    : ``
+                }
             `;
 
             container.appendChild(div);
@@ -527,10 +556,14 @@ function filterArmory() {
 
             div.innerHTML = `
                 <span>${item.name} — <strong>${format(item.amount)}</strong></span>
-                <div>
-                    <button onclick="editArmoryItem('${group}', ${index})">Edit</button>
-                    <button onclick="removeArmoryItem('${group}', ${index})">Remove</button>
-                </div>
+                ${
+                    ROLE === "admin"
+                    ? `<div>
+                           <button onclick="editArmoryItem('${group}', ${index})">Edit</button>
+                           <button onclick="removeArmoryItem('${group}', ${index})">Remove</button>
+                       </div>`
+                    : ``
+                }
             `;
 
             container.appendChild(div);
@@ -539,6 +572,8 @@ function filterArmory() {
 }
 
 document.getElementById("addArmoryBtn").addEventListener("click", () => {
+    if (ROLE !== "admin") return;
+
     const name = document.getElementById("armoryName").value.trim();
     const amount = parseInt(document.getElementById("armoryAmount").value);
     const group = document.getElementById("armoryGroup").value;
@@ -554,6 +589,8 @@ document.getElementById("addArmoryBtn").addEventListener("click", () => {
 });
 
 function editArmoryItem(group, index) {
+    if (ROLE !== "admin") return;
+
     const current = ARMORY[group][index];
 
     const newName = prompt("New name:", current.name);
@@ -569,6 +606,8 @@ function editArmoryItem(group, index) {
 }
 
 function removeArmoryItem(group, index) {
+    if (ROLE !== "admin") return;
+
     if (!confirm("Remove this item?")) return;
 
     ARMORY[group].splice(index, 1);
@@ -642,12 +681,49 @@ function loadPriceList() {
 }
 
 /* ============================================================
+   ROLE‑BASED UI RESTRICTIONS
+============================================================ */
+
+function applyRoleRestrictions() {
+    if (ROLE === "admin") return;
+
+    // Disable quota editing
+    const quotaBtn = document.querySelector("button[onclick='openQuotaModal()']");
+    if (quotaBtn) quotaBtn.style.display = "none";
+
+    // Disable member adding
+    document.getElementById("memberName").disabled = true;
+    document.getElementById("memberRank").disabled = true;
+
+    const addMemberBtn = document.querySelector("button[onclick='updateMembers()']");
+    if (addMemberBtn) addMemberBtn.style.display = "none";
+
+    // Disable funds editing
+    document.getElementById("fundAmount").disabled = true;
+
+    const fundButtons = [
+        "addClean()", "removeClean()", "addDirty()", "removeDirty()", "updateFunds()"
+    ];
+
+    fundButtons.forEach(fn => {
+        const btn = document.querySelector(`button[onclick="${fn}"]`);
+        if (btn) btn.style.display = "none";
+    });
+
+    // Disable armory adding
+    document.getElementById("armoryName").disabled = true;
+    document.getElementById("armoryAmount").disabled = true;
+    document.getElementById("addArmoryBtn").style.display = "none";
+}
+
+/* ============================================================
    INIT
 ============================================================ */
 
 function init() {
     updateCountdown();
     loadDashboard();
+    applyRoleRestrictions();
 }
 
 init();
