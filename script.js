@@ -54,7 +54,6 @@ function login() {
 }
 
 // Run on load
-applyAuthVisibility();
 
 /* ============================================================
    PAGE SWITCHING
