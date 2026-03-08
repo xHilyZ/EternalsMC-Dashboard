@@ -23,7 +23,10 @@ if (localStorage.getItem("loggedIn") !== "true") {
         <ul>
             <li onclick="openPage('dashboard')">Dashboard</li>
             <li onclick="openPage('deals')">Deals</li>
-            <li onclick="openPage('bank')">Bank</li>
+
+            <!-- ⭐ ADMIN ONLY -->
+            <li class="admin-only" onclick="openPage('bank')">Bank</li>
+
             <li onclick="openPage('checklist')">Checklist</li>
             <li onclick="openPage('quota')">Quota</li>
             <li onclick="openPage('pricelist')">Price List</li>
@@ -50,7 +53,9 @@ if (localStorage.getItem("loggedIn") !== "true") {
         <h1>Welcome — Eternals MC</h1>
 
         <div class="stats">
-            <div class="stat-box">
+
+            <!-- ⭐ ADMIN ONLY -->
+            <div class="stat-box admin-only">
                 <h3>Total Money</h3>
                 <p id="totalMoney">$0</p>
             </div>
@@ -90,7 +95,6 @@ if (localStorage.getItem("loggedIn") !== "true") {
      DEALS PAGE
 =========================== -->
 <div id="page-deals" class="page">
-
     <div class="panel">
         <h2>Deals</h2>
 
@@ -106,13 +110,12 @@ if (localStorage.getItem("loggedIn") !== "true") {
 
         <div id="transactionsList2"></div>
     </div>
-
 </div>
 
 <!-- ===========================
-     BANK PAGE
+     BANK PAGE (ADMIN ONLY)
 =========================== -->
-<div id="page-bank" class="page">
+<div id="page-bank" class="page admin-only">
 
     <div class="panel">
         <h2>Club Funds</h2>
@@ -137,51 +140,39 @@ if (localStorage.getItem("loggedIn") !== "true") {
      CHECKLIST PAGE
 =========================== -->
 <div id="page-checklist" class="page">
-
     <div class="panel">
         <h2>Checklist</h2>
-
         <p id="checklistHeader"></p>
-
         <div id="checklistContainer"></div>
     </div>
-
 </div>
 
 <!-- ===========================
      QUOTA PAGE
 =========================== -->
 <div id="page-quota" class="page">
-
     <div class="panel">
         <h2>Weekly Quota</h2>
-
         <div id="quotaHeader"></div>
         <div id="quotaContainer"></div>
-
         <button onclick="openQuotaModal()">Set Quota</button>
     </div>
-
 </div>
 
 <!-- ===========================
      PRICE LIST PAGE
 =========================== -->
 <div id="page-pricelist" class="page">
-
     <div class="panel">
         <h2>Price List</h2>
-
         <div id="priceListContainer"></div>
     </div>
-
 </div>
 
 <!-- ===========================
      ARMORY PAGE
 =========================== -->
 <div id="page-armory" class="page">
-
     <div class="panel">
         <h2>Armory</h2>
 
@@ -204,14 +195,12 @@ if (localStorage.getItem("loggedIn") !== "true") {
 
         <div id="armoryList"></div>
     </div>
-
 </div>
 
 <!-- ===========================
      MEMBERS PAGE
 =========================== -->
 <div id="page-members" class="page">
-
     <div class="panel">
         <h2>Members</h2>
 
@@ -222,20 +211,16 @@ if (localStorage.getItem("loggedIn") !== "true") {
 
         <div id="membersList"></div>
     </div>
-
 </div>
 
 <!-- ===========================
      TRANSACTIONS PAGE
 =========================== -->
 <div id="page-transactions" class="page">
-
     <div class="panel">
         <h2>All Transactions</h2>
-
         <div id="transactionsList"></div>
     </div>
-
 </div>
 
 <!-- EDIT MEMBER MODAL -->

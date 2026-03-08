@@ -568,3 +568,12 @@ main h1 {
     text-shadow: 0 0 10px rgba(194,181,155,0.35);
     user-select: none;
 }
+
+/* ============================================================
+   ROLE‑BASED VISIBILITY
+   Hide admin-only elements for members
+============================================================ */
+
+body.member .admin-only {
+    display: none !important;
+}

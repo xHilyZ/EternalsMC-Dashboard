@@ -7,6 +7,7 @@ if (localStorage.getItem("loggedIn") !== "true") {
 }
 
 const ROLE = localStorage.getItem("role") || "member";
+document.body.classList.add(ROLE);
 
 function logout() {
     localStorage.removeItem("loggedIn");
