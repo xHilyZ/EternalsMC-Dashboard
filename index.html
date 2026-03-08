@@ -22,7 +22,9 @@ if (localStorage.getItem("loggedIn") !== "true") {
 
         <ul>
             <li onclick="openPage('dashboard')">Dashboard</li>
-            <li onclick="openPage('deals')">Deals</li>
+
+            <!-- ⭐ ADMIN ONLY -->
+            <li class="admin-only" onclick="openPage('deals')">Deals</li>
 
             <!-- ⭐ ADMIN ONLY -->
             <li class="admin-only" onclick="openPage('bank')">Bank</li>
@@ -32,7 +34,9 @@ if (localStorage.getItem("loggedIn") !== "true") {
             <li onclick="openPage('pricelist')">Price List</li>
             <li onclick="openPage('armory')">Armory</li>
             <li onclick="openPage('members')">Members</li>
-            <li onclick="openPage('transactions')">Transactions</li>
+
+            <!-- ⭐ ADMIN ONLY -->
+            <li class="admin-only" onclick="openPage('transactions')">Transactions</li>
         </ul>
     </div>
 
@@ -92,9 +96,9 @@ if (localStorage.getItem("loggedIn") !== "true") {
 </div>
 
 <!-- ===========================
-     DEALS PAGE
+     DEALS PAGE (ADMIN ONLY)
 =========================== -->
-<div id="page-deals" class="page">
+<div id="page-deals" class="page admin-only">
     <div class="panel">
         <h2>Deals</h2>
 
@@ -214,9 +218,9 @@ if (localStorage.getItem("loggedIn") !== "true") {
 </div>
 
 <!-- ===========================
-     TRANSACTIONS PAGE
+     TRANSACTIONS PAGE (ADMIN ONLY)
 =========================== -->
-<div id="page-transactions" class="page">
+<div id="page-transactions" class="page admin-only">
     <div class="panel">
         <h2>All Transactions</h2>
         <div id="transactionsList"></div>
