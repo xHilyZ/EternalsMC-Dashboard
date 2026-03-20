@@ -1,13 +1,14 @@
 # EternalsMC Dashboard
 
-A clean, luxury‑themed dashboard built for **Eternals MC | Zephyr**.  
-It provides simple, fast tools for managing members, funds, inventory, and daily/weekly club activity.  
-Frontend is pure HTML/CSS/JS, with Supabase + Vercel serverless functions powering the backend.
 
 ![Static Badge](https://img.shields.io/badge/Status-Active-3b82f6)
 ![Static Badge](https://img.shields.io/badge/Tech-HTML%20%7C%20CSS%20%7C%20JS-0ea5e9)
 ![Static Badge](https://img.shields.io/badge/CFX.re-API-22c55e)
 ![Static Badge](https://img.shields.io/badge/License-MIT-6366f1)
+
+A clean, luxury‑themed dashboard built for **Eternals MC | Zephyr**.  
+It provides simple, fast tools for managing members, funds, inventory, and daily/weekly club activity.  
+Frontend is pure HTML/CSS/JS, with Supabase + Vercel serverless functions powering the backend.
 
 ## Features
 - Role‑based access (Admin / Member)
